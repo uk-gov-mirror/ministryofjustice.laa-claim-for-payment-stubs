@@ -50,7 +50,7 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
   private DraftClaimEntity checkIfDraftClaimExists(UUID draftClaimId, UUID providerUserId)
       throws DraftClaimNotFoundException {
     return draftClaimRepository
-        .findByProviderUserId(draftClaimId, providerUserId)
+        .findByIdAndProviderUserId(draftClaimId, providerUserId)
         .orElseThrow(
             () ->
                 new DraftClaimNotFoundException(

@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -27,7 +26,7 @@ public class DraftClaim implements Serializable {
 
   @Schema(description = "payload")
   @JsonProperty("payload")
-  private JsonNode payload;
+  private String payload;
 
   @Schema(description = "ID of the provider user making the submission")
   @JsonProperty("providerUserId")

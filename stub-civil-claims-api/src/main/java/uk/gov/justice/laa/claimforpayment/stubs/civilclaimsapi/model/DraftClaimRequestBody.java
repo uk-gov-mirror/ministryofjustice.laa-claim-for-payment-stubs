@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -36,7 +35,7 @@ public class DraftClaimRequestBody implements Serializable {
   @NotNull
   @JsonProperty("payload")
   @Schema(description = "payload")
-  private JsonNode payload;
+  private String payload;
 
   /** Builder for DraftRequestBody. */
   @JsonPOJOBuilder(withPrefix = "")

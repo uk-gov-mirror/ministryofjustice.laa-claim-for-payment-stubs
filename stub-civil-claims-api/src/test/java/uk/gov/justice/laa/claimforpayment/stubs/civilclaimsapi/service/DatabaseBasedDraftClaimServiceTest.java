@@ -6,8 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -36,10 +34,12 @@ class DatabaseBasedDraftClaimServiceTest {
 
     UUID draftClaimId = UUID.randomUUID();
     UUID providerUserId = UUID.randomUUID();
-
-    ObjectMapper mapper = new ObjectMapper();
-    ObjectNode payload = mapper.createObjectNode();
-    payload.put("myField", "myValue");
+    String payload =
+        """
+        {
+          "someField": "someValue"
+        }
+        """;
 
     DraftClaimEntity entity =
         DraftClaimEntity.builder()
@@ -55,7 +55,7 @@ class DatabaseBasedDraftClaimServiceTest {
             .providerUserId(providerUserId)
             .build();
 
-    when(mockDraftClaimRepository.findByProviderUserId(draftClaimId, providerUserId)).thenReturn(Optional.of(entity));
+    when(mockDraftClaimRepository.findByIdAndProviderUserId(draftClaimId, providerUserId)).thenReturn(Optional.of(entity));
     when(mockDraftClaimMapper.toDraftClaim(entity)).thenReturn(draftClaim);
 
     DraftClaim result = draftClaimService.getDraftClaim(draftClaimId, providerUserId);
@@ -70,7 +70,7 @@ class DatabaseBasedDraftClaimServiceTest {
     UUID draftClaimId = UUID.randomUUID();
     UUID providerUserId = UUID.randomUUID();
 
-    when(mockDraftClaimRepository.findByProviderUserId(draftClaimId, providerUserId)).thenReturn(Optional.empty());
+    when(mockDraftClaimRepository.findByIdAndProviderUserId(draftClaimId, providerUserId)).thenReturn(Optional.empty());
 
     assertThrows(DraftClaimNotFoundException.class, () -> draftClaimService.getDraftClaim(draftClaimId, providerUserId));
 
@@ -81,10 +81,12 @@ class DatabaseBasedDraftClaimServiceTest {
   void shouldCreateClaim() {
     UUID draftClaimId = UUID.randomUUID();
     UUID providerUserId = UUID.randomUUID();
-
-    ObjectMapper mapper = new ObjectMapper();
-    ObjectNode payload = mapper.createObjectNode();
-    payload.put("myField", "myValue");
+    String payload =
+        """
+        {
+          "someField": "someValue"
+        }
+        """;
 
     DraftClaimRequestBody requestBody =
         DraftClaimRequestBody.builder()
