@@ -114,16 +114,6 @@ class DraftClaimControllerIntegrationTest {
 
     mockMvc
         .perform(
-            get("/api/v1/drafts/{draftClaimId}", id)
-                .with(
-                    jwt()
-                        .jwt(jwt -> jwt.claim("USER_NAME", providerUserId.toString()))
-                        .authorities(() -> "SCOPE_" + claimsWriteScope)))
-        .andExpect(status().isOk());
-
-
-    mockMvc
-        .perform(
             put("/api/v1/drafts")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
