@@ -135,9 +135,10 @@ public class ClaimsSeeder {
       Connection connection, ClaimsFile file, Map<String, Long> claimIds) throws SQLException {
 
     Map<String, Long> evidenceIds = new HashMap<>();
-    String sql = "INSERT INTO claim_evidence"
-        + " (claim_id, file_key, file_size, submitted_on) "
-        + "VALUES (?, ?, ?, ?)";
+    String sql =
+        "INSERT INTO claim_evidence"
+            + " (claim_id, file_key, file_size, submitted_on) "
+            + "VALUES (?, ?, ?, ?)";
 
     try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -242,11 +243,9 @@ public class ClaimsSeeder {
     }
   }
 
-  private void insertDrafts(Connection connection, ClaimsFile file)
-      throws SQLException {
+  private void insertDrafts(Connection connection, ClaimsFile file) throws SQLException {
 
-    String sql =
-        "INSERT INTO draft_claims (id, payload, provider_user_id) VALUES (?, ?, ?)";
+    String sql = "INSERT INTO draft_claims (id, payload, provider_user_id) VALUES (?, ?, ?)";
 
     try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -309,6 +308,7 @@ public class ClaimsSeeder {
     public LocalDate lineItemDate;
   }
 
+  /** DTO for a draft claim row. */
   public static class DraftClaimRow {
     public String id;
     public String payload;

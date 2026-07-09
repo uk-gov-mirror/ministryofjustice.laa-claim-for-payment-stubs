@@ -2,7 +2,8 @@ package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.service;
 
 import java.util.UUID;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaim;
-import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimRequestBody;
+import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPost;
+import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPut;
 
 /** An interface to some method of managing draft claims. */
 public interface DraftClaimServiceInterface {
@@ -23,7 +24,7 @@ public interface DraftClaimServiceInterface {
    * @param providerUserId the provider user id
    * @return the id of the created draft claim
    */
-  UUID createDraftClaim(DraftClaimRequestBody requestBody, UUID providerUserId);
+  UUID createDraftClaim(DraftClaimPost requestBody, UUID providerUserId);
 
   /**
    * Updates a draft claim.
@@ -31,7 +32,7 @@ public interface DraftClaimServiceInterface {
    * @param requestBody the updated draft claim
    * @return the id of the updated draft claim
    */
-  UUID updateDraftClaim(DraftClaimRequestBody requestBody, UUID providerUserId);
+  UUID updateDraftClaim(DraftClaimPut requestBody, UUID draftClaimId, UUID providerUserId);
 
   /**
    * Deletes a draft claim.

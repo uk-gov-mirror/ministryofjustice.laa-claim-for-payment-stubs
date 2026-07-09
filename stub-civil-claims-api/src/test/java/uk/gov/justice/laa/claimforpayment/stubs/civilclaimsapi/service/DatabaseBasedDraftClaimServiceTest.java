@@ -16,7 +16,8 @@ import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.entity.DraftClaim
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.exception.DraftClaimNotFoundException;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.mapper.DraftClaimMapper;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaim;
-import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimRequestBody;
+import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPost;
+import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPut;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.repository.DraftClaimRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,7 +55,8 @@ class DatabaseBasedDraftClaimServiceTest {
             .providerUserId(providerUserId)
             .build();
 
-    when(mockDraftClaimRepository.findByIdAndProviderUserId(draftClaimId, providerUserId)).thenReturn(Optional.of(entity));
+    when(mockDraftClaimRepository.findByIdAndProviderUserId(draftClaimId, providerUserId))
+        .thenReturn(Optional.of(entity));
     when(mockDraftClaimMapper.toDraftClaim(entity)).thenReturn(draftClaim);
 
     DraftClaim result = draftClaimService.getDraftClaim(draftClaimId, providerUserId);
@@ -69,9 +71,12 @@ class DatabaseBasedDraftClaimServiceTest {
     UUID draftClaimId = UUID.randomUUID();
     UUID providerUserId = UUID.randomUUID();
 
-    when(mockDraftClaimRepository.findByIdAndProviderUserId(draftClaimId, providerUserId)).thenReturn(Optional.empty());
+    when(mockDraftClaimRepository.findByIdAndProviderUserId(draftClaimId, providerUserId))
+        .thenReturn(Optional.empty());
 
-    assertThrows(DraftClaimNotFoundException.class, () -> draftClaimService.getDraftClaim(draftClaimId, providerUserId));
+    assertThrows(
+        DraftClaimNotFoundException.class,
+        () -> draftClaimService.getDraftClaim(draftClaimId, providerUserId));
 
     verifyNoInteractions(mockDraftClaimMapper);
   }
@@ -87,11 +92,7 @@ class DatabaseBasedDraftClaimServiceTest {
         }
         """;
 
-    DraftClaimRequestBody requestBody =
-        DraftClaimRequestBody.builder()
-            .id(draftClaimId)
-            .payload(payload)
-            .build();
+    DraftClaimPost requestBody = DraftClaimPost.builder().id(draftClaimId).payload(payload).build();
 
     DraftClaimEntity savedEntity =
         DraftClaimEntity.builder()
@@ -113,37 +114,34 @@ class DatabaseBasedDraftClaimServiceTest {
     UUID draftClaimId = UUID.randomUUID();
     UUID providerUserId = UUID.randomUUID();
     String payload =
-            """
+        """
                     {
                       "someField": "someValue"
                     }
                     """;
 
-    DraftClaimRequestBody requestBody =
-            DraftClaimRequestBody.builder()
-                    .id(draftClaimId)
-                    .payload(payload)
-                    .build();
+    DraftClaimPut requestBody = DraftClaimPut.builder().payload(payload).build();
 
     DraftClaimEntity savedEntity =
-            DraftClaimEntity.builder()
-                    .id(draftClaimId)
-                    .payload(payload)
-                    .providerUserId(providerUserId)
-                    .build();
+        DraftClaimEntity.builder()
+            .id(draftClaimId)
+            .payload(payload)
+            .providerUserId(providerUserId)
+            .build();
 
     DraftClaimEntity updatedEntity =
-            DraftClaimEntity.builder()
-                    .id(draftClaimId)
-                    .payload(payload)
-                    .providerUserId(providerUserId)
-                    .build();
+        DraftClaimEntity.builder()
+            .id(draftClaimId)
+            .payload(payload)
+            .providerUserId(providerUserId)
+            .build();
 
-    when(mockDraftClaimRepository.findByIdAndProviderUserId(draftClaimId, providerUserId)).thenReturn(Optional.of(savedEntity));
+    when(mockDraftClaimRepository.findByIdAndProviderUserId(draftClaimId, providerUserId))
+        .thenReturn(Optional.of(savedEntity));
 
     when(mockDraftClaimRepository.save(any(DraftClaimEntity.class))).thenReturn(updatedEntity);
 
-    UUID result = draftClaimService.updateDraftClaim(requestBody, providerUserId);
+    UUID result = draftClaimService.updateDraftClaim(requestBody, draftClaimId, providerUserId);
 
     assertThat(result).isNotNull();
     assertThat(result).isEqualTo(draftClaimId);
@@ -154,10 +152,13 @@ class DatabaseBasedDraftClaimServiceTest {
     UUID draftClaimId = UUID.randomUUID();
     UUID providerUserId = UUID.randomUUID();
 
-    doNothing().when(mockDraftClaimRepository).deleteByIdAndProviderUserId(draftClaimId, providerUserId);
+    doNothing()
+        .when(mockDraftClaimRepository)
+        .deleteByIdAndProviderUserId(draftClaimId, providerUserId);
 
     draftClaimService.deleteDraftClaim(draftClaimId, providerUserId);
 
-    verify(mockDraftClaimRepository, times(1)).deleteByIdAndProviderUserId(draftClaimId, providerUserId);
+    verify(mockDraftClaimRepository, times(1))
+        .deleteByIdAndProviderUserId(draftClaimId, providerUserId);
   }
 }

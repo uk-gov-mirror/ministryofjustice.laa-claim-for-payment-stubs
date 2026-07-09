@@ -12,38 +12,26 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.AddClaimEvidenceResponse;
-import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.AddLineItemResponse;
-import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.Claim;
-import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.ClaimEvidenceRequestBody;
-import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.ClaimPageResponse;
-import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.ClaimRequestBody;
-import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.CreateClaimResponse;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.CreateDraftClaimResponse;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaim;
-import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimRequestBody;
-import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.LineItemRequestBody;
+import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPost;
+import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPut;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.service.DraftClaimServiceInterface;
 
 /** REST controller for managing draft claims. */
@@ -85,7 +73,7 @@ public class DraftClaimController {
   @PostMapping
   public ResponseEntity<CreateDraftClaimResponse> createDraftClaim(
       @Parameter(description = "Draft claim input data", required = true) @Valid @RequestBody
-          DraftClaimRequestBody requestBody,
+          DraftClaimPost requestBody,
       @AuthenticationPrincipal Jwt jwt) {
 
     String id = jwt.getClaimAsString("USER_NAME");
@@ -142,26 +130,32 @@ public class DraftClaimController {
   @Operation(summary = "Update a claim")
   @ApiResponses(
       value = {
-          @ApiResponse(responseCode = "204", description = "Draft claim updated successfully"),
-          @ApiResponse(responseCode = "404", description = "Draft claim not found", content = @Content)
+        @ApiResponse(responseCode = "204", description = "Draft claim updated successfully"),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Draft claim not found",
+            content = @Content)
       })
-  @PutMapping()
+  @PutMapping("/{draftClaimId}")
   public ResponseEntity<Void> updateClaim(
       @Parameter(description = "Updated claim data", required = true) @Valid @RequestBody
-      DraftClaimRequestBody requestBody, @AuthenticationPrincipal Jwt jwt) {
+      DraftClaimPut requestBody,
+      @Parameter(description = "ID of the draft claim to update", required = true) @PathVariable
+          UUID draftClaimId,
+      @AuthenticationPrincipal Jwt jwt) {
 
     String id = jwt.getClaimAsString("USER_NAME");
     if (id == null || id.isBlank()) {
       throw new ResponseStatusException(FORBIDDEN, "providerUserId missing in token");
     }
     UUID providerUserId = UUID.fromString(id);
-    log.debug("Fetching draft claim with ID: {}", requestBody.getId());
-    draftClaimService.updateDraftClaim(requestBody, providerUserId);
+    log.debug("Updating draft claim with ID: {}", draftClaimId);
+    draftClaimService.updateDraftClaim(requestBody, draftClaimId, providerUserId);
     return ResponseEntity.noContent().build();
   }
 
-/**
-   * Deletes draft claim
+  /**
+   * Deletes draft claim.
    *
    * @param draftClaimId the ID of the draft claim to delete
    * @return a response entity with no content if the draft claim is deleted successfully
@@ -169,14 +163,15 @@ public class DraftClaimController {
   @Operation(summary = "Delete a draft claim")
   @ApiResponses(
       value = {
-          @ApiResponse(responseCode = "204", description = "Draft claim deleted successfully"),
-          @ApiResponse(responseCode = "403", description = "ProviderUserId is missing")
+        @ApiResponse(responseCode = "204", description = "Draft claim deleted successfully"),
+        @ApiResponse(responseCode = "403", description = "ProviderUserId is missing")
       })
   @DeleteMapping("/{draftClaimId}")
   public ResponseEntity<Void> deleteDraftClaim(
-      @Parameter(description = "ID of the draft claim to delete", required = true) @PathVariable UUID draftClaimId,
+      @Parameter(description = "ID of the draft claim to delete", required = true) @PathVariable
+          UUID draftClaimId,
       @AuthenticationPrincipal Jwt jwt) {
-    
+
     String id = jwt.getClaimAsString("USER_NAME");
     if (id == null || id.isBlank()) {
       throw new ResponseStatusException(FORBIDDEN, "providerUserId missing in token");
@@ -189,4 +184,3 @@ public class DraftClaimController {
     return ResponseEntity.noContent().build();
   }
 }
-

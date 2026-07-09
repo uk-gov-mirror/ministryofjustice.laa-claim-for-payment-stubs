@@ -11,5 +11,6 @@ import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.entity.DraftClaim
 public interface DraftClaimRepository extends JpaRepository<DraftClaimEntity, UUID> {
 
   Optional<DraftClaimEntity> findByIdAndProviderUserId(UUID id, UUID providerUserId);
+
   void deleteByIdAndProviderUserId(UUID id, UUID providerUserId);
 }

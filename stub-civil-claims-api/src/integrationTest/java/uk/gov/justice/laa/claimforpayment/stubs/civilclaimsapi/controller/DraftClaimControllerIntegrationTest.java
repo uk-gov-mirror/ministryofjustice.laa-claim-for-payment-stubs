@@ -89,19 +89,17 @@ class DraftClaimControllerIntegrationTest {
   @Test
   void shouldUpdateDraftClaim() throws Exception {
     UUID id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
-    String payload = "{'someField':'someValue'}";
 
     String requestBody =
-        String.format("""
+        """
         {
-          "id": "%s",
-          "payload": "%s"
+          "payload": "{'someField':'someValue'}"
         }
-        """, id, payload);
+        """;
 
     mockMvc
         .perform(
-            put("/api/v1/drafts")
+            put("/api/v1/drafts/{draftClaimId}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .accept(MediaType.APPLICATION_JSON)
@@ -114,30 +112,17 @@ class DraftClaimControllerIntegrationTest {
 
   @Test
   void shouldDeleteDraftClaim() throws Exception {
+    UUID id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
     mockMvc
         .perform(
-            delete("/api/v1/drafts/550e8400-e29b-41d4-a716-446655440000")
+            delete("/api/v1/drafts/{draftClaimId}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .with(
                     jwt()
-                      .jwt(jwt -> jwt.claim("USER_NAME", providerUserId.toString()))
-                      .authorities(() -> "SCOPE_" + claimsWriteScope)))
+                        .jwt(jwt -> jwt.claim("USER_NAME", providerUserId.toString()))
+                        .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isNoContent());
-  }
-
-  private String encode(Map<String, Object> claims) {
-    Instant now = Instant.now();
-
-    JwtClaimsSet jwtClaims =
-        JwtClaimsSet.builder()
-            .issuer("https://issuer.test")
-            .issuedAt(now)
-            .expiresAt(now.plusSeconds(60))
-            .claims(c -> c.putAll(claims))
-            .build();
-
-    return jwtEncoder.encode(JwtEncoderParameters.from(jwtClaims)).getTokenValue();
   }
 }

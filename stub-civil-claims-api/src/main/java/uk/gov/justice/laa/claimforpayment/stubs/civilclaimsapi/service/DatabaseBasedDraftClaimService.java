@@ -7,7 +7,8 @@ import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.entity.DraftClaim
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.exception.DraftClaimNotFoundException;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.mapper.DraftClaimMapper;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaim;
-import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimRequestBody;
+import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPost;
+import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPut;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.repository.DraftClaimRepository;
 
 /** Service class for handling claims requests. */
@@ -37,7 +38,7 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
    * @return the id of the created claim
    */
   @Override
-  public UUID createDraftClaim(DraftClaimRequestBody requestBody, UUID providerUserId) {
+  public UUID createDraftClaim(DraftClaimPost requestBody, UUID providerUserId) {
     DraftClaimEntity entity = new DraftClaimEntity();
     entity.setId(requestBody.getId());
     entity.setPayload(requestBody.getPayload());
@@ -48,24 +49,12 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
   }
 
   @Override
-  public UUID updateDraftClaim(DraftClaimRequestBody requestBody, UUID providerUserId) {
-    UUID draftClaimId = requestBody.getId();
-    DraftClaimEntity draftClaimEntity =
-            checkIfDraftClaimExists(draftClaimId, providerUserId);
+  public UUID updateDraftClaim(DraftClaimPut requestBody, UUID draftClaimId, UUID providerUserId) {
+    DraftClaimEntity draftClaimEntity = checkIfDraftClaimExists(draftClaimId, providerUserId);
 
     draftClaimEntity.setPayload(requestBody.getPayload());
     DraftClaimEntity updatedEntity = draftClaimRepository.save(draftClaimEntity);
     return updatedEntity.getId();
-  }
-
-  private DraftClaimEntity checkIfDraftClaimExists(UUID draftClaimId, UUID providerUserId)
-          throws DraftClaimNotFoundException {
-    return draftClaimRepository
-            .findByIdAndProviderUserId(draftClaimId, providerUserId)
-            .orElseThrow(
-                    () ->
-                            new DraftClaimNotFoundException(
-                                    String.format("No draft claim found with id: %s", draftClaimId)));
   }
 
   /**
@@ -73,10 +62,19 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
    *
    * @param draftClaimId the id of the claim to be deleted
    * @param providerUserId the id of the authenticated user
-   *
    */
   @Override
   public void deleteDraftClaim(UUID draftClaimId, UUID providerUserId) {
     draftClaimRepository.deleteByIdAndProviderUserId(draftClaimId, providerUserId);
+  }
+
+  private DraftClaimEntity checkIfDraftClaimExists(UUID draftClaimId, UUID providerUserId)
+      throws DraftClaimNotFoundException {
+    return draftClaimRepository
+        .findByIdAndProviderUserId(draftClaimId, providerUserId)
+        .orElseThrow(
+            () ->
+                new DraftClaimNotFoundException(
+                    String.format("No draft claim found with id: %s", draftClaimId)));
   }
 }
