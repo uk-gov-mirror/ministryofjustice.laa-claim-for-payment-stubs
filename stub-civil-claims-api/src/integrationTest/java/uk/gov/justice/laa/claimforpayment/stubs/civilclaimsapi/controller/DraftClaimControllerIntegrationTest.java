@@ -1,9 +1,7 @@
 package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.controller;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -103,17 +101,6 @@ class DraftClaimControllerIntegrationTest {
 
     mockMvc
         .perform(
-            post("/api/v1/drafts")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody)
-                .accept(MediaType.APPLICATION_JSON)
-                .with(
-                    jwt()
-                        .jwt(jwt -> jwt.claim("USER_NAME", providerUserId.toString()))
-                        .authorities(() -> "SCOPE_" + claimsWriteScope)));
-
-    mockMvc
-        .perform(
             put("/api/v1/drafts")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
@@ -122,6 +109,21 @@ class DraftClaimControllerIntegrationTest {
                     jwt()
                         .jwt(jwt -> jwt.claim("USER_NAME", providerUserId.toString()))
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
+        .andExpect(status().isNoContent());
+  }
+
+  @Test
+  void shouldDeleteDraftClaim() throws Exception {
+
+    mockMvc
+        .perform(
+            delete("/api/v1/drafts/550e8400-e29b-41d4-a716-446655440000")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(
+                    jwt()
+                      .jwt(jwt -> jwt.claim("USER_NAME", providerUserId.toString()))
+                      .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isNoContent());
   }
 

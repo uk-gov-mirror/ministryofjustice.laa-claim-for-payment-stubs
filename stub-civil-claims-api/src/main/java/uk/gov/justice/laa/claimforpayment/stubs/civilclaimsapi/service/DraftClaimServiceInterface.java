@@ -25,7 +25,6 @@ public interface DraftClaimServiceInterface {
    */
   UUID createDraftClaim(DraftClaimRequestBody requestBody, UUID providerUserId);
 
-
   /**
    * Updates a draft claim.
    *
@@ -33,4 +32,11 @@ public interface DraftClaimServiceInterface {
    * @return the id of the updated draft claim
    */
   UUID updateDraftClaim(DraftClaimRequestBody requestBody, UUID providerUserId);
+
+  /**
+   * Deletes a draft claim.
+   *
+   * @param draftClaimId the id of the draft claim to be deleted
+   */
+  void deleteDraftClaim(UUID draftClaimId, UUID providerUserId);
 }

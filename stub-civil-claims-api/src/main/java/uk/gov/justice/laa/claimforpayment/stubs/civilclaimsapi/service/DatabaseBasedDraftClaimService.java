@@ -49,9 +49,9 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
 
   @Override
   public UUID updateDraftClaim(DraftClaimRequestBody requestBody, UUID providerUserId) {
-  UUID draftClaimId = requestBody.getId();
-  DraftClaimEntity draftClaimEntity =
-        checkIfDraftClaimExists(draftClaimId, providerUserId);
+    UUID draftClaimId = requestBody.getId();
+    DraftClaimEntity draftClaimEntity =
+            checkIfDraftClaimExists(draftClaimId, providerUserId);
 
     draftClaimEntity.setPayload(requestBody.getPayload());
     DraftClaimEntity updatedEntity = draftClaimRepository.save(draftClaimEntity);
@@ -59,12 +59,24 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
   }
 
   private DraftClaimEntity checkIfDraftClaimExists(UUID draftClaimId, UUID providerUserId)
-      throws DraftClaimNotFoundException {
+          throws DraftClaimNotFoundException {
     return draftClaimRepository
-        .findByIdAndProviderUserId(draftClaimId, providerUserId)
-        .orElseThrow(
-            () ->
-                new DraftClaimNotFoundException(
-                    String.format("No draft claim found with id: %s", draftClaimId)));
+            .findByIdAndProviderUserId(draftClaimId, providerUserId)
+            .orElseThrow(
+                    () ->
+                            new DraftClaimNotFoundException(
+                                    String.format("No draft claim found with id: %s", draftClaimId)));
+  }
+
+  /**
+   * Deletes a claim.
+   *
+   * @param draftClaimId the id of the claim to be deleted
+   * @param providerUserId the id of the authenticated user
+   *
+   */
+  @Override
+  public void deleteDraftClaim(UUID draftClaimId, UUID providerUserId) {
+    draftClaimRepository.deleteByIdAndProviderUserId(draftClaimId, providerUserId);
   }
 }

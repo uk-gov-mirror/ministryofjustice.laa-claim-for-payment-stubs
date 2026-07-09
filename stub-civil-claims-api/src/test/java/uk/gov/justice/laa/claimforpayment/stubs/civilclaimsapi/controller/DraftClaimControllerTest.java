@@ -4,12 +4,9 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -159,6 +156,27 @@ public class DraftClaimControllerTest {
         .andExpect(status().isNoContent());
 
     verify(mockDraftClaimService).updateDraftClaim(any(DraftClaimRequestBody.class), any(UUID.class));
+  }
+
+  @Test
+  void deleteDraftClaim_returnsVoid() throws Exception {
+    UUID providerUserId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+    UUID draftClaimId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+
+    doNothing().when(mockDraftClaimService).deleteDraftClaim(draftClaimId, providerUserId);
+
+    mockMvc
+        .perform(
+            delete("/api/v1/drafts/123e4567-e89b-12d3-a456-426614174000")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(
+                    jwt()
+                        .jwt(jwt -> jwt.claim("USER_NAME", providerUserId.toString()))
+                        .authorities(() -> "SCOPE_" + claimsWriteScope)))
+        .andExpect(status().isNoContent());
+
+    verify(mockDraftClaimService).deleteDraftClaim(draftClaimId, providerUserId);
   }
 
 }

@@ -159,4 +159,34 @@ public class DraftClaimController {
     draftClaimService.updateDraftClaim(requestBody, providerUserId);
     return ResponseEntity.noContent().build();
   }
+
+/**
+   * Deletes draft claim
+   *
+   * @param draftClaimId the ID of the draft claim to delete
+   * @return a response entity with no content if the draft claim is deleted successfully
+   */
+  @Operation(summary = "Delete a draft claim")
+  @ApiResponses(
+      value = {
+          @ApiResponse(responseCode = "204", description = "Draft claim deleted successfully"),
+          @ApiResponse(responseCode = "403", description = "ProviderUserId is missing")
+      })
+  @DeleteMapping("/{draftClaimId}")
+  public ResponseEntity<Void> deleteDraftClaim(
+      @Parameter(description = "ID of the draft claim to delete", required = true) @PathVariable UUID draftClaimId,
+      @AuthenticationPrincipal Jwt jwt) {
+    
+    String id = jwt.getClaimAsString("USER_NAME");
+    if (id == null || id.isBlank()) {
+      throw new ResponseStatusException(FORBIDDEN, "providerUserId missing in token");
+    }
+    UUID providerUserId = UUID.fromString(id);
+    log.debug("Deleting draft claim with ID: {}", draftClaimId);
+
+    draftClaimService.deleteDraftClaim(draftClaimId, providerUserId);
+
+    return ResponseEntity.noContent().build();
+  }
 }
+
