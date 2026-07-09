@@ -132,4 +132,31 @@ public class DraftClaimController {
     DraftClaim draftClaim = draftClaimService.getDraftClaim(draftClaimId, providerUserId);
     return ResponseEntity.ok(draftClaim);
   }
+
+  /**
+   * Updates an existing draft by its ID.
+   *
+   * @param requestBody the updated draft data
+   * @return a response entity with no content if update is successful
+   */
+  @Operation(summary = "Update a claim")
+  @ApiResponses(
+      value = {
+          @ApiResponse(responseCode = "204", description = "Draft claim updated successfully"),
+          @ApiResponse(responseCode = "404", description = "Draft claim not found", content = @Content)
+      })
+  @PutMapping()
+  public ResponseEntity<Void> updateClaim(
+      @Parameter(description = "Updated claim data", required = true) @Valid @RequestBody
+      DraftClaimRequestBody requestBody, @AuthenticationPrincipal Jwt jwt) {
+
+    String id = jwt.getClaimAsString("USER_NAME");
+    if (id == null || id.isBlank()) {
+      throw new ResponseStatusException(FORBIDDEN, "providerUserId missing in token");
+    }
+    UUID providerUserId = UUID.fromString(id);
+    log.debug("Fetching draft claim with ID: {}", requestBody.getId());
+    draftClaimService.updateDraftClaim(requestBody, providerUserId);
+    return ResponseEntity.noContent().build();
+  }
 }

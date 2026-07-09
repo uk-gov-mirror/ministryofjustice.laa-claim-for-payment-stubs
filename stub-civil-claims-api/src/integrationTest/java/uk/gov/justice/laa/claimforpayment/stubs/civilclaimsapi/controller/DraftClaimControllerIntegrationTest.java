@@ -3,6 +3,7 @@ package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.controller;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -85,6 +86,53 @@ class DraftClaimControllerIntegrationTest {
         .andExpect(jsonPath("$.id").value(id.toString()))
         .andExpect(jsonPath("$.payload").value(payload))
         .andExpect(jsonPath("$.providerUserId").value(providerUserId.toString()));
+  }
+
+  @Test
+  void shouldUpdateDraftClaim() throws Exception {
+    UUID id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    String payload = "{'someField':'someValue'}";
+
+    String requestBody =
+        String.format("""
+        {
+          "id": "%s",
+          "payload": "%s"
+        }
+        """, id, payload);
+
+    mockMvc
+        .perform(
+            post("/api/v1/drafts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(
+                    jwt()
+                        .jwt(jwt -> jwt.claim("USER_NAME", providerUserId.toString()))
+                        .authorities(() -> "SCOPE_" + claimsWriteScope)));
+
+    mockMvc
+        .perform(
+            get("/api/v1/drafts/{draftClaimId}", id)
+                .with(
+                    jwt()
+                        .jwt(jwt -> jwt.claim("USER_NAME", providerUserId.toString()))
+                        .authorities(() -> "SCOPE_" + claimsWriteScope)))
+        .andExpect(status().isOk());
+
+
+    mockMvc
+        .perform(
+            put("/api/v1/drafts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(
+                    jwt()
+                        .jwt(jwt -> jwt.claim("USER_NAME", providerUserId.toString()))
+                        .authorities(() -> "SCOPE_" + claimsWriteScope)))
+        .andExpect(status().isNoContent());
   }
 
   private String encode(Map<String, Object> claims) {

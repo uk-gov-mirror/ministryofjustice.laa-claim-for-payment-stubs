@@ -47,6 +47,17 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
     return createdEntity.getId();
   }
 
+  @Override
+  public UUID updateDraftClaim(DraftClaimRequestBody requestBody, UUID providerUserId) {
+  UUID draftClaimId = requestBody.getId();
+  DraftClaimEntity draftClaimEntity =
+        checkIfDraftClaimExists(draftClaimId, providerUserId);
+
+    draftClaimEntity.setPayload(requestBody.getPayload());
+    DraftClaimEntity updatedEntity = draftClaimRepository.save(draftClaimEntity);
+    return updatedEntity.getId();
+  }
+
   private DraftClaimEntity checkIfDraftClaimExists(UUID draftClaimId, UUID providerUserId)
       throws DraftClaimNotFoundException {
     return draftClaimRepository

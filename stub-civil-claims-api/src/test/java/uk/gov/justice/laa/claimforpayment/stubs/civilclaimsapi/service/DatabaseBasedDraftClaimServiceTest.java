@@ -108,4 +108,45 @@ class DatabaseBasedDraftClaimServiceTest {
     assertThat(result).isNotNull();
     assertThat(result).isEqualTo(draftClaimId);
   }
+
+  @Test
+  void shouldUpdateClaim() {
+    UUID draftClaimId = UUID.randomUUID();
+    UUID providerUserId = UUID.randomUUID();
+    String payload =
+        """
+        {
+          "someField": "someValue"
+        }
+        """;
+
+    DraftClaimRequestBody requestBody =
+        DraftClaimRequestBody.builder()
+            .id(draftClaimId)
+            .payload(payload)
+            .build();
+
+    DraftClaimEntity savedEntity =
+        DraftClaimEntity.builder()
+            .id(draftClaimId)
+            .payload(payload)
+            .providerUserId(providerUserId)
+            .build();
+
+    DraftClaimEntity updatedEntity =
+        DraftClaimEntity.builder()
+            .id(draftClaimId)
+            .payload(payload)
+            .providerUserId(providerUserId)
+            .build();
+
+    when(mockDraftClaimRepository.findByIdAndProviderUserId(draftClaimId, providerUserId)).thenReturn(Optional.of(savedEntity));
+
+    when(mockDraftClaimRepository.save(any(DraftClaimEntity.class))).thenReturn(updatedEntity);
+
+    UUID result = draftClaimService.updateDraftClaim(requestBody, providerUserId);
+
+    assertThat(result).isNotNull();
+    assertThat(result).isEqualTo(draftClaimId);
+  }
 }

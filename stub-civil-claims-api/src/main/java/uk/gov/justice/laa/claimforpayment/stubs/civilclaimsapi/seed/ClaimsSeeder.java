@@ -74,6 +74,8 @@ public class ClaimsSeeder {
 
         insertJoinRows(connection, file, lineItemIdsByKey, evidenceIdsByKey);
 
+        insertDrafts(connection, file);
+
         connection.commit();
         log.info("Seeding completed successfully");
 
@@ -240,12 +242,30 @@ public class ClaimsSeeder {
     }
   }
 
+  private void insertDrafts(Connection connection, ClaimsFile file)
+      throws SQLException {
+
+    String sql =
+        "INSERT INTO draft_claims (id, payload, provider_user_id) VALUES (?, ?, ?)";
+
+    try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+      for (DraftClaimRow d : file.draft_claims) {
+        ps.setString(1, d.id);
+        ps.setString(2, d.payload);
+        ps.setString(3, d.providerUserId);
+        ps.executeUpdate();
+      }
+    }
+  }
+
   /** DTO for the claims data file. */
   public static class ClaimsFile {
     public List<ClaimRow> claims;
     public List<ClaimEvidenceRow> claim_evidence;
     public List<LineItemRow> line_items;
     public List<LineItemEvidenceRow> line_item_claim_evidence;
+    public List<DraftClaimRow> draft_claims;
   }
 
   /** DTO for a claim row. */
@@ -287,5 +307,11 @@ public class ClaimsSeeder {
     public String evidenceFileIdString;
     public String lineItemTitle;
     public LocalDate lineItemDate;
+  }
+
+  public static class DraftClaimRow {
+    public String id;
+    public String payload;
+    public String providerUserId;
   }
 }
