@@ -148,13 +148,11 @@ public class DraftClaimController {
       @Parameter(description = "Updated claim data", required = true) @Valid @RequestBody
           DraftClaimPut requestBody,
       @Parameter(description = "ID of the draft claim to update", required = true) @PathVariable
-          UUID draftClaimId,
-      @AuthenticationPrincipal Jwt jwt) {
+          UUID draftClaimId) {
 
-    UUID providerUserId = getProviderUserId(jwt);
     log.debug("Updating draft claim with ID: {}", draftClaimId);
     try {
-      draftClaimService.updateDraftClaim(requestBody, draftClaimId, providerUserId);
+      draftClaimService.updateDraftClaim(requestBody, draftClaimId);
       return ResponseEntity.noContent().build();
     } catch (DraftClaimNotFoundException e) {
       log.error(e.getMessage());

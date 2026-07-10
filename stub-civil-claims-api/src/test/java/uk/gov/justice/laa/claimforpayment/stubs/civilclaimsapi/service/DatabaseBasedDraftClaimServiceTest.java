@@ -131,7 +131,10 @@ class DatabaseBasedDraftClaimServiceTest {
                     }
                     """;
 
-    DraftClaimPut requestBody = DraftClaimPut.builder().payload(newPayload).build();
+    DraftClaimPut requestBody = DraftClaimPut.builder()
+        .payload(newPayload)
+        .providerUserId(providerUserId)
+        .build();
 
     DraftClaimEntity savedEntity =
         DraftClaimEntity.builder()
@@ -161,7 +164,7 @@ class DatabaseBasedDraftClaimServiceTest {
 
     when(mockDraftClaimMapper.toDraftClaim(updatedEntity)).thenReturn(updatedClaim);
 
-    DraftClaim result = draftClaimService.updateDraftClaim(requestBody, draftClaimId, providerUserId);
+    DraftClaim result = draftClaimService.updateDraftClaim(requestBody, draftClaimId);
 
     verify(mockDraftClaimRepository).save(savedDraftClaimCaptor.capture());
 

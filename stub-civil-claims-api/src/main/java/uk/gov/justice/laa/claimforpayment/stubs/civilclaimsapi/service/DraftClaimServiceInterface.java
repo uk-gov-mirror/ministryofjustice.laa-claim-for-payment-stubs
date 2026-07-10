@@ -32,7 +32,7 @@ public interface DraftClaimServiceInterface {
    * @param requestBody the updated draft claim
    * @return the id of the updated draft claim
    */
-  DraftClaim updateDraftClaim(DraftClaimPut requestBody, UUID draftClaimId, UUID providerUserId);
+  DraftClaim updateDraftClaim(DraftClaimPut requestBody, UUID draftClaimId);
 
   /**
    * Patches a draft claim.

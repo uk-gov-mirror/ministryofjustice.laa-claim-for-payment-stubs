@@ -50,9 +50,9 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
   }
 
   @Override
-  public DraftClaim updateDraftClaim(
-      DraftClaimPut requestBody, UUID draftClaimId, UUID providerUserId) {
-    DraftClaimEntity draftClaimEntity = checkIfDraftClaimExists(draftClaimId, providerUserId);
+  public DraftClaim updateDraftClaim(DraftClaimPut requestBody, UUID draftClaimId) {
+    DraftClaimEntity draftClaimEntity =
+        checkIfDraftClaimExists(draftClaimId, requestBody.getProviderUserId());
 
     draftClaimEntity.setPayload(requestBody.getPayload());
     DraftClaimEntity updatedEntity = draftClaimRepository.save(draftClaimEntity);

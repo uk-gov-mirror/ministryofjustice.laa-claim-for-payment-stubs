@@ -124,14 +124,17 @@ class DraftClaimControllerIntegrationTest {
   void shouldUpdateDraftClaim() throws Exception {
     UUID id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
-    String payload = "{'someField':'someValue'}";
+    String payload = "{\"someField\": \"someValue\"}";
 
     String requestBody =
-        String.format("""
+        String.format(
+            """
         {
-          "payload": "%s"
+          "payload": "{\\"someField\\": \\"someValue\\"}",
+          "providerUserId": "%s"
         }
-        """, payload);
+        """,
+            providerUserId);
 
     mockMvc
         .perform(
@@ -163,14 +166,15 @@ class DraftClaimControllerIntegrationTest {
   void shouldNotUpdateDraftClaimWhenItDoesNotExist() throws Exception {
     UUID id = UUID.fromString("0ec9d4b6-900d-48ac-8685-ebb9fcd335dd");
 
-    String payload = "{'someField':'someValue'}";
-
     String requestBody =
-        String.format("""
+        String.format(
+            """
         {
-          "payload": "%s"
+          "payload": "{\\"someField\\": \\"someValue\\"}",
+          "providerUserId": "%s"
         }
-        """, payload);
+        """,
+            providerUserId);
 
     mockMvc
         .perform(

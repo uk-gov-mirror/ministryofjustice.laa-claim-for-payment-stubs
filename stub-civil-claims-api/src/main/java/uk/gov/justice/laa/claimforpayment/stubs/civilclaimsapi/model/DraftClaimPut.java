@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,6 +29,11 @@ public class DraftClaimPut implements Serializable {
   @JsonProperty("payload")
   @Schema(description = "payload")
   private String payload;
+
+  @NotNull
+  @JsonProperty("providerUserId")
+  @Schema(description = "provider user id")
+  private UUID providerUserId;
 
   /** Builder for DraftClaimPut. */
   @JsonPOJOBuilder(withPrefix = "")

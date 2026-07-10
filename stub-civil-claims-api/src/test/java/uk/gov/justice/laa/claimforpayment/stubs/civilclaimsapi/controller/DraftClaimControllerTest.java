@@ -224,21 +224,22 @@ public class DraftClaimControllerTest {
 
     UUID providerUserId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
     UUID draftClaimId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
-    String payload = "{'someField':'someValue'}";
+    String payload = "{\"someField\": \"someValue\"}";
 
     String requestBody =
         String.format(
             """
         {
-          "payload": "%s"
+          "payload": "{\\"someField\\": \\"someValue\\"}",
+          "providerUserId": "%s"
         }
         """,
-            payload);
+            providerUserId);
 
     @Test
     void returnsNoContentStatus() throws Exception {
       when(mockDraftClaimService.updateDraftClaim(
-              any(DraftClaimPut.class), eq(draftClaimId), eq(providerUserId)))
+              any(DraftClaimPut.class), eq(draftClaimId)))
           .thenReturn(
               DraftClaim.builder()
                   .id(draftClaimId)
@@ -259,7 +260,7 @@ public class DraftClaimControllerTest {
           .andExpect(status().isNoContent());
 
       verify(mockDraftClaimService)
-          .updateDraftClaim(draftClaimPutCaptor.capture(), eq(draftClaimId), eq(providerUserId));
+          .updateDraftClaim(draftClaimPutCaptor.capture(), eq(draftClaimId));
 
       assertThat(draftClaimPutCaptor.getValue().getPayload()).isEqualTo(payload);
     }
@@ -291,7 +292,7 @@ public class DraftClaimControllerTest {
     @Test
     void returnsNotFoundStatusWhenDraftClaimDoesNotExist() throws Exception {
       when(mockDraftClaimService.updateDraftClaim(
-              any(DraftClaimPut.class), eq(draftClaimId), eq(providerUserId)))
+              any(DraftClaimPut.class), eq(draftClaimId)))
           .thenThrow(new DraftClaimNotFoundException("Draft claim not found"));
 
       mockMvc
@@ -316,37 +317,6 @@ public class DraftClaimControllerTest {
                   .content(requestBody)
                   .accept(MediaType.APPLICATION_JSON))
           .andExpect(status().isUnauthorized());
-
-      verifyNoInteractions(mockDraftClaimService);
-    }
-
-    @Test
-    void returnsForbiddenStatusWhenJwtTokenIsMissing() throws Exception {
-      mockMvc
-          .perform(
-              put("/api/v1/drafts/{draftClaimId}", draftClaimId)
-                  .with(jwt().authorities(() -> "SCOPE_" + claimsWriteScope))
-                  .contentType(MediaType.APPLICATION_JSON)
-                  .content(requestBody)
-                  .accept(MediaType.APPLICATION_JSON))
-          .andExpect(status().isForbidden());
-
-      verifyNoInteractions(mockDraftClaimService);
-    }
-
-    @Test
-    void returnsForbiddenStatusWhenJwtTokenIsBlank() throws Exception {
-      mockMvc
-          .perform(
-              put("/api/v1/drafts/{draftClaimId}", draftClaimId)
-                  .with(
-                      jwt()
-                          .jwt(jwt -> jwt.claim("USER_NAME", ""))
-                          .authorities(() -> "SCOPE_" + claimsWriteScope))
-                  .contentType(MediaType.APPLICATION_JSON)
-                  .content(requestBody)
-                  .accept(MediaType.APPLICATION_JSON))
-          .andExpect(status().isForbidden());
 
       verifyNoInteractions(mockDraftClaimService);
     }
