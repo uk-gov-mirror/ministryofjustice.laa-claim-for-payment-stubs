@@ -80,11 +80,9 @@ public class DraftClaimController {
   @PostMapping
   public ResponseEntity<CreateDraftClaimResponse> createDraftClaim(
       @Parameter(description = "Draft claim input data", required = true) @Valid @RequestBody
-          DraftClaimPost requestBody,
-      @AuthenticationPrincipal Jwt jwt) {
+          DraftClaimPost requestBody) {
 
-    UUID providerUserId = getProviderUserId(jwt);
-    UUID draftClaimId = draftClaimService.createDraftClaim(requestBody, providerUserId);
+    UUID draftClaimId = draftClaimService.createDraftClaim(requestBody);
     URI location = URI.create("/api/v1/drafts/" + draftClaimId);
     return ResponseEntity.created(location).body(new CreateDraftClaimResponse(draftClaimId));
   }
@@ -243,6 +241,7 @@ public class DraftClaimController {
     }
   }
 
+  // TODO - remove
   private UUID getProviderUserId(Jwt jwt) {
     String id = jwt.getClaimAsString("USER_NAME");
     if (id == null || id.isBlank()) {

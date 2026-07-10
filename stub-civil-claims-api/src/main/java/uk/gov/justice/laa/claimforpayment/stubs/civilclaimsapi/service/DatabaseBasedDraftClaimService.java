@@ -39,11 +39,11 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
    * @return the id of the created claim
    */
   @Override
-  public UUID createDraftClaim(DraftClaimPost requestBody, UUID providerUserId) {
+  public UUID createDraftClaim(DraftClaimPost requestBody) {
     DraftClaimEntity entity = new DraftClaimEntity();
     entity.setId(requestBody.getId());
     entity.setPayload(requestBody.getPayload());
-    entity.setProviderUserId(providerUserId);
+    entity.setProviderUserId(requestBody.getProviderUserId());
 
     DraftClaimEntity createdEntity = draftClaimRepository.save(entity);
     return createdEntity.getId();
@@ -78,13 +78,7 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
    */
   @Override
   public void deleteDraftClaim(UUID draftClaimId, UUID providerUserId) {
-    try {
-      draftClaimRepository.deleteByIdAndProviderUserId(draftClaimId, providerUserId);
-    } catch (Exception e) {
-      System.out.println("********");
-      System.out.println(e.getMessage());
-      throw new RuntimeException(e);
-    }
+    draftClaimRepository.deleteByIdAndProviderUserId(draftClaimId, providerUserId);
   }
 
   private DraftClaimEntity checkIfDraftClaimExists(UUID draftClaimId, UUID providerUserId)

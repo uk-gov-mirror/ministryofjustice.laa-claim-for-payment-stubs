@@ -32,7 +32,6 @@ public class DraftClaimPatch implements Serializable {
   @JsonPOJOBuilder(withPrefix = "")
   public static class BodyBuilder {}
 
-
   @AssertTrue(message = "At least one field must be supplied")
   public boolean hasUpdates() {
     return payload != null;

@@ -22,10 +22,9 @@ public interface DraftClaimServiceInterface {
    * Creates a draft claim.
    *
    * @param requestBody the draft claim to be created
-   * @param providerUserId the provider user id
    * @return the id of the created draft claim
    */
-  UUID createDraftClaim(DraftClaimPost requestBody, UUID providerUserId);
+  UUID createDraftClaim(DraftClaimPost requestBody);
 
   /**
    * Updates a draft claim.

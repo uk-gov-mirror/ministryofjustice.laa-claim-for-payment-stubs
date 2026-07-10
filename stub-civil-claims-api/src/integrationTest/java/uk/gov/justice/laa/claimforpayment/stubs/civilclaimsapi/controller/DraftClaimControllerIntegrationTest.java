@@ -81,15 +81,18 @@ class DraftClaimControllerIntegrationTest {
   @Test
   void shouldCreateDraftClaim() throws Exception {
     UUID id = UUID.fromString("17dd7c98-ff17-4342-bef1-0b589a656f58");
-    String payload = "{'someField':'someValue'}";
+    String payload = "{\"someField\": \"someValue\"}";
 
     String requestBody =
-        String.format("""
+        String.format(
+            """
         {
           "id": "%s",
-          "payload": "%s"
+          "payload": "{\\"someField\\": \\"someValue\\"}",
+          "providerUserId": "%s"
         }
-        """, id, payload);
+        """,
+            id, providerUserId);
 
     mockMvc
         .perform(

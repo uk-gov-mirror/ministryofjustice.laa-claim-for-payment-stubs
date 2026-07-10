@@ -108,7 +108,7 @@ class DatabaseBasedDraftClaimServiceTest {
 
     when(mockDraftClaimRepository.save(any(DraftClaimEntity.class))).thenReturn(savedEntity);
 
-    UUID result = draftClaimService.createDraftClaim(requestBody, providerUserId);
+    UUID result = draftClaimService.createDraftClaim(requestBody);
 
     assertThat(result).isNotNull();
     assertThat(result).isEqualTo(draftClaimId);

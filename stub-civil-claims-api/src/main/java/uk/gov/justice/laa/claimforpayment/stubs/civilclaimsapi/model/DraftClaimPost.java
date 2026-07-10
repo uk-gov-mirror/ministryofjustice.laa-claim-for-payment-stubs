@@ -35,6 +35,11 @@ public class DraftClaimPost implements Serializable {
   @Schema(description = "payload")
   private String payload;
 
+  @NotNull
+  @JsonProperty("providerUserId")
+  @Schema(description = "provider user id")
+  private UUID providerUserId;
+
   /** Builder for DraftClaimPost. */
   @JsonPOJOBuilder(withPrefix = "")
   public static class BodyBuilder {}
