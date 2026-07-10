@@ -2,6 +2,7 @@ package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.entity.ClaimEvidenceEntity;
@@ -13,12 +14,9 @@ class ClaimEvidenceMapperTest {
 
   @Test
   void shouldMapToClaimEvidence() {
+    var claimId = UUID.randomUUID();
     var claimEvidenceEntity =
-        ClaimEvidenceEntity.builder()
-            .id(1L)
-            .fileKey("fileKey")
-            .fileSize(1000L)
-            .build();
+        ClaimEvidenceEntity.builder().id(claimId).fileKey("fileKey").fileSize(1000L).build();
 
     var result = claimEvidenceMapper.toClaimEvidence(claimEvidenceEntity);
 

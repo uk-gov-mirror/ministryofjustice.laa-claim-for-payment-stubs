@@ -11,6 +11,8 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -31,9 +33,8 @@ import org.hibernate.annotations.CreationTimestamp;
 public class ClaimEvidenceEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @EqualsAndHashCode.Include
-  private Long id;
+  private UUID id;
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "claim_id")

@@ -87,10 +87,13 @@ class ClaimControllerTest {
     UUID providerUserId1 = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
     UUID providerUserId2 = UUID.randomUUID();
 
+    UUID claimId1 = UUID.randomUUID();
+    UUID claimId2 = UUID.randomUUID();
+
     List<Claim> claims =
         List.of(
             Claim.builder()
-                .id(1L)
+                .id(claimId1)
                 .category("Category 1")
                 .claimed(new BigDecimal(2.2))
                 .client("Smith")
@@ -101,7 +104,7 @@ class ClaimControllerTest {
                 .providerUserId(providerUserId1)
                 .build(),
             Claim.builder()
-                .id(2L)
+                .id(claimId2)
                 .category("Category 1")
                 .claimed(new BigDecimal(2.5))
                 .client("Smith")
@@ -130,7 +133,7 @@ class ClaimControllerTest {
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.claims[0].id").value("1"))
+        .andExpect(jsonPath("$.claims[0].id").value(claimId1.toString()))
         .andExpect(jsonPath("$.claims", hasSize(1)));
   }
 
@@ -139,20 +142,33 @@ class ClaimControllerTest {
   void getClaimById_returnsOkStatusAndOneClaim() throws Exception {
     UUID providerUserId1 = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
 
-    Long claimEvidence1Id = 1L;
-    Long claimEvidence2Id = 2L;
-    Long claimEvidence3Id = 3L;
-    ClaimEvidence claimEvidence1 = ClaimEvidence.builder().id(claimEvidence1Id).fileKey("fileKey1").build();
-    ClaimEvidence claimEvidence2 = ClaimEvidence.builder().id(claimEvidence2Id).fileKey("fileKey2").build();
-    ClaimEvidence claimEvidence3 = ClaimEvidence.builder().id(claimEvidence3Id).fileKey("fileKey3").build();
-    LineItem lineItem1 =
-        LineItem.builder().id(1L).evidenceItems(List.of(claimEvidence1Id, claimEvidence2Id)).build();
-    LineItem lineItem2 = LineItem.builder().id(2L).evidenceItems(List.of(claimEvidence3Id)).build();
+    UUID claimEvidence1Id = UUID.randomUUID();
+    UUID claimEvidence2Id = UUID.randomUUID();
+    UUID claimEvidence3Id = UUID.randomUUID();
 
-    when(mockClaimService.getClaim(1L))
+    UUID claimId1 = UUID.randomUUID();
+
+    UUID lineItem1Id = UUID.randomUUID();
+    UUID lineItem2Id = UUID.randomUUID();
+
+    ClaimEvidence claimEvidence1 =
+        ClaimEvidence.builder().id(claimEvidence1Id).fileKey("fileKey1").build();
+    ClaimEvidence claimEvidence2 =
+        ClaimEvidence.builder().id(claimEvidence2Id).fileKey("fileKey2").build();
+    ClaimEvidence claimEvidence3 =
+        ClaimEvidence.builder().id(claimEvidence3Id).fileKey("fileKey3").build();
+    LineItem lineItem1 =
+        LineItem.builder()
+            .id(lineItem1Id)
+            .evidenceItems(List.of(claimEvidence1Id, claimEvidence2Id))
+            .build();
+    LineItem lineItem2 =
+        LineItem.builder().id(lineItem2Id).evidenceItems(List.of(claimEvidence3Id)).build();
+
+    when(mockClaimService.getClaim(claimId1))
         .thenReturn(
             Claim.builder()
-                .id(1L)
+                .id(claimId1)
                 .feeType("Fee type 1")
                 .category("Category 1")
                 .claimed(new BigDecimal(2.2))
@@ -199,8 +215,10 @@ class ClaimControllerTest {
   @Test
   void createClaim_returnsCreatedStatusAndLocationHeader() throws Exception {
     UUID providerUserId1 = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+    UUID claimId1 = UUID.randomUUID();
 
-    when(mockClaimService.createClaim(any(ClaimRequestBody.class), any(UUID.class))).thenReturn(3L);
+    when(mockClaimService.createClaim(any(ClaimRequestBody.class), any(UUID.class)))
+        .thenReturn(claimId1);
 
     String requestBody =
         """
@@ -228,7 +246,7 @@ class ClaimControllerTest {
                 .content(requestBody)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isCreated())
-        .andExpect(header().string("Location", containsString("/api/v1/claims/3")));
+        .andExpect(header().string("Location", containsString("/api/v1/claims/" + claimId1)));
   }
 
   @Test
@@ -260,6 +278,7 @@ class ClaimControllerTest {
   @Test
   void updateClaim_returnsNoContentStatus() throws Exception {
     UUID providerUserId1 = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+    UUID claimId1 = UUID.randomUUID();
 
     String requestBody =
         """
@@ -278,7 +297,7 @@ class ClaimControllerTest {
 
     mockMvc
         .perform(
-            put("/api/v1/claims/2")
+            put("/api/v1/claims/" + claimId1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .accept(MediaType.APPLICATION_JSON)
@@ -288,16 +307,17 @@ class ClaimControllerTest {
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isNoContent());
 
-    verify(mockClaimService).updateClaim(eq(2L), any(ClaimRequestBody.class));
+    verify(mockClaimService).updateClaim(eq(claimId1), any(ClaimRequestBody.class));
   }
 
   @Test
   void updateClaim_returnsBadRequestStatus() throws Exception {
     UUID providerUserId1 = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+    UUID claimId1 = UUID.randomUUID();
 
     mockMvc
         .perform(
-            put("/api/v1/claims/2")
+            put("/api/v1/claims/" + claimId1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"description\": \"This is an updated claim two.\"}")
                 .accept(MediaType.APPLICATION_JSON)
@@ -312,32 +332,36 @@ class ClaimControllerTest {
                     "{\"title\":\"Bad"
                         + " Request\",\"status\":400,\"detail\":\"Invalid request"
                         + " content.\",\"instance\":"
-                        + "\"/api/v1/claims/2\"}"));
+                        + "\"/api/v1/claims/"
+                        + claimId1
+                        + "\"}"));
 
-    verify(mockClaimService, never()).updateClaim(eq(2L), any(ClaimRequestBody.class));
+    verify(mockClaimService, never()).updateClaim(eq(claimId1), any(ClaimRequestBody.class));
   }
 
   @Test
   void deleteClaim_returnsNoContentStatus() throws Exception {
     UUID providerUserId1 = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
-
+    UUID claimId1 = UUID.randomUUID();
     mockMvc
         .perform(
-            delete("/api/v1/claims/3")
+            delete("/api/v1/claims/" + claimId1)
                 .with(
                     jwt()
                         .jwt(jwt -> jwt.claim("USER_NAME", providerUserId1.toString()))
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isNoContent());
 
-    verify(mockClaimService).deleteClaim(3L);
+    verify(mockClaimService).deleteClaim(claimId1);
   }
 
   @Test
   void addLineItemToClaim_returnsCreatedStatusAndLocationHeader() throws Exception {
     UUID providerUserId1 = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
-    when(mockClaimService.addLineItemToClaim(any(Long.class), any(LineItemRequestBody.class)))
-        .thenReturn(1L);
+    UUID claimId1 = UUID.randomUUID();
+    UUID lineItemId1 = UUID.randomUUID();
+    when(mockClaimService.addLineItemToClaim(any(UUID.class), any(LineItemRequestBody.class)))
+        .thenReturn(lineItemId1);
     String requestBody =
         """
         {
@@ -348,7 +372,7 @@ class ClaimControllerTest {
 
     mockMvc
         .perform(
-            patch("/api/v1/claims/3/line-items")
+            patch("/api/v1/claims/" + claimId1 + "/line-items")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .with(
@@ -356,9 +380,13 @@ class ClaimControllerTest {
                         .jwt(jwt -> jwt.claim("USER_NAME", providerUserId1.toString()))
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isCreated())
-        .andExpect(header().string("Location", containsString("/api/v1/claims/3/line-items/1")));
+        .andExpect(
+            header()
+                .string(
+                    "Location",
+                    containsString("/api/v1/claims/" + claimId1 + "/line-items/" + lineItemId1)));
 
-    verify(mockClaimService).addLineItemToClaim(eq(3L), lineItemRequestBodyCaptor.capture());
+    verify(mockClaimService).addLineItemToClaim(eq(claimId1), lineItemRequestBodyCaptor.capture());
     LineItemRequestBody capturedRequestBody = lineItemRequestBodyCaptor.getValue();
     assert capturedRequestBody.getTitle().equals("Line item title");
     assert capturedRequestBody.getCategory().equals("Line item category");
@@ -367,8 +395,11 @@ class ClaimControllerTest {
   @Test
   void addEvidenceToClaim_returnsCreatedStatusAndLocationHeader() throws Exception {
     UUID providerUserId1 = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
-    when(mockClaimService.addEvidenceToClaim(any(Long.class), any(ClaimEvidenceRequestBody.class)))
-        .thenReturn(1L);
+    UUID claimId1 = UUID.randomUUID();
+    UUID evidenceId1 = UUID.randomUUID();
+
+    when(mockClaimService.addEvidenceToClaim(any(UUID.class), any(ClaimEvidenceRequestBody.class)))
+        .thenReturn(UUID.randomUUID());
     String requestBody =
         """
         {
@@ -379,7 +410,7 @@ class ClaimControllerTest {
 
     mockMvc
         .perform(
-            patch("/api/v1/claims/3/evidence")
+            patch("/api/v1/claims/" + claimId1 + "/evidence")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .with(
@@ -387,9 +418,14 @@ class ClaimControllerTest {
                         .jwt(jwt -> jwt.claim("USER_NAME", providerUserId1.toString()))
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isCreated())
-        .andExpect(header().string("Location", containsString("/api/v1/claims/3/evidence/1")));
+        .andExpect(
+            header()
+                .string(
+                    "Location",
+                    containsString("/api/v1/claims/" + claimId1 + "/evidence/" + evidenceId1)));
 
-    verify(mockClaimService).addEvidenceToClaim(eq(3L), claimEvidenceRequestBodyCaptor.capture());
+    verify(mockClaimService)
+        .addEvidenceToClaim(eq(claimId1), claimEvidenceRequestBodyCaptor.capture());
     ClaimEvidenceRequestBody capturedRequestBody = claimEvidenceRequestBodyCaptor.getValue();
     assert capturedRequestBody.getFileKey().equals("evidence-file-key");
     assert capturedRequestBody.getFileSize().equals(1000L);
@@ -398,27 +434,32 @@ class ClaimControllerTest {
   @Test
   void deleteEvidenceFromClaim_returnsNoContentStatus() throws Exception {
     UUID providerUserId1 = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+    UUID claimId1 = UUID.randomUUID();
+    UUID evidenceId1 = UUID.randomUUID();
 
     mockMvc
         .perform(
-            delete("/api/v1/claims/3/evidence/1")
+            delete("/api/v1/claims/" + claimId1 + "/evidence/" + evidenceId1)
                 .with(
                     jwt()
                         .jwt(jwt -> jwt.claim("USER_NAME", providerUserId1.toString()))
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isNoContent());
 
-    verify(mockClaimService).deleteEvidenceFromClaim(3L, 1L);
+    verify(mockClaimService).deleteEvidenceFromClaim(claimId1, evidenceId1);
   }
 
   @Test
   void addExistingEvidenceToLineItem_returnsNoContentStatus() throws Exception {
     UUID providerUserId1 = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
     String requestBody = "[3]";
+    UUID lineItemId1 = UUID.randomUUID();
+    UUID claimId1 = UUID.randomUUID();
+    UUID evidenceId1 = UUID.randomUUID();
 
     mockMvc
         .perform(
-            post("/api/v1/claims/3/line-items/2/evidence")
+            post("/api/v1/claims/" + claimId1 + "/line-items/" + lineItemId1 + "/evidence")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .with(
@@ -427,17 +468,20 @@ class ClaimControllerTest {
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isNoContent());
 
-    verify(mockClaimService).linkEvidenceToLineItem(3L, 2L, List.of(3L));
+    verify(mockClaimService).linkEvidenceToLineItem(claimId1, lineItemId1, List.of(evidenceId1));
   }
 
   @Test
   void addMultipleExistingEvidenceToLineItem_returnsNoContentStatus() throws Exception {
     UUID providerUserId1 = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
     String requestBody = "[3,4,5]";
+    UUID lineItemId1 = UUID.randomUUID();
+    UUID claimId1 = UUID.randomUUID();
+    List<UUID> evidenceIds = List.of(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
 
     mockMvc
         .perform(
-            post("/api/v1/claims/3/line-items/2/evidence")
+            post("/api/v1/claims/" + claimId1 + "/line-items/" + lineItemId1 + "/evidence")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .with(
@@ -446,22 +490,35 @@ class ClaimControllerTest {
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isNoContent());
 
-    verify(mockClaimService).linkEvidenceToLineItem(3L, 2L, List.of(3L, 4L, 5L));
+    verify(mockClaimService)
+        .linkEvidenceToLineItem(
+            claimId1,
+            lineItemId1,
+            List.of(evidenceIds.get(0), evidenceIds.get(1), evidenceIds.get(2)));
   }
 
   @Test
   void unlinkExistingEvidenceFromLineItem_returnsNoContentStatus() throws Exception {
     UUID providerUserId1 = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+    UUID lineItemId1 = UUID.randomUUID();
+    UUID claimId1 = UUID.randomUUID();
+    UUID evidenceId1 = UUID.randomUUID();
 
     mockMvc
         .perform(
-            delete("/api/v1/claims/3/line-items/2/evidence/1")
+            delete(
+                    "/api/v1/claims/"
+                        + claimId1
+                        + "/line-items/"
+                        + lineItemId1
+                        + "/evidence/"
+                        + evidenceId1)
                 .with(
                     jwt()
                         .jwt(jwt -> jwt.claim("USER_NAME", providerUserId1.toString()))
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isNoContent());
 
-    verify(mockClaimService).unlinkEvidenceFromLineItem(3L, 2L, 1L);
+    verify(mockClaimService).unlinkEvidenceFromLineItem(claimId1, lineItemId1, evidenceId1);
   }
 }

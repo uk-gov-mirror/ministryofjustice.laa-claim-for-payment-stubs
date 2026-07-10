@@ -27,8 +27,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "CLAIMS")
 public class ClaimEntity {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private UUID id;
 
   private String ufn;
 

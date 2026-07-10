@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.LineItem;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {ClaimMapperImpl.class, LineItemMapperImpl.class})
 class ClaimMapperTest {
-  private static final Long CLAIM_ID = 123L;
+  private static final UUID CLAIM_ID = UUID.randomUUID();
   private static final String UFN = "UFN123";
   private static final String CLIENT = "John Doe";
   private static final String CATEGORY = "A";
@@ -30,10 +31,10 @@ class ClaimMapperTest {
   private static final Boolean ESCAPED = false;
   private static final String COUNSEL_PAYMENT = "Paid and Reconciled";
   private static final BigDecimal CLAIMED = new BigDecimal(100.0);
-  private static final Long LINE_ITEM_ID_1 = 1L;
-  private static final Long LINE_ITEM_ID_2 = 2L;
-  private static final Long EVIDENCE_ID_1 = 10L;
-  private static final Long EVIDENCE_ID_2 = 20L;
+  private static final UUID LINE_ITEM_ID_1 = UUID.randomUUID();
+  private static final UUID LINE_ITEM_ID_2 = UUID.randomUUID();
+  private static final UUID EVIDENCE_ID_1 = UUID.randomUUID();
+  private static final UUID EVIDENCE_ID_2 = UUID.randomUUID();
   private static final ClaimEvidence CLAIM_EVIDENCE_1 =
       ClaimEvidence.builder().id(EVIDENCE_ID_1).fileKey("fileKey1").fileSize(1000L).build();
   private static final ClaimEvidence CLAIM_EVIDENCE_2 =
@@ -46,8 +47,7 @@ class ClaimMapperTest {
           .evidenceItems(List.of(EVIDENCE_ID_1, EVIDENCE_ID_2))
           .build();
 
-  @Autowired
-  private ClaimMapper claimMapper;
+  @Autowired private ClaimMapper claimMapper;
 
   @Test
   void shouldMapToClaim() {
@@ -61,7 +61,10 @@ class ClaimMapperTest {
         LineItemEntity.builder().id(LINE_ITEM_ID_1).evidenceItems(Set.of(claimEvidence1)).build();
 
     LineItemEntity lineItem2 =
-        LineItemEntity.builder().id(LINE_ITEM_ID_2).evidenceItems(Set.of(claimEvidence1, claimEvidence2)).build();
+        LineItemEntity.builder()
+            .id(LINE_ITEM_ID_2)
+            .evidenceItems(Set.of(claimEvidence1, claimEvidence2))
+            .build();
 
     ClaimEntity claimEntity =
         ClaimEntity.builder()
