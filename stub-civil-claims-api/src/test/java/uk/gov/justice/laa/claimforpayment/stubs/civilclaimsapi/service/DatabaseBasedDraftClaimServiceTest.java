@@ -9,6 +9,8 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -16,6 +18,7 @@ import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.entity.DraftClaim
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.exception.DraftClaimNotFoundException;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.mapper.DraftClaimMapper;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaim;
+import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPatch;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPost;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPut;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.repository.DraftClaimRepository;
@@ -28,6 +31,8 @@ class DatabaseBasedDraftClaimServiceTest {
   @Mock private DraftClaimMapper mockDraftClaimMapper;
 
   @InjectMocks private DatabaseBasedDraftClaimService draftClaimService;
+
+  @Captor ArgumentCaptor<DraftClaimEntity> savedDraftClaimCaptor;
 
   @Test
   void shouldGetDraftClaimById() {
@@ -113,26 +118,39 @@ class DatabaseBasedDraftClaimServiceTest {
   void shouldUpdateClaim() {
     UUID draftClaimId = UUID.randomUUID();
     UUID providerUserId = UUID.randomUUID();
-    String payload =
+    String oldPayload =
         """
                     {
-                      "someField": "someValue"
+                      "field": "oldValue"
+                    }
+                    """;
+    String newPayload =
+        """
+                    {
+                      "field": "newValue"
                     }
                     """;
 
-    DraftClaimPut requestBody = DraftClaimPut.builder().payload(payload).build();
+    DraftClaimPut requestBody = DraftClaimPut.builder().payload(newPayload).build();
 
     DraftClaimEntity savedEntity =
         DraftClaimEntity.builder()
             .id(draftClaimId)
-            .payload(payload)
+            .payload(oldPayload)
             .providerUserId(providerUserId)
             .build();
 
     DraftClaimEntity updatedEntity =
         DraftClaimEntity.builder()
             .id(draftClaimId)
-            .payload(payload)
+            .payload(newPayload)
+            .providerUserId(providerUserId)
+            .build();
+
+    DraftClaim updatedClaim =
+        DraftClaim.builder()
+            .id(draftClaimId)
+            .payload(newPayload)
             .providerUserId(providerUserId)
             .build();
 
@@ -141,10 +159,114 @@ class DatabaseBasedDraftClaimServiceTest {
 
     when(mockDraftClaimRepository.save(any(DraftClaimEntity.class))).thenReturn(updatedEntity);
 
-    UUID result = draftClaimService.updateDraftClaim(requestBody, draftClaimId, providerUserId);
+    when(mockDraftClaimMapper.toDraftClaim(updatedEntity)).thenReturn(updatedClaim);
+
+    DraftClaim result = draftClaimService.updateDraftClaim(requestBody, draftClaimId, providerUserId);
+
+    verify(mockDraftClaimRepository).save(savedDraftClaimCaptor.capture());
 
     assertThat(result).isNotNull();
-    assertThat(result).isEqualTo(draftClaimId);
+    assertThat(result).isEqualTo(updatedClaim);
+    assertThat(savedDraftClaimCaptor.getValue().getPayload()).isEqualTo(newPayload);
+  }
+
+  @Test
+  void shouldPatchClaimWhenFieldsDefined() {
+    UUID draftClaimId = UUID.randomUUID();
+    UUID providerUserId = UUID.randomUUID();
+    String oldPayload =
+        """
+                    {
+                      "field": "oldValue"
+                    }
+                    """;
+    String newPayload =
+        """
+                    {
+                      "field": "newValue"
+                    }
+                    """;
+
+    DraftClaimPatch requestBody = DraftClaimPatch.builder().payload(newPayload).build();
+
+    DraftClaimEntity savedEntity =
+        DraftClaimEntity.builder()
+            .id(draftClaimId)
+            .payload(oldPayload)
+            .providerUserId(providerUserId)
+            .build();
+
+    DraftClaimEntity updatedEntity =
+        DraftClaimEntity.builder()
+            .id(draftClaimId)
+            .payload(newPayload)
+            .providerUserId(providerUserId)
+            .build();
+
+    DraftClaim updatedClaim =
+        DraftClaim.builder()
+            .id(draftClaimId)
+            .payload(newPayload)
+            .providerUserId(providerUserId)
+            .build();
+
+    when(mockDraftClaimRepository.findByIdAndProviderUserId(draftClaimId, providerUserId))
+        .thenReturn(Optional.of(savedEntity));
+
+    when(mockDraftClaimRepository.save(any(DraftClaimEntity.class))).thenReturn(updatedEntity);
+
+    when(mockDraftClaimMapper.toDraftClaim(updatedEntity)).thenReturn(updatedClaim);
+
+    DraftClaim result = draftClaimService.patchDraftClaim(requestBody, draftClaimId, providerUserId);
+    
+    verify(mockDraftClaimRepository).save(savedDraftClaimCaptor.capture());
+
+    assertThat(result).isNotNull();
+    assertThat(result).isEqualTo(updatedClaim);
+    assertThat(savedDraftClaimCaptor.getValue().getPayload()).isEqualTo(newPayload);
+  }
+
+  @Test
+  void shouldPatchClaimWhenFieldsUndefined() {
+    UUID draftClaimId = UUID.randomUUID();
+    UUID providerUserId = UUID.randomUUID();
+    String oldPayload =
+        """
+                    {
+                      "field": "oldValue"
+                    }
+                    """;
+
+    DraftClaimPatch requestBody = DraftClaimPatch.builder().build();
+
+    DraftClaimEntity savedEntity =
+        DraftClaimEntity.builder()
+            .id(draftClaimId)
+            .payload(oldPayload)
+            .providerUserId(providerUserId)
+            .build();
+
+    DraftClaim updatedClaim =
+        DraftClaim.builder()
+            .id(draftClaimId)
+            .payload(oldPayload)
+            .providerUserId(providerUserId)
+            .build();
+
+    when(mockDraftClaimRepository.findByIdAndProviderUserId(draftClaimId, providerUserId))
+        .thenReturn(Optional.of(savedEntity));
+
+    when(mockDraftClaimRepository.save(any(DraftClaimEntity.class))).thenReturn(savedEntity);
+
+    when(mockDraftClaimMapper.toDraftClaim(savedEntity)).thenReturn(updatedClaim);
+
+    DraftClaim result = draftClaimService.patchDraftClaim(requestBody, draftClaimId, providerUserId);
+
+    verify(mockDraftClaimRepository).save(savedDraftClaimCaptor.capture());
+
+    assertThat(result).isNotNull();
+    assertThat(result).isEqualTo(updatedClaim);
+    assertThat(savedDraftClaimCaptor.getValue().getPayload()).isEqualTo(oldPayload);
   }
 
   @Test

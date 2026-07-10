@@ -7,6 +7,7 @@ import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.entity.DraftClaim
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.exception.DraftClaimNotFoundException;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.mapper.DraftClaimMapper;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaim;
+import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPatch;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPost;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPut;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.repository.DraftClaimRepository;
@@ -49,12 +50,24 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
   }
 
   @Override
-  public UUID updateDraftClaim(DraftClaimPut requestBody, UUID draftClaimId, UUID providerUserId) {
+  public DraftClaim updateDraftClaim(
+      DraftClaimPut requestBody, UUID draftClaimId, UUID providerUserId) {
     DraftClaimEntity draftClaimEntity = checkIfDraftClaimExists(draftClaimId, providerUserId);
 
     draftClaimEntity.setPayload(requestBody.getPayload());
     DraftClaimEntity updatedEntity = draftClaimRepository.save(draftClaimEntity);
-    return updatedEntity.getId();
+    return draftClaimMapper.toDraftClaim(updatedEntity);
+  }
+
+  @Override
+  public DraftClaim patchDraftClaim(
+      DraftClaimPatch requestBody, UUID draftClaimId, UUID providerUserId) {
+    DraftClaimEntity draftClaimEntity = checkIfDraftClaimExists(draftClaimId, providerUserId);
+    if (requestBody.getPayload() != null) {
+      draftClaimEntity.setPayload(requestBody.getPayload());
+    }
+    DraftClaimEntity updatedEntity = draftClaimRepository.save(draftClaimEntity);
+    return draftClaimMapper.toDraftClaim(updatedEntity);
   }
 
   /**
@@ -65,7 +78,13 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
    */
   @Override
   public void deleteDraftClaim(UUID draftClaimId, UUID providerUserId) {
-    draftClaimRepository.deleteByIdAndProviderUserId(draftClaimId, providerUserId);
+    try {
+      draftClaimRepository.deleteByIdAndProviderUserId(draftClaimId, providerUserId);
+    } catch (Exception e) {
+      System.out.println("********");
+      System.out.println(e.getMessage());
+      throw new RuntimeException(e);
+    }
   }
 
   private DraftClaimEntity checkIfDraftClaimExists(UUID draftClaimId, UUID providerUserId)

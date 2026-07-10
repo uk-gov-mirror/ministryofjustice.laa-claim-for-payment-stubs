@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.AssertTrue;
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,4 +31,10 @@ public class DraftClaimPatch implements Serializable {
   /** Builder for DraftClaimPatch. */
   @JsonPOJOBuilder(withPrefix = "")
   public static class BodyBuilder {}
+
+
+  @AssertTrue(message = "At least one field must be supplied")
+  public boolean hasUpdates() {
+    return payload != null;
+  }
 }

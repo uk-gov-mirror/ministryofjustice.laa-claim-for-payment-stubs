@@ -21,6 +21,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -28,8 +29,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.exception.DraftClaimNotFoundException;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.CreateDraftClaimResponse;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaim;
+import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPatch;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPost;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPut;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.service.DraftClaimServiceInterface;
@@ -68,7 +71,11 @@ public class DraftClaimController {
                 @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = CreateDraftClaimResponse.class))),
-        @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content)
+        @ApiResponse(
+            responseCode = "400",
+            description = "Invalid request body",
+            content = @Content),
+        @ApiResponse(responseCode = "403", description = "Invalid provider user ID"),
       })
   @PostMapping
   public ResponseEntity<CreateDraftClaimResponse> createDraftClaim(
@@ -76,12 +83,7 @@ public class DraftClaimController {
           DraftClaimPost requestBody,
       @AuthenticationPrincipal Jwt jwt) {
 
-    String id = jwt.getClaimAsString("USER_NAME");
-    if (id == null || id.isBlank()) {
-      throw new ResponseStatusException(FORBIDDEN, "providerUserId missing in token");
-    }
-    UUID providerUserId = UUID.fromString(id);
-
+    UUID providerUserId = getProviderUserId(jwt);
     UUID draftClaimId = draftClaimService.createDraftClaim(requestBody, providerUserId);
     URI location = URI.create("/api/v1/drafts/" + draftClaimId);
     return ResponseEntity.created(location).body(new CreateDraftClaimResponse(draftClaimId));
@@ -100,6 +102,7 @@ public class DraftClaimController {
             responseCode = "200",
             description = "Draft claim found",
             content = @Content(schema = @Schema(implementation = DraftClaim.class))),
+        @ApiResponse(responseCode = "403", description = "Invalid provider user ID"),
         @ApiResponse(
             responseCode = "404",
             description = "Draft claim not found",
@@ -111,14 +114,15 @@ public class DraftClaimController {
           UUID draftClaimId,
       @AuthenticationPrincipal Jwt jwt) {
 
-    String id = jwt.getClaimAsString("USER_NAME");
-    if (id == null || id.isBlank()) {
-      throw new ResponseStatusException(FORBIDDEN, "providerUserId missing in token");
-    }
-    UUID providerUserId = UUID.fromString(id);
+    UUID providerUserId = getProviderUserId(jwt);
     log.debug("Fetching draft claim with ID: {}", draftClaimId);
-    DraftClaim draftClaim = draftClaimService.getDraftClaim(draftClaimId, providerUserId);
-    return ResponseEntity.ok(draftClaim);
+    try {
+      DraftClaim draftClaim = draftClaimService.getDraftClaim(draftClaimId, providerUserId);
+      return ResponseEntity.ok(draftClaim);
+    } catch (DraftClaimNotFoundException e) {
+      log.error(e.getMessage());
+      return ResponseEntity.notFound().build();
+    }
   }
 
   /**
@@ -132,6 +136,11 @@ public class DraftClaimController {
       value = {
         @ApiResponse(responseCode = "204", description = "Draft claim updated successfully"),
         @ApiResponse(
+            responseCode = "400",
+            description = "Invalid request body",
+            content = @Content),
+        @ApiResponse(responseCode = "403", description = "Invalid provider user ID"),
+        @ApiResponse(
             responseCode = "404",
             description = "Draft claim not found",
             content = @Content)
@@ -139,19 +148,66 @@ public class DraftClaimController {
   @PutMapping("/{draftClaimId}")
   public ResponseEntity<Void> updateClaim(
       @Parameter(description = "Updated claim data", required = true) @Valid @RequestBody
-      DraftClaimPut requestBody,
+          DraftClaimPut requestBody,
       @Parameter(description = "ID of the draft claim to update", required = true) @PathVariable
           UUID draftClaimId,
       @AuthenticationPrincipal Jwt jwt) {
 
-    String id = jwt.getClaimAsString("USER_NAME");
-    if (id == null || id.isBlank()) {
-      throw new ResponseStatusException(FORBIDDEN, "providerUserId missing in token");
-    }
-    UUID providerUserId = UUID.fromString(id);
+    UUID providerUserId = getProviderUserId(jwt);
     log.debug("Updating draft claim with ID: {}", draftClaimId);
-    draftClaimService.updateDraftClaim(requestBody, draftClaimId, providerUserId);
-    return ResponseEntity.noContent().build();
+    try {
+      draftClaimService.updateDraftClaim(requestBody, draftClaimId, providerUserId);
+      return ResponseEntity.noContent().build();
+    } catch (DraftClaimNotFoundException e) {
+      log.error(e.getMessage());
+      return ResponseEntity.notFound().build();
+    }
+  }
+
+  /**
+   * Patches an existing draft by its ID.
+   *
+   * @param requestBody the updated draft data fields
+   * @return a response entity if patch is successful
+   */
+  @Operation(summary = "Patch a claim")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Draft claim patched successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = DraftClaim.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Invalid request body",
+            content = @Content),
+        @ApiResponse(responseCode = "403", description = "Invalid provider user ID"),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Draft claim not found",
+            content = @Content)
+      })
+  @PatchMapping("/{draftClaimId}")
+  public ResponseEntity<DraftClaim> patchClaim(
+      @Parameter(description = "Updated claim fields", required = true) @Valid @RequestBody
+          DraftClaimPatch requestBody,
+      @Parameter(description = "ID of the draft claim to patch", required = true) @PathVariable
+          UUID draftClaimId,
+      @AuthenticationPrincipal Jwt jwt) {
+
+    UUID providerUserId = getProviderUserId(jwt);
+    log.debug("Patching draft claim with ID: {}", draftClaimId);
+    try {
+      DraftClaim draftClaim =
+          draftClaimService.patchDraftClaim(requestBody, draftClaimId, providerUserId);
+      return ResponseEntity.ok(draftClaim);
+    } catch (DraftClaimNotFoundException e) {
+      log.error(e.getMessage());
+      return ResponseEntity.notFound().build();
+    }
   }
 
   /**
@@ -164,7 +220,11 @@ public class DraftClaimController {
   @ApiResponses(
       value = {
         @ApiResponse(responseCode = "204", description = "Draft claim deleted successfully"),
-        @ApiResponse(responseCode = "403", description = "ProviderUserId is missing")
+        @ApiResponse(responseCode = "403", description = "Invalid provider user ID"),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Draft claim not found",
+            content = @Content)
       })
   @DeleteMapping("/{draftClaimId}")
   public ResponseEntity<Void> deleteDraftClaim(
@@ -172,15 +232,22 @@ public class DraftClaimController {
           UUID draftClaimId,
       @AuthenticationPrincipal Jwt jwt) {
 
+    UUID providerUserId = getProviderUserId(jwt);
+    log.debug("Deleting draft claim with ID: {}", draftClaimId);
+    try {
+      draftClaimService.deleteDraftClaim(draftClaimId, providerUserId);
+      return ResponseEntity.noContent().build();
+    } catch (DraftClaimNotFoundException e) {
+      log.error(e.getMessage());
+      return ResponseEntity.noContent().build();
+    }
+  }
+
+  private UUID getProviderUserId(Jwt jwt) {
     String id = jwt.getClaimAsString("USER_NAME");
     if (id == null || id.isBlank()) {
       throw new ResponseStatusException(FORBIDDEN, "providerUserId missing in token");
     }
-    UUID providerUserId = UUID.fromString(id);
-    log.debug("Deleting draft claim with ID: {}", draftClaimId);
-
-    draftClaimService.deleteDraftClaim(draftClaimId, providerUserId);
-
-    return ResponseEntity.noContent().build();
+    return UUID.fromString(id);
   }
 }
