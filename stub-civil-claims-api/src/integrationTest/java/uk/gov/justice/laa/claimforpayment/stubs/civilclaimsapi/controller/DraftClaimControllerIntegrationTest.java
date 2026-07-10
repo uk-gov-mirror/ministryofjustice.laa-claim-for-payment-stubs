@@ -296,6 +296,6 @@ class DraftClaimControllerIntegrationTest {
                     jwt()
                         .jwt(jwt -> jwt.claim("USER_NAME", providerUserId.toString()))
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
-        .andExpect(status().isNoContent());
+        .andExpect(status().isNotFound());
   }
 }

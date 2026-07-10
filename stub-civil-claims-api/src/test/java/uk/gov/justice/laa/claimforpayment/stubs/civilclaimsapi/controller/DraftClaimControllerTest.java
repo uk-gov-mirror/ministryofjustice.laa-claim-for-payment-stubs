@@ -482,7 +482,7 @@ public class DraftClaimControllerTest {
     }
 
     @Test
-    void returnsNoContentStatusWhenDraftClaimDoesNotExist() throws Exception {
+    void returnsNotFoundStatusWhenDraftClaimDoesNotExist() throws Exception {
       doThrow(new DraftClaimNotFoundException("Draft claim not found"))
           .when(mockDraftClaimService)
           .deleteDraftClaim(draftClaimId, providerUserId);
@@ -494,7 +494,7 @@ public class DraftClaimControllerTest {
                       jwt()
                           .jwt(jwt -> jwt.claim("USER_NAME", providerUserId.toString()))
                           .authorities(() -> "SCOPE_" + claimsWriteScope)))
-          .andExpect(status().isNoContent());
+          .andExpect(status().isNotFound());
     }
 
     @Test

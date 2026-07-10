@@ -235,11 +235,10 @@ public class DraftClaimController {
       return ResponseEntity.noContent().build();
     } catch (DraftClaimNotFoundException e) {
       log.error(e.getMessage());
-      return ResponseEntity.noContent().build();
+      return ResponseEntity.notFound().build();
     }
   }
 
-  // TODO - remove
   private UUID getProviderUserId(Jwt jwt) {
     String id = jwt.getClaimAsString("USER_NAME");
     if (id == null || id.isBlank()) {

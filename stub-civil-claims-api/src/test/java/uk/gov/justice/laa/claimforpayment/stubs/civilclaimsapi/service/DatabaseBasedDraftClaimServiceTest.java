@@ -131,10 +131,8 @@ class DatabaseBasedDraftClaimServiceTest {
                     }
                     """;
 
-    DraftClaimPut requestBody = DraftClaimPut.builder()
-        .payload(newPayload)
-        .providerUserId(providerUserId)
-        .build();
+    DraftClaimPut requestBody =
+        DraftClaimPut.builder().payload(newPayload).providerUserId(providerUserId).build();
 
     DraftClaimEntity savedEntity =
         DraftClaimEntity.builder()
@@ -220,8 +218,9 @@ class DatabaseBasedDraftClaimServiceTest {
 
     when(mockDraftClaimMapper.toDraftClaim(updatedEntity)).thenReturn(updatedClaim);
 
-    DraftClaim result = draftClaimService.patchDraftClaim(requestBody, draftClaimId, providerUserId);
-    
+    DraftClaim result =
+        draftClaimService.patchDraftClaim(requestBody, draftClaimId, providerUserId);
+
     verify(mockDraftClaimRepository).save(savedDraftClaimCaptor.capture());
 
     assertThat(result).isNotNull();
@@ -263,7 +262,8 @@ class DatabaseBasedDraftClaimServiceTest {
 
     when(mockDraftClaimMapper.toDraftClaim(savedEntity)).thenReturn(updatedClaim);
 
-    DraftClaim result = draftClaimService.patchDraftClaim(requestBody, draftClaimId, providerUserId);
+    DraftClaim result =
+        draftClaimService.patchDraftClaim(requestBody, draftClaimId, providerUserId);
 
     verify(mockDraftClaimRepository).save(savedDraftClaimCaptor.capture());
 
@@ -276,6 +276,22 @@ class DatabaseBasedDraftClaimServiceTest {
   void shouldDeleteDraftClaim() {
     UUID draftClaimId = UUID.randomUUID();
     UUID providerUserId = UUID.randomUUID();
+    String payload =
+        """
+                    {
+                      "field": "oldValue"
+                    }
+                    """;
+
+    DraftClaimEntity savedEntity =
+        DraftClaimEntity.builder()
+            .id(draftClaimId)
+            .payload(payload)
+            .providerUserId(providerUserId)
+            .build();
+
+    when(mockDraftClaimRepository.findByIdAndProviderUserId(draftClaimId, providerUserId))
+        .thenReturn(Optional.of(savedEntity));
 
     doNothing()
         .when(mockDraftClaimRepository)
@@ -284,6 +300,22 @@ class DatabaseBasedDraftClaimServiceTest {
     draftClaimService.deleteDraftClaim(draftClaimId, providerUserId);
 
     verify(mockDraftClaimRepository, times(1))
+        .deleteByIdAndProviderUserId(draftClaimId, providerUserId);
+  }
+
+  @Test
+  void shouldNotDeleteDraftClaimAndThrowExceptionIfDraftClaimDoesNotExist() {
+    UUID draftClaimId = UUID.randomUUID();
+    UUID providerUserId = UUID.randomUUID();
+
+    when(mockDraftClaimRepository.findByIdAndProviderUserId(draftClaimId, providerUserId))
+        .thenReturn(Optional.empty());
+
+    assertThrows(
+        DraftClaimNotFoundException.class,
+        () -> draftClaimService.deleteDraftClaim(draftClaimId, providerUserId));
+
+    verify(mockDraftClaimRepository, never())
         .deleteByIdAndProviderUserId(draftClaimId, providerUserId);
   }
 }
