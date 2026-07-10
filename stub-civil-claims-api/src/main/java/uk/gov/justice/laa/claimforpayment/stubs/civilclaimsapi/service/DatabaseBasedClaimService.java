@@ -125,8 +125,7 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
                 new LineItemNotFoundException(String.format("No line item found with id: %s", id)));
   }
 
-  private ClaimEvidenceEntity checkIfEvidenceExists(Long id)
-      throws ClaimEvidenceNotFoundException {
+  private ClaimEvidenceEntity checkIfEvidenceExists(Long id) throws ClaimEvidenceNotFoundException {
     return claimEvidenceRepository
         .findById(id)
         .orElseThrow(
@@ -220,11 +219,10 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
     ClaimEntity claimEntity = checkIfClaimExists(claimId);
     LineItemEntity lineItemEntity = checkIfLineItemExists(lineItemId);
     checkIfLineItemExistsForClaim(lineItemEntity, claimEntity);
-    List<ClaimEvidenceEntity> evidenceEntities = evidenceIds.stream().map(
-        this::checkIfEvidenceExists).toList();
+    List<ClaimEvidenceEntity> evidenceEntities =
+        evidenceIds.stream().map(this::checkIfEvidenceExists).toList();
     evidenceEntities.forEach(
-        evidenceEntity -> checkIfEvidenceExistsForClaim(evidenceEntity, claimEntity)
-    );
+        evidenceEntity -> checkIfEvidenceExistsForClaim(evidenceEntity, claimEntity));
     lineItemEntity.getEvidenceItems().addAll(evidenceEntities);
     lineItemRepository.save(lineItemEntity);
   }
