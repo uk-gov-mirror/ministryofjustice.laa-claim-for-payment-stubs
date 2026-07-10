@@ -107,7 +107,7 @@ public class DraftClaimController {
             content = @Content)
       })
   @GetMapping("/{draftClaimId}")
-  public ResponseEntity<DraftClaim> getClaim(
+  public ResponseEntity<DraftClaim> getDraftClaim(
       @Parameter(description = "ID of the draft claim to retrieve", required = true) @PathVariable
           UUID draftClaimId,
       @AuthenticationPrincipal Jwt jwt) {
@@ -144,7 +144,7 @@ public class DraftClaimController {
             content = @Content)
       })
   @PutMapping("/{draftClaimId}")
-  public ResponseEntity<Void> updateClaim(
+  public ResponseEntity<Void> updateDraftClaim(
       @Parameter(description = "Updated claim data", required = true) @Valid @RequestBody
           DraftClaimPut requestBody,
       @Parameter(description = "ID of the draft claim to update", required = true) @PathVariable
@@ -187,7 +187,7 @@ public class DraftClaimController {
             content = @Content)
       })
   @PatchMapping("/{draftClaimId}")
-  public ResponseEntity<DraftClaim> patchClaim(
+  public ResponseEntity<DraftClaim> patchDraftClaim(
       @Parameter(description = "Updated claim fields", required = true) @Valid @RequestBody
           DraftClaimPatch requestBody,
       @Parameter(description = "ID of the draft claim to patch", required = true) @PathVariable
