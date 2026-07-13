@@ -318,7 +318,8 @@ class ClaimControllerIntegrationTest {
         {
           "id": "ffffffff-ffff-ffff-ffff-ffffffffffff",
           "fileKey": "New file key for evidence",
-          "fileSize": 1000
+          "fileSize": 1000,
+          "submittedOn": "2026-06-17T10:15:30Z"
         }
         """;
     mockMvc

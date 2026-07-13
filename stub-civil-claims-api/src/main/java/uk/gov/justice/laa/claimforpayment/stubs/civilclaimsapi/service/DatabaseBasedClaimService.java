@@ -198,6 +198,7 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
     newEvidenceEntity.setId(claimEvidenceRequestBody.getId());
     newEvidenceEntity.setFileKey(claimEvidenceRequestBody.getFileKey());
     newEvidenceEntity.setFileSize(claimEvidenceRequestBody.getFileSize());
+    newEvidenceEntity.setSubmittedOn(claimEvidenceRequestBody.getSubmittedOn());
     newEvidenceEntity.setClaim(claimEntity);
     ClaimEvidenceEntity savedEvidence = claimEvidenceRepository.save(newEvidenceEntity);
     return savedEvidence.getId();

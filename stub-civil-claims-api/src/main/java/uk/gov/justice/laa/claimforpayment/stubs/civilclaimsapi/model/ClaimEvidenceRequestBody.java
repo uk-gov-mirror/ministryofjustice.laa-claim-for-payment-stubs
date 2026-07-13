@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,4 +38,8 @@ public class ClaimEvidenceRequestBody implements Serializable {
   @Schema(description = "The file size for the evidence")
   @JsonProperty("fileSize")
   private Long fileSize;
+
+  @Schema(description = "The date and time the evidence was submitted")
+  @JsonProperty("submittedOn")
+  private Instant submittedOn;
 }
