@@ -33,8 +33,8 @@ class ClaimMapperTest {
   private static final BigDecimal CLAIMED = new BigDecimal(100.0);
   private static final UUID LINE_ITEM_ID_1 = UUID.randomUUID();
   private static final UUID LINE_ITEM_ID_2 = UUID.randomUUID();
-  private static final UUID EVIDENCE_ID_1 = UUID.randomUUID();
-  private static final UUID EVIDENCE_ID_2 = UUID.randomUUID();
+  private static final UUID EVIDENCE_ID_1 = UUID.fromString("11111111-1111-1111-1111-111111111111");
+  private static final UUID EVIDENCE_ID_2 = UUID.fromString("22222222-2222-2222-2222-222222222222");
   private static final ClaimEvidence CLAIM_EVIDENCE_1 =
       ClaimEvidence.builder().id(EVIDENCE_ID_1).fileKey("fileKey1").fileSize(1000L).build();
   private static final ClaimEvidence CLAIM_EVIDENCE_2 =

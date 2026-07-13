@@ -45,10 +45,10 @@ class ClaimControllerIntegrationNoAuthTest {
   @Test
   void shouldGetClaimFor() throws Exception {
     mockMvc
-        .perform(get("/api/v1/claims/{claimId}", 1))
+        .perform(get("/api/v1/claims/{claimId}", "11111111-1111-1111-1111-111111111111"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.id").value("11111111-1111-1111-1111-111111111111"))
         .andExpect(jsonPath("$.ufn").value("121120/467"))
         .andExpect(jsonPath("$.client").value("Giordano"))
         .andExpect(jsonPath("$.category").value("Family"))
@@ -64,6 +64,7 @@ class ClaimControllerIntegrationNoAuthTest {
     String requestBody =
         """
         {
+          "id": "00000000-0000-0000-0000-000000000001",
           "ufn": "NEW/999",
           "client": "New Client",
           "category": "Family",
@@ -102,7 +103,7 @@ class ClaimControllerIntegrationNoAuthTest {
 
     mockMvc
         .perform(
-            put("/api/v1/claims/{claimId}", 2)
+            put("/api/v1/claims/{claimId}", "22222222-2222-2222-2222-222222222222")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .accept(MediaType.APPLICATION_JSON))
@@ -111,6 +112,8 @@ class ClaimControllerIntegrationNoAuthTest {
 
   @Test
   void shouldDeleteClaim() throws Exception {
-    mockMvc.perform(delete("/api/v1/claims/{claimId}", 3)).andExpect(status().isNoContent());
+    mockMvc
+        .perform(delete("/api/v1/claims/{claimId}", "33333333-3333-3333-3333-333333333333"))
+        .andExpect(status().isNoContent());
   }
 }

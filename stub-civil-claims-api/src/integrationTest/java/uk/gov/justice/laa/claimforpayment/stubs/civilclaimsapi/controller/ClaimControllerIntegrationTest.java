@@ -84,16 +84,19 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void shouldGetClaim() throws Exception {
+    String claimId = "11111111-1111-1111-1111-111111111111";
+    String claimUrlTemplate = "/api/v1/claims/{claimId}";
+
     mockMvc
         .perform(
-            get("/api/v1/claims/{claimId}", 1)
+            get(claimUrlTemplate, claimId)
                 .with(
                     jwt()
                         .jwt(jwt -> jwt.claim("USER_NAME", providerUserId1.toString()))
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.id").value(claimId))
         .andExpect(jsonPath("$.ufn").value("121120/467"))
         .andExpect(jsonPath("$.client").value("Giordano"))
         .andExpect(jsonPath("$.category").value("Family"))
@@ -108,40 +111,47 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void shouldGetClaimWithLineItems() throws Exception {
+    String claimId = "22222222-2222-2222-2222-222222222222";
+    String claimUrlTemplate = "/api/v1/claims/{claimId}";
+
     mockMvc
         .perform(
-            get("/api/v1/claims/{claimId}", 2)
+            get(claimUrlTemplate, claimId)
                 .with(
                     jwt()
                         .jwt(jwt -> jwt.claim("USER_NAME", providerUserId1.toString()))
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.id").value(2))
+        .andExpect(jsonPath("$.id").value(claimId))
         .andExpect(jsonPath("$.ufn").value("100323/098"))
         .andExpect(jsonPath("$.client").value("Amoto"))
         .andExpect(jsonPath("$.lineItems", hasSize(1)))
-        .andExpect(jsonPath("$.lineItems[0].id").value(1))
+        .andExpect(jsonPath("$.lineItems[0].id").value("00000000-0000-0000-0000-000000000000"))
         .andExpect(jsonPath("$.lineItems[0].title").value("Interim hearing"))
         .andExpect(jsonPath("$.lineItems[0].category").value("Work Item"))
         .andExpect(jsonPath("$.lineItems[0].date").value("2023-12-20"))
         .andExpect(jsonPath("$.lineItems[0].evidenceItems", hasSize(2)))
-        .andExpect(jsonPath("$.lineItems[0].evidenceItems[0]").value(1))
-        .andExpect(jsonPath("$.lineItems[0].evidenceItems[1]").value(2))
+        .andExpect(
+            jsonPath("$.lineItems[0].evidenceItems[0]")
+                .value("00000000-0000-0000-0000-000000000000"))
+        .andExpect(
+            jsonPath("$.lineItems[0].evidenceItems[1]")
+                .value("11111111-1111-1111-1111-111111111111"))
         .andExpect(jsonPath("$.evidence", hasSize(4)))
-        .andExpect(jsonPath("$.evidence[0].id").value(1))
+        .andExpect(jsonPath("$.evidence[0].id").value("00000000-0000-0000-0000-000000000000"))
         .andExpect(jsonPath("$.evidence[0].fileKey").value("amoto-invoice-001.pdf"))
         .andExpect(jsonPath("$.evidence[0].fileSize").value(5000000))
         .andExpect(jsonPath("$.evidence[0].submittedOn").value("2026-06-17T10:15:30Z"))
-        .andExpect(jsonPath("$.evidence[1].id").value(2))
+        .andExpect(jsonPath("$.evidence[1].id").value("11111111-1111-1111-1111-111111111111"))
         .andExpect(jsonPath("$.evidence[1].fileKey").value("amoto-invoice-002.pdf"))
         .andExpect(jsonPath("$.evidence[1].fileSize").value(4000000))
         .andExpect(jsonPath("$.evidence[1].submittedOn").value("2026-06-17T10:16:45Z"))
-        .andExpect(jsonPath("$.evidence[2].id").value(3))
+        .andExpect(jsonPath("$.evidence[2].id").value("22222222-2222-2222-2222-222222222222"))
         .andExpect(jsonPath("$.evidence[2].fileKey").value("amoto-invoice-003.pdf"))
         .andExpect(jsonPath("$.evidence[2].fileSize").value(5000000))
         .andExpect(jsonPath("$.evidence[2].submittedOn").value("2026-06-17T10:18:12Z"))
-        .andExpect(jsonPath("$.evidence[3].id").value(4))
+        .andExpect(jsonPath("$.evidence[3].id").value("33333333-3333-3333-3333-333333333333"))
         .andExpect(jsonPath("$.evidence[3].fileKey").value("amoto-invoice-004.pdf"))
         .andExpect(jsonPath("$.evidence[3].fileSize").value(6000000))
         .andExpect(jsonPath("$.evidence[3].submittedOn").value("2026-06-17T10:20:05Z"));
@@ -152,6 +162,7 @@ class ClaimControllerIntegrationTest {
     String requestBody =
         """
         {
+          "id": "abcdabcd-abcd-abcd-abcd-abcdabcdabcd",
           "ufn": "NEW/999",
           "client": "New Client",
           "category": "Family",
@@ -178,6 +189,8 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void shouldUpdateClaim() throws Exception {
+    String claimId = "22222222-2222-2222-2222-222222222222";
+    String claimUrlTemplate = "/api/v1/claims/{claimId}";
     String requestBody =
         """
         {
@@ -194,7 +207,7 @@ class ClaimControllerIntegrationTest {
 
     mockMvc
         .perform(
-            put("/api/v1/claims/{claimId}", 2)
+            put(claimUrlTemplate, claimId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .accept(MediaType.APPLICATION_JSON)
@@ -207,6 +220,7 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void shouldFailToUpdateClaimWhenClaimDoesNotExist() throws Exception {
+    String claimUrlTemplate = "/api/v1/claims/{claimId}";
     String requestBody =
         """
         {
@@ -223,7 +237,7 @@ class ClaimControllerIntegrationTest {
 
     mockMvc
         .perform(
-            put("/api/v1/claims/{claimId}", 9999)
+            put(claimUrlTemplate, "abcdabcd-abcd-abcd-abcd-abcdabcdabcd")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .accept(MediaType.APPLICATION_JSON)
@@ -236,9 +250,12 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void shouldDeleteClaim() throws Exception {
+    String claimId = "33333333-3333-3333-3333-333333333333";
+    String claimUrlTemplate = "/api/v1/claims/{claimId}";
+
     mockMvc
         .perform(
-            delete("/api/v1/claims/{claimId}", 3)
+            delete(claimUrlTemplate, claimId)
                 .with(
                     jwt()
                         .jwt(jwt -> jwt.claim("USER_NAME", providerUserId1.toString()))
@@ -248,9 +265,11 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void shouldFailToDeleteClaimWhenClaimDoesNotExist() throws Exception {
+    String claimUrlTemplate = "/api/v1/claims/{claimId}";
+
     mockMvc
         .perform(
-            delete("/api/v1/claims/{claimId}", 9999)
+            delete(claimUrlTemplate, "abcdabcd-abcd-abcd-abcd-abcdabcdabcd")
                 .with(
                     jwt()
                         .jwt(jwt -> jwt.claim("USER_NAME", providerUserId1.toString()))
@@ -260,16 +279,19 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void addLineItemToClaim_returnsCreatedStatusAndLocationHeader() throws Exception {
+    String claimId = "33333333-3333-3333-3333-333333333333";
+    String lineItemUrlTemplate = "/api/v1/claims/{claimId}/line-items";
     String requestBody =
         """
         {
+          "id": "ffffffff-ffff-ffff-ffff-ffffffffffff",
           "title": "New Line Item",
           "category": "New Line Item Category"
         }
         """;
     mockMvc
         .perform(
-            patch("/api/v1/claims/{claimId}/line-items", 3)
+            patch(lineItemUrlTemplate, claimId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .accept(MediaType.APPLICATION_JSON)
@@ -279,21 +301,29 @@ class ClaimControllerIntegrationTest {
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isCreated())
         .andExpect(
-            header().string("Location", matchesPattern(".*/api/v1/claims/3/line-items/\\d+$")));
+            header()
+                .string(
+                    "Location",
+                    matchesPattern(
+                        ".*/api/v1/claims/"
+                            + claimId
+                            + "/line-items/ffffffff-ffff-ffff-ffff-ffffffffffff$")));
   }
 
   @Test
   void addEvidenceToClaim_returnsCreatedStatusAndLocationHeader() throws Exception {
+    UUID claimId = UUID.fromString("33333333-3333-3333-3333-333333333333");
     String requestBody =
         """
         {
+          "id": "ffffffff-ffff-ffff-ffff-ffffffffffff",
           "fileKey": "New file key for evidence",
           "fileSize": 1000
         }
         """;
     mockMvc
         .perform(
-            patch("/api/v1/claims/{claimId}/evidence", 3)
+            patch("/api/v1/claims/{claimId}/evidence", claimId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .accept(MediaType.APPLICATION_JSON)
@@ -303,12 +333,18 @@ class ClaimControllerIntegrationTest {
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isCreated())
         .andExpect(
-            header().string("Location", matchesPattern(".*/api/v1/claims/3/evidence/\\d+$")));
+            header()
+                .string(
+                    "Location",
+                    matchesPattern(
+                        ".*/api/v1/claims/"
+                            + claimId
+                            + "/evidence/ffffffff-ffff-ffff-ffff-ffffffffffff$")));
   }
 
   @Test
   void deleteEvidenceFromClaim_returnsNoContentStatus() throws Exception {
-    int claimId = 2;
+    UUID claimId = UUID.fromString("22222222-2222-2222-2222-222222222222");
 
     mockMvc
         .perform(
@@ -319,14 +355,16 @@ class ClaimControllerIntegrationTest {
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.id").value(claimId))
+        .andExpect(jsonPath("$.id").value(claimId.toString()))
         .andExpect(jsonPath("$.lineItems", hasSize(1)))
         .andExpect(jsonPath("$.lineItems[0].evidenceItems", hasSize(2)))
         .andExpect(jsonPath("$.evidence", hasSize(4)));
 
     mockMvc
         .perform(
-            delete("/api/v1/claims/{claimId}/evidence/1", claimId)
+            delete(
+                    "/api/v1/claims/{claimId}/evidence/11111111-1111-1111-1111-111111111111",
+                    claimId)
                 .with(
                     jwt()
                         .jwt(jwt -> jwt.claim("USER_NAME", providerUserId1.toString()))
@@ -342,7 +380,7 @@ class ClaimControllerIntegrationTest {
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.id").value(claimId))
+        .andExpect(jsonPath("$.id").value(claimId.toString()))
         .andExpect(jsonPath("$.lineItems", hasSize(1)))
         .andExpect(jsonPath("$.lineItems[0].evidenceItems", hasSize(1)))
         .andExpect(jsonPath("$.evidence", hasSize(3)));
@@ -350,9 +388,13 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void deleteEvidenceFromClaim_returnsNotFoundStatusWhenClaimNotFound() throws Exception {
+    String deleteEvidenceUrl =
+        "/api/v1/claims/abababab-abab-abab-abab-abababababab/evidence/"
+            + "11111111-1111-1111-1111-111111111111";
+
     mockMvc
         .perform(
-            delete("/api/v1/claims/9999/evidence/1")
+            delete(deleteEvidenceUrl)
                 .with(
                     jwt()
                         .jwt(jwt -> jwt.claim("USER_NAME", providerUserId1.toString()))
@@ -362,8 +404,10 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void addEvidenceToLineItem_returnsNoContentStatus() throws Exception {
-    Long claimId = 2L;
-    String requestBody = "[3]";
+    UUID claimId = UUID.fromString("22222222-2222-2222-2222-222222222222");
+    String lineItemEvidenceUrlTemplate =
+        "/api/v1/claims/{claimId}/line-items/00000000-0000-0000-0000-000000000000/evidence";
+    String requestBody = "[\"33333333-3333-3333-3333-333333333333\"]";
     mockMvc
         .perform(
             get("/api/v1/claims/{claimId}", claimId)
@@ -373,14 +417,14 @@ class ClaimControllerIntegrationTest {
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.id").value(claimId))
+        .andExpect(jsonPath("$.id").value(claimId.toString()))
         .andExpect(jsonPath("$.lineItems", hasSize(1)))
         .andExpect(jsonPath("$.lineItems[0].evidenceItems", hasSize(2)))
         .andExpect(jsonPath("$.evidence", hasSize(4)));
 
     mockMvc
         .perform(
-            post("/api/v1/claims/{claimId}/line-items/1/evidence", claimId)
+            post(lineItemEvidenceUrlTemplate, claimId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .with(
@@ -398,7 +442,7 @@ class ClaimControllerIntegrationTest {
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.id").value(claimId))
+        .andExpect(jsonPath("$.id").value(claimId.toString()))
         .andExpect(jsonPath("$.lineItems", hasSize(1)))
         .andExpect(jsonPath("$.lineItems[0].evidenceItems", hasSize(3)))
         .andExpect(jsonPath("$.evidence", hasSize(4)));
@@ -406,8 +450,11 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void addMultipleEvidenceToLineItem_returnsNoContentStatus() throws Exception {
-    Long claimId = 2L;
-    String requestBody = "[3,4]";
+    UUID claimId = UUID.fromString("22222222-2222-2222-2222-222222222222");
+    String lineItemEvidenceUrlTemplate =
+        "/api/v1/claims/{claimId}/line-items/00000000-0000-0000-0000-000000000000/evidence";
+    String requestBody =
+        "[\"33333333-3333-3333-3333-333333333333\",\"22222222-2222-2222-2222-222222222222\"]";
 
     mockMvc
         .perform(
@@ -418,14 +465,14 @@ class ClaimControllerIntegrationTest {
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.id").value(claimId))
+        .andExpect(jsonPath("$.id").value(claimId.toString()))
         .andExpect(jsonPath("$.lineItems", hasSize(1)))
         .andExpect(jsonPath("$.lineItems[0].evidenceItems", hasSize(2)))
         .andExpect(jsonPath("$.evidence", hasSize(4)));
 
     mockMvc
         .perform(
-            post("/api/v1/claims/{claimId}/line-items/1/evidence", claimId)
+            post(lineItemEvidenceUrlTemplate, claimId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .with(
@@ -443,7 +490,7 @@ class ClaimControllerIntegrationTest {
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.id").value(claimId))
+        .andExpect(jsonPath("$.id").value(claimId.toString()))
         .andExpect(jsonPath("$.lineItems", hasSize(1)))
         .andExpect(jsonPath("$.lineItems[0].evidenceItems", hasSize(4)))
         .andExpect(jsonPath("$.evidence", hasSize(4)));
@@ -451,7 +498,10 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void unlinkEvidenceFromLineItem_returnsNoContentStatus() throws Exception {
-    int claimId = 2;
+    UUID claimId = UUID.fromString("22222222-2222-2222-2222-222222222222");
+    String unlinkEvidenceUrlTemplate =
+        "/api/v1/claims/{claimId}/line-items/00000000-0000-0000-0000-000000000000/evidence/"
+            + "00000000-0000-0000-0000-000000000000";
 
     mockMvc
         .perform(
@@ -462,14 +512,14 @@ class ClaimControllerIntegrationTest {
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.id").value(claimId))
+        .andExpect(jsonPath("$.id").value(claimId.toString()))
         .andExpect(jsonPath("$.lineItems", hasSize(1)))
         .andExpect(jsonPath("$.lineItems[0].evidenceItems", hasSize(2)))
         .andExpect(jsonPath("$.evidence", hasSize(4)));
 
     mockMvc
         .perform(
-            delete("/api/v1/claims/{claimId}/line-items/1/evidence/1", claimId)
+            delete(unlinkEvidenceUrlTemplate, claimId)
                 .with(
                     jwt()
                         .jwt(jwt -> jwt.claim("USER_NAME", providerUserId1.toString()))
@@ -485,7 +535,7 @@ class ClaimControllerIntegrationTest {
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.id").value(claimId))
+        .andExpect(jsonPath("$.id").value(claimId.toString()))
         .andExpect(jsonPath("$.lineItems", hasSize(1)))
         .andExpect(jsonPath("$.lineItems[0].evidenceItems", hasSize(1)))
         .andExpect(jsonPath("$.evidence", hasSize(4)));
@@ -493,9 +543,14 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void unlinkEvidenceFromLineItem_returnsNotFoundStatusWhenClaimNotFound() throws Exception {
+    String unlinkEvidenceUrl =
+        "/api/v1/claims/abababab-abab-abab-abab-abababababab/line-items/"
+            + "11111111-1111-1111-1111-111111111111/evidence/"
+            + "11111111-1111-1111-1111-111111111111";
+
     mockMvc
         .perform(
-            delete("/api/v1/claims/9999/line-items/1/evidence/1")
+            delete(unlinkEvidenceUrl)
                 .with(
                     jwt()
                         .jwt(jwt -> jwt.claim("USER_NAME", providerUserId1.toString()))
@@ -505,9 +560,14 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void unlinkEvidenceFromLineItem_returnsNotFoundStatusWhenLineItemNotFound() throws Exception {
+    String unlinkEvidenceUrl =
+        "/api/v1/claims/22222222-2222-2222-2222-222222222222/line-items/"
+            + "abababab-abab-abab-abab-abababababab/evidence/"
+            + "11111111-1111-1111-1111-111111111111";
+
     mockMvc
         .perform(
-            delete("/api/v1/claims/2/line-items/9999/evidence/1")
+            delete(unlinkEvidenceUrl)
                 .with(
                     jwt()
                         .jwt(jwt -> jwt.claim("USER_NAME", providerUserId1.toString()))
@@ -517,9 +577,14 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void unlinkEvidenceFromLineItem_returnsNotFoundStatusWhenEvidenceNotFound() throws Exception {
+    String unlinkEvidenceUrl =
+        "/api/v1/claims/22222222-2222-2222-2222-222222222222/line-items/"
+            + "11111111-1111-1111-1111-111111111111/evidence/"
+            + "abababab-abab-abab-abab-abababababab";
+
     mockMvc
         .perform(
-            delete("/api/v1/claims/2/line-items/1/evidence/9999")
+            delete(unlinkEvidenceUrl)
                 .with(
                     jwt()
                         .jwt(jwt -> jwt.claim("USER_NAME", providerUserId1.toString()))

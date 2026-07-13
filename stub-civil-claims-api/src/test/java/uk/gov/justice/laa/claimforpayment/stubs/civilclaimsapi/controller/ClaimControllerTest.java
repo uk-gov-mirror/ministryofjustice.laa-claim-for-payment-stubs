@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -183,33 +184,33 @@ class ClaimControllerTest {
 
     mockMvc
         .perform(
-            get("/api/v1/claims/1")
+            get("/api/v1/claims/" + claimId1)
                 .with(
                     jwt()
                         .jwt(jwt -> jwt.claim("USER_NAME", providerUserId1.toString()))
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.id").value(claimId1.toString()))
         .andExpect(jsonPath("$.feeType").value("Fee type 1"))
         .andExpect(jsonPath("$.escaped").value(true))
         .andExpect(jsonPath("$.counselPayment").value("Paid and Reconciled"))
         .andExpect(jsonPath("$.client").value("Smith"))
         .andExpect(jsonPath("$.lineItems", hasSize(2)))
         .andExpect(jsonPath("$.evidence", hasSize(3)))
-        .andExpect(jsonPath("$.evidence[0].id").value(1))
+        .andExpect(jsonPath("$.evidence[0].id").value(claimEvidence1Id.toString()))
         .andExpect(jsonPath("$.evidence[0].fileKey").value("fileKey1"))
-        .andExpect(jsonPath("$.evidence[1].id").value(2))
+        .andExpect(jsonPath("$.evidence[1].id").value(claimEvidence2Id.toString()))
         .andExpect(jsonPath("$.evidence[1].fileKey").value("fileKey2"))
-        .andExpect(jsonPath("$.evidence[2].id").value(3))
+        .andExpect(jsonPath("$.evidence[2].id").value(claimEvidence3Id.toString()))
         .andExpect(jsonPath("$.evidence[2].fileKey").value("fileKey3"))
-        .andExpect(jsonPath("$.lineItems[0].id").value(1))
+        .andExpect(jsonPath("$.lineItems[0].id").value(lineItem1Id.toString()))
         .andExpect(jsonPath("$.lineItems[0].evidenceItems", hasSize(2)))
-        .andExpect(jsonPath("$.lineItems[0].evidenceItems[0]").value(1))
-        .andExpect(jsonPath("$.lineItems[0].evidenceItems[1]").value(2))
-        .andExpect(jsonPath("$.lineItems[1].id").value(2))
+        .andExpect(jsonPath("$.lineItems[0].evidenceItems[0]").value(claimEvidence1Id.toString()))
+        .andExpect(jsonPath("$.lineItems[0].evidenceItems[1]").value(claimEvidence2Id.toString()))
+        .andExpect(jsonPath("$.lineItems[1].id").value(lineItem2Id.toString()))
         .andExpect(jsonPath("$.lineItems[1].evidenceItems", hasSize(1)))
-        .andExpect(jsonPath("$.lineItems[1].evidenceItems[0]").value(3));
+        .andExpect(jsonPath("$.lineItems[1].evidenceItems[0]").value(claimEvidence3Id.toString()));
   }
 
   @Test
@@ -230,8 +231,7 @@ class ClaimControllerTest {
           "concluded": "2025-07-07",
           "feeType": "Fee type 1",
           "escaped": false,
-          "counselPayment": "Paid and Reconciled",
-          "submissionId": "123e4567-e89b-12d3-a456-426614174000"
+          "counselPayment": "Paid and Reconciled"
         }
         """;
 
@@ -290,8 +290,7 @@ class ClaimControllerTest {
           "feeType": "Updated Fee Type",
           "escaped": "false",
           "counselPayment": "Paid and Reconciled",
-          "claimed": 1234.56,
-          "submissionId": "123e4567-e89b-12d3-a456-426614174001"
+          "claimed": 1234.56
         }
         """;
 
@@ -399,7 +398,7 @@ class ClaimControllerTest {
     UUID evidenceId1 = UUID.randomUUID();
 
     when(mockClaimService.addEvidenceToClaim(any(UUID.class), any(ClaimEvidenceRequestBody.class)))
-        .thenReturn(UUID.randomUUID());
+        .thenReturn(evidenceId1);
     String requestBody =
         """
         {
@@ -450,12 +449,14 @@ class ClaimControllerTest {
   }
 
   @Test
+  @DisplayName("Add existing evidence to line item returns no content status")
   void addExistingEvidenceToLineItem_returnsNoContentStatus() throws Exception {
     UUID providerUserId1 = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
-    String requestBody = "[3]";
+
     UUID lineItemId1 = UUID.randomUUID();
     UUID claimId1 = UUID.randomUUID();
     UUID evidenceId1 = UUID.randomUUID();
+    String requestBody = "[\"" + evidenceId1 + "\"]";
 
     mockMvc
         .perform(
@@ -474,11 +475,10 @@ class ClaimControllerTest {
   @Test
   void addMultipleExistingEvidenceToLineItem_returnsNoContentStatus() throws Exception {
     UUID providerUserId1 = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
-    String requestBody = "[3,4,5]";
     UUID lineItemId1 = UUID.randomUUID();
     UUID claimId1 = UUID.randomUUID();
     List<UUID> evidenceIds = List.of(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
-
+String requestBody = "[\"" + evidenceIds.get(0) + "\", \"" + evidenceIds.get(1) + "\", \"" + evidenceIds.get(2) + "\"]";
     mockMvc
         .perform(
             post("/api/v1/claims/" + claimId1 + "/line-items/" + lineItemId1 + "/evidence")

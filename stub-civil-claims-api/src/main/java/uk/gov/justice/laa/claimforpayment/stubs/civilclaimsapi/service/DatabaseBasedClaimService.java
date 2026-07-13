@@ -62,8 +62,9 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
    * @return the id of the created claim
    */
   @Override
-  public  UUID createClaim(ClaimRequestBody claimRequestBody, UUID providerUserId) {
+  public UUID createClaim(ClaimRequestBody claimRequestBody, UUID providerUserId) {
     ClaimEntity claimEntity = new ClaimEntity();
+    claimEntity.setId(claimRequestBody.getId());
     claimEntity.setUfn(claimRequestBody.getUfn());
     claimEntity.setClient(claimRequestBody.getClient());
     claimEntity.setCategory(claimRequestBody.getCategory());
@@ -73,7 +74,6 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
     claimEntity.setCounselPayment(claimRequestBody.getCounselPayment());
     claimEntity.setClaimed(claimRequestBody.getClaimed());
     claimEntity.setProviderUserId(providerUserId);
-    claimEntity.setSubmissionId(claimRequestBody.getSubmissionId());
 
     ClaimEntity createdClaimEntity = claimRepository.save(claimEntity);
     return createdClaimEntity.getId();
@@ -182,6 +182,7 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
   public UUID addLineItemToClaim(UUID claimId, LineItemRequestBody lineItemRequestBody) {
     ClaimEntity claimEntity = checkIfClaimExists(claimId);
     LineItemEntity newLineItemEntity = new LineItemEntity();
+    newLineItemEntity.setId(lineItemRequestBody.getId());
     newLineItemEntity.setTitle(lineItemRequestBody.getTitle());
     newLineItemEntity.setClaim(claimEntity);
 
@@ -194,6 +195,7 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
   public UUID addEvidenceToClaim(UUID claimId, ClaimEvidenceRequestBody claimEvidenceRequestBody) {
     ClaimEntity claimEntity = checkIfClaimExists(claimId);
     ClaimEvidenceEntity newEvidenceEntity = new ClaimEvidenceEntity();
+    newEvidenceEntity.setId(claimEvidenceRequestBody.getId());
     newEvidenceEntity.setFileKey(claimEvidenceRequestBody.getFileKey());
     newEvidenceEntity.setFileSize(claimEvidenceRequestBody.getFileSize());
     newEvidenceEntity.setClaim(claimEntity);

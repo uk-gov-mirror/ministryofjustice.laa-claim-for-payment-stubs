@@ -51,6 +51,7 @@ class LineItemMapperTest {
     assertThat(result.getTitle()).isEqualTo(lineItemEntity.getTitle());
     assertThat(result.getCategory()).isEqualTo(lineItemEntity.getCategory());
     assertThat(result.getDate()).isEqualTo(lineItemEntity.getDate());
-    assertThat(result.getEvidenceItems()).containsExactly(evidenceEntity1Id, evidenceEntity2Id);
+    assertThat(result.getEvidenceItems())
+        .containsExactlyInAnyOrder(evidenceEntity1Id, evidenceEntity2Id);
   }
 }

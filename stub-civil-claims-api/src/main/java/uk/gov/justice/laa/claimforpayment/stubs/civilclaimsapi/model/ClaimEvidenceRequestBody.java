@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,6 +23,10 @@ import tools.jackson.databind.annotation.JsonDeserialize;
 public class ClaimEvidenceRequestBody implements Serializable {
 
   private static final long serialVersionUID = 1L;
+
+  @Schema(description = "The unique ID for the evidence")
+  @JsonProperty("id")
+  private UUID id;
 
   @NotNull
   @Schema(description = "The file key for the evidence")

@@ -1,6 +1,6 @@
 logging:
   level:
-    root: DEBUG
+    root: INFO
     # org.flywaydb: TRACE
     # This shows Spring Boot's decision to start Flyway
     # org.springframework.boot.autoconfigure.flyway: TRACE

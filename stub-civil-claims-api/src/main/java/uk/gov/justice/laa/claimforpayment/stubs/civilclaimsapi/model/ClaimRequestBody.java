@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
  * Represents the request body for creating or updating a claim.
  *
  * <p>This model contains all necessary fields required to submit a claim, including client details,
- * claim category, dates, fee type, claimed amount, and a unique submission identifier.
+ * claim category, dates, fee type, claimed amount.
  */
 @Data
 @Builder
@@ -29,6 +29,10 @@ import lombok.NoArgsConstructor;
 public class ClaimRequestBody implements Serializable {
 
   private static final long serialVersionUID = 1L;
+
+  @Schema(description = "unique ID for the claim")
+  @JsonProperty("id")
+  private UUID id;
 
   @NotNull
   @JsonProperty("ufn")
@@ -63,10 +67,6 @@ public class ClaimRequestBody implements Serializable {
   @JsonProperty("claimed")
   @Schema(description = "amount claimed")
   private BigDecimal claimed;
-
-  @Schema(description = "id of the submission this claim links to")
-  @JsonProperty("submissionId")
-  private UUID submissionId;
 
   /** Builder for ClaimRequestBody. */
   @JsonPOJOBuilder(withPrefix = "")

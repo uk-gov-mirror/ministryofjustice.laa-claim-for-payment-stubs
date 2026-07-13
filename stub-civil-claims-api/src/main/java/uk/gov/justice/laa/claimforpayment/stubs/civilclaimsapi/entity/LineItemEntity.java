@@ -1,8 +1,6 @@
 package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -13,7 +11,6 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,8 +27,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "LINE_ITEMS")
 public class LineItemEntity {
 
-  @Id
-  private UUID id;
+  @Id private UUID id;
 
   private String title;
 
