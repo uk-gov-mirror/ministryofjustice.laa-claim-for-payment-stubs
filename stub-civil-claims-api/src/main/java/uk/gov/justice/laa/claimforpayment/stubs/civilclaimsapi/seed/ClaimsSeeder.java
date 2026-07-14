@@ -215,14 +215,15 @@ public class ClaimsSeeder {
 
   private void insertDrafts(Connection connection, ClaimsFile file) throws SQLException {
 
-    String sql = "INSERT INTO draft_claims (id, payload, provider_user_id) VALUES (?, ?, ?)";
+    String sql =
+        "INSERT INTO draft_claims (id, payload, provider_user_id) VALUES (?, CAST(? AS jsonb), ?)";
 
     try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
       for (DraftClaimRow d : file.draft_claims) {
-        ps.setString(1, d.id);
-        ps.setString(2, d.payload);
-        ps.setString(3, d.providerUserId);
+        ps.setObject(1, d.id);
+        ps.setObject(2, d.payload);
+        ps.setObject(3, d.providerUserId);
         ps.executeUpdate();
       }
     }
