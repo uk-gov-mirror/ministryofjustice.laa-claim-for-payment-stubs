@@ -62,7 +62,7 @@ dependencies {
 
     compileOnly "org.springframework:spring-web"
     implementation "jakarta.servlet:jakarta.servlet-api:6.1.0"
-    compileOnly 'org.slf4j:slf4j-api:2.0.9'
+    implementation 'org.slf4j:slf4j-api:2.0.9'
     implementation 'org.json:json:20251224'
     implementation 'org.springframework.security:spring-security-core:7.0.6'
     implementation 'org.springframework.security:spring-security-oauth2-jose:7.0.6'
