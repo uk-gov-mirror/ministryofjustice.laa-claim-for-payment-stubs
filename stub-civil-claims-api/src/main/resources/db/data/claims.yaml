@@ -1,5 +1,5 @@
 claims:
-  - id: "11111111-1111-1111-1111-111111111111"
+  - id: "019f5c43-7d3b-7a50-8f2e-442533c936d0"
     ufn: "121120/467"
     client: "Giordano"
     category: "Family"
@@ -10,7 +10,7 @@ claims:
     claimed: 234.56
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - id: "22222222-2222-2222-2222-222222222222"
+  - id: "019f5c43-ba95-755c-8f28-c92bfb46013b"
     ufn: "100323/098"
     client: "Amoto"
     category: "Immigration and Asylum"
@@ -21,7 +21,7 @@ claims:
     claimed: 56.00
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - id: "33333333-3333-3333-3333-333333333333"
+  - id: "019f5c43-d9f0-732e-88b2-1ca29c6c41de"
     ufn: "121120/678"
     client: "DeMello"
     category: "Immigration and Asylum"
@@ -32,7 +32,7 @@ claims:
     claimed: 456.01
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - id: "44444444-4444-4444-4444-444444444444"
+  - id: "019f5c43-f5f9-7dca-828d-6191287beff5"
     ufn: "121120/678"
     client: "Omar"
     category: "Immigration and Asylum"
@@ -43,7 +43,7 @@ claims:
     claimed: 456.01
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - id: "55555555-5555-5555-5555-555555555555"
+  - id: "019f5c44-14bb-7553-ab4c-99b46fb62ffa"
     ufn: "121120/678"
     client: "Abdelazim"
     category: "Family"
@@ -54,7 +54,7 @@ claims:
     claimed: 234.56
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - id: "66666666-6666-6666-6666-666666666666"
+  - id: "019f5c44-330e-7957-bcc2-319135a4d8bc"
     ufn: "121120/765"
     client: "Simpson"
     category: "Family"
@@ -65,7 +65,7 @@ claims:
     claimed: 234.56
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - id: "77777777-7777-7777-7777-777777777777"
+  - id: "019f5c44-4ff7-7458-912e-a4a9cacaafa9"
     ufn: "121120/678"
     client: "Gruffalo"
     category: "Immigration and Asylum"
@@ -76,7 +76,7 @@ claims:
     claimed: 456.01
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - id: "88888888-8888-8888-8888-888888888888"
+  - id: "019f5c44-669a-7ecf-8c94-abe3e56ddc1f"
     ufn: "121120/678"
     client: "O'Connor"
     category: "Family"
@@ -86,7 +86,7 @@ claims:
     claimed: 234.56
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - id: "99999999-9999-9999-9999-999999999999"
+  - id: "019f5c44-7f43-7178-a3b7-0d51052c89e5"
     ufn: "100323/567"
     client: "Tony"
     category: "Immigration and Asylum"
@@ -97,7 +97,7 @@ claims:
     claimed: 56.00
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - id: "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
+  - id: "019f5c44-98e9-7144-acb5-4d8af9050d93"
     ufn: "100323/234"
     client: "Bianchi"
     category: "Immigration and Asylum"
@@ -108,7 +108,7 @@ claims:
     claimed: 56.00
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - id: "BBBBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"
+  - id: "019f5c44-b49f-70a3-b6b1-9a810dc7a323"
     ufn: "100323/765"
     client: "McKenna"
     category: "Immigration and Asylum"
@@ -119,7 +119,7 @@ claims:
     claimed: 56.00
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - id: "CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"
+  - id: "019f5c44-d798-7445-9214-24d4642400ba"
     ufn: "240301/101"
     client: "Johnson"
     category: "Immigration and Asylum"
@@ -130,7 +130,7 @@ claims:
     claimed: 429.01
     providerUserId: "d9c4b277-941c-451c-81c4-6b46b7f7ab59"
 
-  - id: "DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"
+  - id: "019f5c44-f132-70e7-b4f2-19b3b4a9c717"
     ufn: "240301/102"
     client: "Anderson"
     category: "Family"
@@ -141,7 +141,7 @@ claims:
     claimed: 234.56
     providerUserId: "d9c4b277-941c-451c-81c4-6b46b7f7ab59"
 
-  - id: "EEEEEEEE-EEEE-EEEE-EEEE-EEEEEEEEEEEE"
+  - id: "019f5c45-0b14-77d5-bee9-318259da6f54"
     ufn: "240301/103"
     client: "Thompson"
     category: "Immigration and Asylum"
@@ -152,7 +152,7 @@ claims:
     claimed: 56.00
     providerUserId: "d9c4b277-941c-451c-81c4-6b46b7f7ab59"
 
-  - id: "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF"
+  - id: "019f5c45-25e2-767a-9519-e4f4791e380f"
     ufn: "240301/104"
     client: "Harrison"
     category: "Immigration and Asylum"
@@ -163,7 +163,7 @@ claims:
     claimed: 76.00
     providerUserId: "d9c4b277-941c-451c-81c4-6b46b7f7ab59"
 
-  - id: "00000000-0000-0000-0000-000000000000"
+  - id: "019f5c45-4203-7d7d-b7bb-173c4c941a45"
     ufn: "240301/105"
     client: "Mitchell"
     category: "Immigration and Asylum"
@@ -175,85 +175,85 @@ claims:
     providerUserId: "d9c4b277-941c-451c-81c4-6b46b7f7ab59"
 
 claim_evidence:
-  - id: "00000000-0000-0000-0000-000000000000"
-    claimId: "22222222-2222-2222-2222-222222222222"
+  - id: "019f5c45-6070-7abd-9129-171e41387b7c"
+    claimId: "019f5c43-ba95-755c-8f28-c92bfb46013b"
     fileIdString: "amoto-invoice-001.pdf"
     fileSize: 5000000
     submittedOn: "2026-06-17T10:15:30Z"
 
-  - id: "11111111-1111-1111-1111-111111111111"
-    claimId: "22222222-2222-2222-2222-222222222222"
+  - id: "019f5c45-ff06-7419-ab4c-9165d89b6173"
+    claimId: "019f5c43-ba95-755c-8f28-c92bfb46013b"
     fileIdString: "amoto-invoice-002.pdf"
     fileSize: 4000000
     submittedOn: "2026-06-17T10:16:45Z"
 
-  - id: "22222222-2222-2222-2222-222222222222"
-    claimId: "22222222-2222-2222-2222-222222222222"
+  - id: "019f5c43-ba95-755c-8f28-c92bfb46013b"
+    claimId: "019f5c43-ba95-755c-8f28-c92bfb46013b"
     fileIdString: "amoto-invoice-003.pdf"
     fileSize: 5000000
     submittedOn: "2026-06-17T10:18:12Z"
 
-  - id: "33333333-3333-3333-3333-333333333333"
-    claimId: "22222222-2222-2222-2222-222222222222"
+  - id: "019f5c46-2184-7325-94aa-756fbce442b0"
+    claimId: "019f5c43-ba95-755c-8f28-c92bfb46013b"
     fileIdString: "amoto-invoice-004.pdf"
     fileSize: 6000000
     submittedOn: "2026-06-17T10:20:05Z"
 
 line_items:
-  - id: "00000000-0000-0000-0000-000000000000"
-    claimId: "22222222-2222-2222-2222-222222222222"
+  - id: "019f5c46-5788-7252-9172-b494faac8fe8"
+    claimId: "019f5c43-ba95-755c-8f28-c92bfb46013b"
     title: "Interim hearing"
     category: "Work Item"
     date: "2023-12-20"
 
-  - id: "11111111-1111-1111-1111-111111111111"
-    claimId: "33333333-3333-3333-3333-333333333333"
+  - id: "019f5c48-82cc-7a0d-842b-0cf523e7296b"
+    claimId: "019f5c43-d9f0-732e-88b2-1ca29c6c41de"
     title: "Interim hearing"
     category: "Work Item"
     date: "2023-12-20"
 
-  - id: "22222222-2222-2222-2222-222222222222"
-    claimId: "33333333-3333-3333-3333-333333333333"
+  - id: "019f5c43-ba95-755c-8f28-c92bfb46013b"
+    claimId: "019f5c43-d9f0-732e-88b2-1ca29c6c41de"
     title: "Interim hearing"
     category: "Work Item"
     date: "2024-01-04"
 
-  - id: "33333333-3333-3333-3333-333333333333"
-    claimId: "33333333-3333-3333-3333-333333333333"
+  - id: "019f5c43-d9f0-732e-88b2-1ca29c6c41de"
+    claimId: "019f5c43-d9f0-732e-88b2-1ca29c6c41de"
     title: "Final hearing"
     category: "Work Item"
     date: "2024-01-24"
 
-  - id: "44444444-4444-4444-4444-444444444444"
-    claimId: "33333333-3333-3333-3333-333333333333"
+  - id: "019f5c46-d10b-7be6-b294-8a901d12d5ed"
+    claimId: "019f5c43-d9f0-732e-88b2-1ca29c6c41de"
     title: "Enquiry Agent"
     category: "Disbursement"
     date: "2023-12-23"
 
-  - id: "55555555-5555-5555-5555-555555555555"
-    claimId: "33333333-3333-3333-3333-333333333333"
+  - id: "019f5c46-f48c-79cf-9b14-05db42117fad"
+    claimId: "019f5c43-d9f0-732e-88b2-1ca29c6c41de"
     title: "Enquiry Agent"
     category: "Disbursement"
     date: "2023-01-13"
 
-  - id: "66666666-6666-6666-6666-666666666666"
-    claimId: "33333333-3333-3333-3333-333333333333"
+  - id: "019f5c47-15a3-7a13-b6e7-4e25a1aef3f7"
+    claimId: "019f5c43-d9f0-732e-88b2-1ca29c6c41de"
     title: "Car Mileage"
     category: "Disbursement"
     date: "2023-12-20"
 
-  - id: "77777777-7777-7777-7777-777777777777"
-    claimId: "33333333-3333-3333-3333-333333333333"
+  - id: "019f5c47-300d-762f-889a-23e6a4820128"
+    claimId: "019f5c43-d9f0-732e-88b2-1ca29c6c41de"
     title: "Car Mileage"
     category: "Disbursement"
     date: "2024-01-04"
 
 line_item_claim_evidence:
-  - lineItemId: "00000000-0000-0000-0000-000000000000"
-    evidenceId: "00000000-0000-0000-0000-000000000000" 
+  - lineItemId: "019f5c46-5788-7252-9172-b494faac8fe8"
+    evidenceId: "019f5c45-6070-7abd-9129-171e41387b7c"
 
-  - lineItemId: "00000000-0000-0000-0000-000000000000"
-    evidenceId: "11111111-1111-1111-1111-111111111111" 
+  - lineItemId: "019f5c46-5788-7252-9172-b494faac8fe8"
+    evidenceId: "019f5c45-ff06-7419-ab4c-9165d89b6173"
 
 draft_claims:
   - id: "550e8400-e29b-41d4-a716-446655440000"

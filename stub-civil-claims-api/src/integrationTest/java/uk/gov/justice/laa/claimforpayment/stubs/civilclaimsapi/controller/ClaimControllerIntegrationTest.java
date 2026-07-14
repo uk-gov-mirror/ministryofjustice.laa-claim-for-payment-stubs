@@ -84,7 +84,7 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void shouldGetClaim() throws Exception {
-    String claimId = "11111111-1111-1111-1111-111111111111";
+    String claimId = "019f5c43-7d3b-7a50-8f2e-442533c936d0";
     String claimUrlTemplate = "/api/v1/claims/{claimId}";
 
     mockMvc
@@ -111,7 +111,7 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void shouldGetClaimWithLineItems() throws Exception {
-    String claimId = "22222222-2222-2222-2222-222222222222";
+    String claimId = "019f5c43-ba95-755c-8f28-c92bfb46013b";
     String claimUrlTemplate = "/api/v1/claims/{claimId}";
 
     mockMvc
@@ -127,31 +127,31 @@ class ClaimControllerIntegrationTest {
         .andExpect(jsonPath("$.ufn").value("100323/098"))
         .andExpect(jsonPath("$.client").value("Amoto"))
         .andExpect(jsonPath("$.lineItems", hasSize(1)))
-        .andExpect(jsonPath("$.lineItems[0].id").value("00000000-0000-0000-0000-000000000000"))
+        .andExpect(jsonPath("$.lineItems[0].id").value("019f5c46-5788-7252-9172-b494faac8fe8"))
         .andExpect(jsonPath("$.lineItems[0].title").value("Interim hearing"))
         .andExpect(jsonPath("$.lineItems[0].category").value("Work Item"))
         .andExpect(jsonPath("$.lineItems[0].date").value("2023-12-20"))
         .andExpect(jsonPath("$.lineItems[0].evidenceItems", hasSize(2)))
         .andExpect(
             jsonPath("$.lineItems[0].evidenceItems[0]")
-                .value("00000000-0000-0000-0000-000000000000"))
+                .value("019f5c45-6070-7abd-9129-171e41387b7c"))
         .andExpect(
             jsonPath("$.lineItems[0].evidenceItems[1]")
-                .value("11111111-1111-1111-1111-111111111111"))
+                .value("019f5c45-ff06-7419-ab4c-9165d89b6173"))
         .andExpect(jsonPath("$.evidence", hasSize(4)))
-        .andExpect(jsonPath("$.evidence[0].id").value("00000000-0000-0000-0000-000000000000"))
+        .andExpect(jsonPath("$.evidence[0].id").value("019f5c45-6070-7abd-9129-171e41387b7c"))
         .andExpect(jsonPath("$.evidence[0].fileKey").value("amoto-invoice-001.pdf"))
         .andExpect(jsonPath("$.evidence[0].fileSize").value(5000000))
         .andExpect(jsonPath("$.evidence[0].submittedOn").value("2026-06-17T10:15:30Z"))
-        .andExpect(jsonPath("$.evidence[1].id").value("11111111-1111-1111-1111-111111111111"))
+        .andExpect(jsonPath("$.evidence[1].id").value("019f5c45-ff06-7419-ab4c-9165d89b6173"))
         .andExpect(jsonPath("$.evidence[1].fileKey").value("amoto-invoice-002.pdf"))
         .andExpect(jsonPath("$.evidence[1].fileSize").value(4000000))
         .andExpect(jsonPath("$.evidence[1].submittedOn").value("2026-06-17T10:16:45Z"))
-        .andExpect(jsonPath("$.evidence[2].id").value("22222222-2222-2222-2222-222222222222"))
+        .andExpect(jsonPath("$.evidence[2].id").value("019f5c43-ba95-755c-8f28-c92bfb46013b"))
         .andExpect(jsonPath("$.evidence[2].fileKey").value("amoto-invoice-003.pdf"))
         .andExpect(jsonPath("$.evidence[2].fileSize").value(5000000))
         .andExpect(jsonPath("$.evidence[2].submittedOn").value("2026-06-17T10:18:12Z"))
-        .andExpect(jsonPath("$.evidence[3].id").value("33333333-3333-3333-3333-333333333333"))
+        .andExpect(jsonPath("$.evidence[3].id").value("019f5c46-2184-7325-94aa-756fbce442b0"))
         .andExpect(jsonPath("$.evidence[3].fileKey").value("amoto-invoice-004.pdf"))
         .andExpect(jsonPath("$.evidence[3].fileSize").value(6000000))
         .andExpect(jsonPath("$.evidence[3].submittedOn").value("2026-06-17T10:20:05Z"));
@@ -189,7 +189,7 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void shouldUpdateClaim() throws Exception {
-    String claimId = "22222222-2222-2222-2222-222222222222";
+    String claimId = "019f5c43-ba95-755c-8f28-c92bfb46013b";
     String claimUrlTemplate = "/api/v1/claims/{claimId}";
     String requestBody =
         """
@@ -250,7 +250,7 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void shouldDeleteClaim() throws Exception {
-    String claimId = "33333333-3333-3333-3333-333333333333";
+    String claimId = "019f5c43-d9f0-732e-88b2-1ca29c6c41de";
     String claimUrlTemplate = "/api/v1/claims/{claimId}";
 
     mockMvc
@@ -279,7 +279,7 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void addLineItemToClaim_returnsCreatedStatusAndLocationHeader() throws Exception {
-    String claimId = "33333333-3333-3333-3333-333333333333";
+    String claimId = "019f5c43-d9f0-732e-88b2-1ca29c6c41de";
     String lineItemUrlTemplate = "/api/v1/claims/{claimId}/line-items";
     String requestBody =
         """
@@ -312,7 +312,7 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void addEvidenceToClaim_returnsCreatedStatusAndLocationHeader() throws Exception {
-    UUID claimId = UUID.fromString("33333333-3333-3333-3333-333333333333");
+    UUID claimId = UUID.fromString("019f5c43-d9f0-732e-88b2-1ca29c6c41de");
     String requestBody =
         """
         {
@@ -345,7 +345,7 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void deleteEvidenceFromClaim_returnsNoContentStatus() throws Exception {
-    UUID claimId = UUID.fromString("22222222-2222-2222-2222-222222222222");
+    UUID claimId = UUID.fromString("019f5c43-ba95-755c-8f28-c92bfb46013b");
 
     mockMvc
         .perform(
@@ -364,7 +364,7 @@ class ClaimControllerIntegrationTest {
     mockMvc
         .perform(
             delete(
-                    "/api/v1/claims/{claimId}/evidence/11111111-1111-1111-1111-111111111111",
+                    "/api/v1/claims/{claimId}/evidence/019f5c45-ff06-7419-ab4c-9165d89b6173",
                     claimId)
                 .with(
                     jwt()
@@ -405,10 +405,10 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void addEvidenceToLineItem_returnsNoContentStatus() throws Exception {
-    UUID claimId = UUID.fromString("22222222-2222-2222-2222-222222222222");
+    UUID claimId = UUID.fromString("019f5c43-ba95-755c-8f28-c92bfb46013b");
     String lineItemEvidenceUrlTemplate =
-        "/api/v1/claims/{claimId}/line-items/00000000-0000-0000-0000-000000000000/evidence";
-    String requestBody = "[\"33333333-3333-3333-3333-333333333333\"]";
+        "/api/v1/claims/{claimId}/line-items/019f5c46-5788-7252-9172-b494faac8fe8/evidence";
+    String requestBody = "[\"019f5c46-2184-7325-94aa-756fbce442b0\"]";
     mockMvc
         .perform(
             get("/api/v1/claims/{claimId}", claimId)
@@ -451,11 +451,11 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void addMultipleEvidenceToLineItem_returnsNoContentStatus() throws Exception {
-    UUID claimId = UUID.fromString("22222222-2222-2222-2222-222222222222");
+    UUID claimId = UUID.fromString("019f5c43-ba95-755c-8f28-c92bfb46013b");
     String lineItemEvidenceUrlTemplate =
-        "/api/v1/claims/{claimId}/line-items/00000000-0000-0000-0000-000000000000/evidence";
+        "/api/v1/claims/{claimId}/line-items/019f5c46-5788-7252-9172-b494faac8fe8/evidence";
     String requestBody =
-        "[\"33333333-3333-3333-3333-333333333333\",\"22222222-2222-2222-2222-222222222222\"]";
+        "[\"019f5c46-2184-7325-94aa-756fbce442b0\",\"019f5c43-ba95-755c-8f28-c92bfb46013b\"]";
 
     mockMvc
         .perform(
@@ -499,10 +499,10 @@ class ClaimControllerIntegrationTest {
 
   @Test
   void unlinkEvidenceFromLineItem_returnsNoContentStatus() throws Exception {
-    UUID claimId = UUID.fromString("22222222-2222-2222-2222-222222222222");
+    UUID claimId = UUID.fromString("019f5c43-ba95-755c-8f28-c92bfb46013b");
     String unlinkEvidenceUrlTemplate =
-        "/api/v1/claims/{claimId}/line-items/00000000-0000-0000-0000-000000000000/evidence/"
-            + "00000000-0000-0000-0000-000000000000";
+        "/api/v1/claims/{claimId}/line-items/019f5c46-5788-7252-9172-b494faac8fe8/evidence/"
+            + "019f5c45-6070-7abd-9129-171e41387b7c";
 
     mockMvc
         .perform(
@@ -546,8 +546,8 @@ class ClaimControllerIntegrationTest {
   void unlinkEvidenceFromLineItem_returnsNotFoundStatusWhenClaimNotFound() throws Exception {
     String unlinkEvidenceUrl =
         "/api/v1/claims/abababab-abab-abab-abab-abababababab/line-items/"
-            + "11111111-1111-1111-1111-111111111111/evidence/"
-            + "11111111-1111-1111-1111-111111111111";
+            + "019f5c46-5788-7252-9172-b494faac8fe8/evidence/"
+            + "019f5c45-6070-7abd-9129-171e41387b7c";
 
     mockMvc
         .perform(
@@ -562,9 +562,9 @@ class ClaimControllerIntegrationTest {
   @Test
   void unlinkEvidenceFromLineItem_returnsNotFoundStatusWhenLineItemNotFound() throws Exception {
     String unlinkEvidenceUrl =
-        "/api/v1/claims/22222222-2222-2222-2222-222222222222/line-items/"
+        "/api/v1/claims/019f5c43-ba95-755c-8f28-c92bfb46013b/line-items/"
             + "abababab-abab-abab-abab-abababababab/evidence/"
-            + "11111111-1111-1111-1111-111111111111";
+            + "019f5c45-6070-7abd-9129-171e41387b7c";
 
     mockMvc
         .perform(
@@ -579,8 +579,8 @@ class ClaimControllerIntegrationTest {
   @Test
   void unlinkEvidenceFromLineItem_returnsNotFoundStatusWhenEvidenceNotFound() throws Exception {
     String unlinkEvidenceUrl =
-        "/api/v1/claims/22222222-2222-2222-2222-222222222222/line-items/"
-            + "11111111-1111-1111-1111-111111111111/evidence/"
+        "/api/v1/claims/019f5c43-ba95-755c-8f28-c92bfb46013b/line-items/"
+            + "019f5c46-5788-7252-9172-b494faac8fe8/evidence/"
             + "abababab-abab-abab-abab-abababababab";
 
     mockMvc

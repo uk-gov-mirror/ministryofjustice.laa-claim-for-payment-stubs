@@ -9,7 +9,11 @@ plugins {
 group = 'uk.gov.justice.laa.claimforpayment.authx'
 
 checkstyle {
-    toolVersion = "12.1.1"
+    toolVersion = rootProject.ext.checkstyleVersion
+}
+
+dependencies {
+    checkstyle "com.puppycrawl.tools:checkstyle:${rootProject.ext.checkstyleVersion}"
 }
 
 repositories {
@@ -60,6 +64,11 @@ dependencies {
     implementation "jakarta.servlet:jakarta.servlet-api:6.1.0"
     compileOnly 'org.slf4j:slf4j-api:2.0.9'
     implementation 'org.json:json:20251224'
+    implementation 'org.springframework.security:spring-security-core:7.0.6'
+    implementation 'org.springframework.security:spring-security-oauth2-jose:7.0.6'
+    implementation 'org.springframework.security:spring-security-oauth2-resource-server:7.0.6'
+    implementation 'org.springframework.security:spring-security-test:7.0.6'
+    implementation 'org.springframework:spring-test:7.0.8'
 
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.springframework:spring-test"
@@ -71,5 +80,5 @@ dependencies {
     testImplementation "org.assertj:assertj-core:3.27.7"
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    runtimeOnly 'ch.qos.logback:logback-classic:1.4.14'
+    runtimeOnly "ch.qos.logback:logback-classic:${rootProject.ext.logbackVersion}"
 }
