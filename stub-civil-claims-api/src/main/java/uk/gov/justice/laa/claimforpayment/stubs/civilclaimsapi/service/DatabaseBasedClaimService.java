@@ -50,7 +50,7 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
    * @return the requested claim
    */
   @Override
-  public Claim getClaim(Long claimId) {
+  public Claim getClaim(UUID claimId) {
     ClaimEntity claimEntity = checkIfClaimExists(claimId);
     return claimMapper.toClaim(claimEntity);
   }
@@ -62,8 +62,9 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
    * @return the id of the created claim
    */
   @Override
-  public Long createClaim(ClaimRequestBody claimRequestBody, UUID providerUserId) {
+  public UUID createClaim(ClaimRequestBody claimRequestBody, UUID providerUserId) {
     ClaimEntity claimEntity = new ClaimEntity();
+    claimEntity.setId(claimRequestBody.getId());
     claimEntity.setUfn(claimRequestBody.getUfn());
     claimEntity.setClient(claimRequestBody.getClient());
     claimEntity.setCategory(claimRequestBody.getCategory());
@@ -73,7 +74,6 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
     claimEntity.setCounselPayment(claimRequestBody.getCounselPayment());
     claimEntity.setClaimed(claimRequestBody.getClaimed());
     claimEntity.setProviderUserId(providerUserId);
-    claimEntity.setSubmissionId(claimRequestBody.getSubmissionId());
 
     ClaimEntity createdClaimEntity = claimRepository.save(claimEntity);
     return createdClaimEntity.getId();
@@ -86,7 +86,7 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
    * @param claimRequestBody the updated claim
    */
   @Override
-  public void updateClaim(Long id, ClaimRequestBody claimRequestBody) {
+  public void updateClaim(UUID id, ClaimRequestBody claimRequestBody) {
     ClaimEntity claimEntity = checkIfClaimExists(id);
     claimEntity.setUfn(claimRequestBody.getUfn());
     claimEntity.setClient(claimRequestBody.getClient());
@@ -105,19 +105,19 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
    * @param id the id of the claim to be deleted
    */
   @Override
-  public void deleteClaim(Long id) {
+  public void deleteClaim(UUID id) {
     checkIfClaimExists(id);
     claimRepository.deleteById(id);
   }
 
-  private ClaimEntity checkIfClaimExists(Long id) throws ClaimNotFoundException {
+  private ClaimEntity checkIfClaimExists(UUID id) throws ClaimNotFoundException {
     return claimRepository
         .findById(id)
         .orElseThrow(
             () -> new ClaimNotFoundException(String.format("No claim found with id: %s", id)));
   }
 
-  private LineItemEntity checkIfLineItemExists(Long id) throws LineItemNotFoundException {
+  private LineItemEntity checkIfLineItemExists(UUID id) throws LineItemNotFoundException {
     return lineItemRepository
         .findById(id)
         .orElseThrow(
@@ -125,7 +125,7 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
                 new LineItemNotFoundException(String.format("No line item found with id: %s", id)));
   }
 
-  private ClaimEvidenceEntity checkIfEvidenceExists(Long id) throws ClaimEvidenceNotFoundException {
+  private ClaimEvidenceEntity checkIfEvidenceExists(UUID id) throws ClaimEvidenceNotFoundException {
     return claimEvidenceRepository
         .findById(id)
         .orElseThrow(
@@ -136,7 +136,7 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
 
   private void checkIfEvidenceExistsForClaim(
       ClaimEvidenceEntity evidenceEntity, ClaimEntity claimEntity) throws ClaimNotFoundException {
-    Long claimId = claimEntity.getId();
+    UUID claimId = claimEntity.getId();
     if (!evidenceEntity.getClaim().getId().equals(claimId)) {
       throw new ClaimEvidenceNotFoundException(
           String.format(
@@ -147,7 +147,7 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
 
   private void checkIfLineItemExistsForClaim(LineItemEntity lineItemEntity, ClaimEntity claimEntity)
       throws ClaimNotFoundException {
-    Long claimId = claimEntity.getId();
+    UUID claimId = claimEntity.getId();
     if (!lineItemEntity.getClaim().getId().equals(claimEntity.getId())) {
       throw new LineItemNotFoundException(
           String.format(
@@ -159,7 +159,7 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
   private void checkIfEvidenceExistsForLineItem(
       ClaimEvidenceEntity evidenceEntity, LineItemEntity lineItemEntity)
       throws ClaimNotFoundException {
-    Long evidenceId = evidenceEntity.getId();
+    UUID evidenceId = evidenceEntity.getId();
     if (!lineItemEntity.getEvidenceItems().stream()
         .map(ClaimEvidenceEntity::getId)
         .toList()
@@ -179,9 +179,10 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
   }
 
   @Override
-  public Long addLineItemToClaim(Long claimId, LineItemRequestBody lineItemRequestBody) {
+  public UUID addLineItemToClaim(UUID claimId, LineItemRequestBody lineItemRequestBody) {
     ClaimEntity claimEntity = checkIfClaimExists(claimId);
     LineItemEntity newLineItemEntity = new LineItemEntity();
+    newLineItemEntity.setId(lineItemRequestBody.getId());
     newLineItemEntity.setTitle(lineItemRequestBody.getTitle());
     newLineItemEntity.setClaim(claimEntity);
 
@@ -191,11 +192,13 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
   }
 
   @Override
-  public Long addEvidenceToClaim(Long claimId, ClaimEvidenceRequestBody claimEvidenceRequestBody) {
+  public UUID addEvidenceToClaim(UUID claimId, ClaimEvidenceRequestBody claimEvidenceRequestBody) {
     ClaimEntity claimEntity = checkIfClaimExists(claimId);
     ClaimEvidenceEntity newEvidenceEntity = new ClaimEvidenceEntity();
+    newEvidenceEntity.setId(claimEvidenceRequestBody.getId());
     newEvidenceEntity.setFileKey(claimEvidenceRequestBody.getFileKey());
     newEvidenceEntity.setFileSize(claimEvidenceRequestBody.getFileSize());
+    newEvidenceEntity.setSubmittedOn(claimEvidenceRequestBody.getSubmittedOn());
     newEvidenceEntity.setClaim(claimEntity);
     ClaimEvidenceEntity savedEvidence = claimEvidenceRepository.save(newEvidenceEntity);
     return savedEvidence.getId();
@@ -203,7 +206,7 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
 
   @Override
   @Transactional
-  public void deleteEvidenceFromClaim(Long claimId, Long evidenceId) {
+  public void deleteEvidenceFromClaim(UUID claimId, UUID evidenceId) {
     ClaimEntity claimEntity = checkIfClaimExists(claimId);
     ClaimEvidenceEntity evidenceEntity = checkIfEvidenceExists(evidenceId);
     checkIfEvidenceExistsForClaim(evidenceEntity, claimEntity);
@@ -215,7 +218,7 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
   }
 
   @Override
-  public void linkEvidenceToLineItem(Long claimId, Long lineItemId, List<Long> evidenceIds) {
+  public void linkEvidenceToLineItem(UUID claimId, UUID lineItemId, List<UUID> evidenceIds) {
     ClaimEntity claimEntity = checkIfClaimExists(claimId);
     LineItemEntity lineItemEntity = checkIfLineItemExists(lineItemId);
     checkIfLineItemExistsForClaim(lineItemEntity, claimEntity);
@@ -228,7 +231,7 @@ public class DatabaseBasedClaimService implements ClaimServiceInterface {
   }
 
   @Override
-  public void unlinkEvidenceFromLineItem(Long claimId, Long lineItemId, Long evidenceId) {
+  public void unlinkEvidenceFromLineItem(UUID claimId, UUID lineItemId, UUID evidenceId) {
     ClaimEntity claimEntity = checkIfClaimExists(claimId);
     LineItemEntity lineItemEntity = checkIfLineItemExists(lineItemId);
     ClaimEvidenceEntity evidenceEntity = checkIfEvidenceExists(evidenceId);

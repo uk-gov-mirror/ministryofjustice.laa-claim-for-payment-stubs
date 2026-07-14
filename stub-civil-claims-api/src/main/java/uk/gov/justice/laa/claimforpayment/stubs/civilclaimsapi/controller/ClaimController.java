@@ -88,7 +88,7 @@ public class ClaimController {
     }
     UUID providerUserId = UUID.fromString(id);
 
-    Long claimId = claimService.createClaim(requestBody, providerUserId);
+    UUID claimId = claimService.createClaim(requestBody, providerUserId);
     URI location = URI.create("/api/v1/claims/" + claimId);
     return ResponseEntity.created(location).body(new CreateClaimResponse(claimId));
   }
@@ -156,7 +156,7 @@ public class ClaimController {
   @GetMapping("/{claimId}")
   public ResponseEntity<Claim> getClaim(
       @Parameter(description = "ID of the claim to retrieve", required = true) @PathVariable
-          Long claimId) {
+          UUID claimId) {
 
     log.debug("Fetching claim with ID: {}", claimId);
     Claim claim = claimService.getClaim(claimId);
@@ -178,7 +178,7 @@ public class ClaimController {
       })
   @PutMapping("/{id}")
   public ResponseEntity<Void> updateClaim(
-      @Parameter(description = "ID of the claim to update", required = true) @PathVariable Long id,
+      @Parameter(description = "ID of the claim to update", required = true) @PathVariable UUID id,
       @Parameter(description = "Updated claim data", required = true) @Valid @RequestBody
           ClaimRequestBody requestBody) {
 
@@ -202,7 +202,7 @@ public class ClaimController {
   @DeleteMapping("/{claimId}")
   public ResponseEntity<Void> deleteClaim(
       @Parameter(description = "ID of the claim to delete", required = true) @PathVariable
-          Long claimId) {
+          UUID claimId) {
 
     log.debug("Deleting claim with ID: {}", claimId);
     claimService.deleteClaim(claimId);
@@ -237,13 +237,13 @@ public class ClaimController {
   @PatchMapping("/{claimId}/line-items")
   public ResponseEntity<AddLineItemResponse> addLineItemToClaim(
       @Parameter(description = "ID of the claim to update", required = true) @PathVariable
-          Long claimId,
+          UUID claimId,
       @Parameter(description = "line item data", required = true) @Valid @RequestBody
           LineItemRequestBody requestBody) {
 
     log.debug("Adding new line item to claim with ID: {}", claimId);
 
-    Long lineItemId = claimService.addLineItemToClaim(claimId, requestBody);
+    UUID lineItemId = claimService.addLineItemToClaim(claimId, requestBody);
 
     URI location = URI.create("/api/v1/claims/" + claimId + "/line-items/" + lineItemId);
     return ResponseEntity.created(location).body(new AddLineItemResponse(lineItemId));
@@ -276,13 +276,13 @@ public class ClaimController {
   @PatchMapping("/{claimId}/evidence")
   public ResponseEntity<AddClaimEvidenceResponse> addEvidenceToClaim(
       @Parameter(description = "ID of the claim to update", required = true) @PathVariable
-          Long claimId,
+          UUID claimId,
       @Parameter(description = "evidence data", required = true) @Valid @RequestBody
           ClaimEvidenceRequestBody requestBody) {
 
     log.debug("Adding new evidence to claim with ID: {}", claimId);
 
-    Long evidenceId = claimService.addEvidenceToClaim(claimId, requestBody);
+    UUID evidenceId = claimService.addEvidenceToClaim(claimId, requestBody);
 
     URI location = URI.create("/api/v1/claims/" + claimId + "/evidence/" + evidenceId);
     return ResponseEntity.created(location).body(new AddClaimEvidenceResponse(evidenceId));
@@ -298,21 +298,18 @@ public class ClaimController {
   @Operation(summary = "Delete evidence from a claim")
   @ApiResponses(
       value = {
-          @ApiResponse(responseCode = "204", description = "Evidence deleted successfully"),
-          @ApiResponse(responseCode = "404", description = "Claim not found", content = @Content)
+        @ApiResponse(responseCode = "204", description = "Evidence deleted successfully"),
+        @ApiResponse(responseCode = "404", description = "Claim not found", content = @Content)
       })
   @DeleteMapping("/{claimId}/evidence/{evidenceId}")
   public ResponseEntity<Void> deleteEvidenceFromClaim(
       @Parameter(description = "ID of the claim the evidence has been uploaded to", required = true)
-      @PathVariable Long claimId,
-      @Parameter(description = "ID of the evidence to delete", required = true)
-      @PathVariable
-      Long evidenceId) {
+          @PathVariable
+          UUID claimId,
+      @Parameter(description = "ID of the evidence to delete", required = true) @PathVariable
+          UUID evidenceId) {
 
-    log.debug(
-        "Deleting evidence with ID: {} from claim with ID: {}",
-        evidenceId,
-        claimId);
+    log.debug("Deleting evidence with ID: {} from claim with ID: {}", evidenceId, claimId);
 
     claimService.deleteEvidenceFromClaim(claimId, evidenceId);
 
@@ -339,11 +336,11 @@ public class ClaimController {
   public ResponseEntity<Void> addEvidenceToLineItem(
       @Parameter(description = "ID of the claim the line item belongs to", required = true)
           @PathVariable
-          Long claimId,
+          UUID claimId,
       @Parameter(description = "ID of the line item to update", required = true) @PathVariable
-          Long lineItemId,
+          UUID lineItemId,
       @Parameter(description = "IDs of the evidence to link", required = true) @Valid @RequestBody
-          List<Long> evidenceIds) {
+          List<UUID> evidenceIds) {
 
     log.debug(
         "Adding existing evidence with ID: {} to line item with ID: {} on claim with ID: {}",
@@ -367,19 +364,19 @@ public class ClaimController {
   @Operation(summary = "Unlink evidence from a line item in a claim")
   @ApiResponses(
       value = {
-          @ApiResponse(responseCode = "204", description = "Evidence unlinked successfully"),
-          @ApiResponse(responseCode = "404", description = "Claim not found", content = @Content)
+        @ApiResponse(responseCode = "204", description = "Evidence unlinked successfully"),
+        @ApiResponse(responseCode = "404", description = "Claim not found", content = @Content)
       })
   @DeleteMapping("/{claimId}/line-items/{lineItemId}/evidence/{evidenceId}")
   public ResponseEntity<Void> unlinkEvidenceFromLineItem(
       @Parameter(description = "ID of the claim the line item belongs to", required = true)
-          @PathVariable Long claimId,
+          @PathVariable
+          UUID claimId,
       @Parameter(description = "ID of the line item the evidence is linked to", required = true)
           @PathVariable
-          Long lineItemId,
-      @Parameter(description = "ID of the evidence to unlink", required = true)
-          @PathVariable
-          Long evidenceId) {
+          UUID lineItemId,
+      @Parameter(description = "ID of the evidence to unlink", required = true) @PathVariable
+          UUID evidenceId) {
 
     log.debug(
         "Unlinking evidence with ID: {} from line item with ID: {} on claim with ID: {}",

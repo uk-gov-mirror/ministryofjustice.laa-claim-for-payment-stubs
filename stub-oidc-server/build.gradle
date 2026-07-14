@@ -55,6 +55,8 @@ tasks.named('checkstyleMain') {
 }
 
 dependencies {
+  checkstyle "com.puppycrawl.tools:checkstyle:${rootProject.ext.checkstyleVersion}"
+
   implementation 'org.springframework.boot:spring-boot-starter-actuator'
   implementation 'org.springframework.boot:spring-boot-starter-web'
   implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -62,6 +64,7 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server' // /userinfo reads JWT
   implementation 'commons-logging:commons-logging:1.3.6'
   implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.23'
+  implementation 'org.postgresql:postgresql:42.7.12'
 
   // Overrides to resolve vulnerabilities identified by Snyk
   implementation 'ch.qos.logback:logback-core:1.5.36'
@@ -71,4 +74,6 @@ dependencies {
   testImplementation "org.springframework.security:spring-security-test"
 
   testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+  runtimeOnly "ch.qos.logback:logback-classic:${rootProject.ext.logbackVersion}"
+  runtimeOnly "ch.qos.logback:logback-core:${rootProject.ext.logbackVersion}"
 }

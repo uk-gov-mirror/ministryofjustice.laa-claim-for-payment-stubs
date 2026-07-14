@@ -1,8 +1,6 @@
 package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
@@ -11,6 +9,7 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -30,10 +29,7 @@ import org.hibernate.annotations.CreationTimestamp;
 @Table(name = "CLAIM_EVIDENCE")
 public class ClaimEvidenceEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @EqualsAndHashCode.Include
-  private Long id;
+  @Id @EqualsAndHashCode.Include private UUID id;
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "claim_id")
@@ -43,8 +39,7 @@ public class ClaimEvidenceEntity {
 
   private Long fileSize;
 
-  @CreationTimestamp
-  private Instant submittedOn;
+  @CreationTimestamp private Instant submittedOn;
 
   @ManyToMany(mappedBy = "evidenceItems")
   @Builder.Default

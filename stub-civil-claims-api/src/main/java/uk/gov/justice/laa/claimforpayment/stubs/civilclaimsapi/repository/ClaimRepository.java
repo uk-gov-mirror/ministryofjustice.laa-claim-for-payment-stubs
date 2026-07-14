@@ -9,7 +9,7 @@ import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.entity.ClaimEntit
 
 /** Repository for managing claim entities. */
 @Repository
-public interface ClaimRepository extends JpaRepository<ClaimEntity, Long> {
+public interface ClaimRepository extends JpaRepository<ClaimEntity, UUID> {
 
   Page<ClaimEntity> findByProviderUserId(UUID providerUserId, Pageable pageable);
 }

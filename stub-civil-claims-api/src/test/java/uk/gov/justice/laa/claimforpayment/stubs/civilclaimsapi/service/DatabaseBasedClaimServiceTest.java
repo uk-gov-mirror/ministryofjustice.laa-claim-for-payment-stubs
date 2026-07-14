@@ -55,9 +55,12 @@ class DatabaseBasedClaimServiceTest {
   @Test
   void shouldGetAllClaims() {
 
+    UUID firstClaimId = UUID.randomUUID();
+    UUID secondClaimId = UUID.randomUUID();
+
     ClaimEntity firstClaimEntity =
         ClaimEntity.builder()
-            .id(1L)
+            .id(firstClaimId)
             .ufn("UFN123")
             .client("John Doe")
             .category("Category A")
@@ -70,7 +73,7 @@ class DatabaseBasedClaimServiceTest {
 
     ClaimEntity secondClaimEntity =
         ClaimEntity.builder()
-            .id(2L)
+            .id(secondClaimId)
             .ufn("UFN456")
             .client("Jane Smith")
             .category("Category B")
@@ -83,7 +86,7 @@ class DatabaseBasedClaimServiceTest {
 
     Claim firstClaim =
         Claim.builder()
-            .id(1L)
+            .id(firstClaimId)
             .ufn("UFN123")
             .client("John Doe")
             .category("Category A")
@@ -96,7 +99,7 @@ class DatabaseBasedClaimServiceTest {
 
     Claim secondClaim =
         Claim.builder()
-            .id(2L)
+            .id(secondClaimId)
             .ufn("UFN456")
             .client("Jane Smith")
             .category("Category B")
@@ -120,9 +123,12 @@ class DatabaseBasedClaimServiceTest {
   void shouldGetAllClaimsForProviderUser() {
     UUID providerUserId = UUID.randomUUID();
 
+    UUID firstClaimId = UUID.randomUUID();
+    UUID secondClaimId = UUID.randomUUID();
+
     ClaimEntity firstClaimEntity =
         ClaimEntity.builder()
-            .id(1L)
+            .id(firstClaimId)
             .ufn("UFN123")
             .client("John Doe")
             .category("Category A")
@@ -136,7 +142,7 @@ class DatabaseBasedClaimServiceTest {
 
     ClaimEntity secondClaimEntity =
         ClaimEntity.builder()
-            .id(2L)
+            .id(secondClaimId)
             .ufn("UFN456")
             .client("Jane Smith")
             .category("Category B")
@@ -150,7 +156,7 @@ class DatabaseBasedClaimServiceTest {
 
     Claim firstClaim =
         Claim.builder()
-            .id(1L)
+            .id(firstClaimId)
             .ufn("UFN123")
             .client("John Doe")
             .category("Category A")
@@ -164,7 +170,7 @@ class DatabaseBasedClaimServiceTest {
 
     Claim secondClaim =
         Claim.builder()
-            .id(2L)
+            .id(secondClaimId)
             .ufn("UFN456")
             .client("Jane Smith")
             .category("Category B")
@@ -192,31 +198,45 @@ class DatabaseBasedClaimServiceTest {
   @Test
   void shouldGetClaimById() {
 
-    Long claimId = 1L;
+    UUID claimId = UUID.randomUUID();
 
-    Long claimEvidence1Id = 1L;
-    Long claimEvidence2Id = 2L;
-    Long claimEvidence3Id = 3L;
-    ClaimEvidence claimEvidence1 = ClaimEvidence.builder().id(claimEvidence1Id).fileKey("fileKey1").fileSize(1000L).build();
-    ClaimEvidence claimEvidence2 = ClaimEvidence.builder().id(claimEvidence2Id).fileKey("fileKey2").fileSize(2000L).build();
-    ClaimEvidence claimEvidence3 = ClaimEvidence.builder().id(claimEvidence3Id).fileKey("fileKey3").fileSize(3000L).build();
+    UUID claimEvidence1Id = UUID.randomUUID();
+    UUID claimEvidence2Id = UUID.randomUUID();
+    UUID claimEvidence3Id = UUID.randomUUID();
+
+    UUID lineItem1Id = UUID.randomUUID();
+    UUID lineItem2Id = UUID.randomUUID();
+
+    ClaimEvidence claimEvidence1 =
+        ClaimEvidence.builder().id(claimEvidence1Id).fileKey("fileKey1").fileSize(1000L).build();
+    ClaimEvidence claimEvidence2 =
+        ClaimEvidence.builder().id(claimEvidence2Id).fileKey("fileKey2").fileSize(2000L).build();
+    ClaimEvidence claimEvidence3 =
+        ClaimEvidence.builder().id(claimEvidence3Id).fileKey("fileKey3").fileSize(3000L).build();
     LineItem lineItem1 =
-        LineItem.builder().id(1L).evidenceItems(List.of(claimEvidence1Id, claimEvidence2Id)).build();
-    LineItem lineItem2 = LineItem.builder().id(2L).evidenceItems(List.of(claimEvidence3Id)).build();
+        LineItem.builder()
+            .id(lineItem1Id)
+            .evidenceItems(List.of(claimEvidence1Id, claimEvidence2Id))
+            .build();
+    LineItem lineItem2 =
+        LineItem.builder().id(lineItem2Id).evidenceItems(List.of(claimEvidence3Id)).build();
 
     ClaimEvidenceEntity claimEvidenceEntity1 =
-        ClaimEvidenceEntity.builder().id(1L).fileKey("fileKey1").build();
+        ClaimEvidenceEntity.builder().id(claimEvidence1Id).fileKey("fileKey1").build();
     ClaimEvidenceEntity claimEvidenceEntity2 =
-        ClaimEvidenceEntity.builder().id(2L).fileKey("fileKey2").build();
+        ClaimEvidenceEntity.builder().id(claimEvidence2Id).fileKey("fileKey2").build();
     ClaimEvidenceEntity claimEvidenceEntity3 =
-        ClaimEvidenceEntity.builder().id(3L).fileKey("fileKey3").build();
+        ClaimEvidenceEntity.builder().id(claimEvidence3Id).fileKey("fileKey3").build();
     LineItemEntity lineItemEntity1 =
         LineItemEntity.builder()
-            .id(1L)
+            .id(lineItem1Id)
             .evidenceItems(Set.of(claimEvidenceEntity1, claimEvidenceEntity2))
             .build();
     LineItemEntity lineItemEntity2 =
-        LineItemEntity.builder().id(2L).evidenceItems(Set.of(claimEvidenceEntity3)).build();
+        LineItemEntity.builder()
+            .id(lineItem2Id)
+            .evidenceItems(Set.of(claimEvidenceEntity3))
+            .build();
 
     ClaimEntity claimEntity =
         ClaimEntity.builder()
@@ -258,12 +278,14 @@ class DatabaseBasedClaimServiceTest {
     assertThat(result.getClient()).isEqualTo("John Doe");
     assertThat(result.getClaimed()).isEqualTo(new BigDecimal(1000.0));
     assertThat(result.getLineItems()).hasSize(2).contains(lineItem1, lineItem2);
-    assertThat(result.getEvidence()).hasSize(3).contains(claimEvidence1, claimEvidence2, claimEvidence3);
+    assertThat(result.getEvidence())
+        .hasSize(3)
+        .contains(claimEvidence1, claimEvidence2, claimEvidence3);
   }
 
   @Test
   void shouldNotGetClaimById_whenClaimNotFoundThenThrowsException() {
-    Long id = 5L;
+    UUID id = UUID.randomUUID();
     when(mockClaimRepository.findById(id)).thenReturn(Optional.empty());
 
     assertThrows(ClaimNotFoundException.class, () -> claimService.getClaim(id));
@@ -273,6 +295,8 @@ class DatabaseBasedClaimServiceTest {
 
   @Test
   void shouldCreateClaim() {
+
+    UUID firstClaimId = UUID.randomUUID();
 
     ClaimRequestBody claimRequestBody =
         ClaimRequestBody.builder()
@@ -288,7 +312,7 @@ class DatabaseBasedClaimServiceTest {
 
     ClaimEntity savedClaimEntity =
         ClaimEntity.builder()
-            .id(3L)
+            .id(firstClaimId)
             .ufn("UFN789")
             .client("Alice Example")
             .category("Category C")
@@ -301,14 +325,14 @@ class DatabaseBasedClaimServiceTest {
 
     when(mockClaimRepository.save(any(ClaimEntity.class))).thenReturn(savedClaimEntity);
 
-    Long result = claimService.createClaim(claimRequestBody, UUID.randomUUID());
+    UUID result = claimService.createClaim(claimRequestBody, UUID.randomUUID());
 
-    assertThat(result).isNotNull().isEqualTo(3L);
+    assertThat(result).isNotNull().isEqualTo(firstClaimId);
   }
 
   @Test
   void shouldUpdateClaim() {
-    Long id = 1L;
+    UUID id = UUID.randomUUID();
     ClaimRequestBody claimRequestBody =
         ClaimRequestBody.builder()
             .ufn("UFN999")
@@ -352,7 +376,7 @@ class DatabaseBasedClaimServiceTest {
 
   @Test
   void shouldNotUpdateClaim_whenClaimNotFoundThenThrowsException() {
-    Long id = 5L;
+    UUID id = UUID.randomUUID();
     ClaimRequestBody claimRequestBody =
         ClaimRequestBody.builder().ufn("UFN000").client("Non-existent Client").build();
 
@@ -366,7 +390,7 @@ class DatabaseBasedClaimServiceTest {
 
   @Test
   void shouldDeleteClaim() {
-    Long id = 1L;
+    UUID id = UUID.randomUUID();
     ClaimEntity claimEntity = ClaimEntity.builder().id(id).ufn("UFN123").client("John Doe").build();
 
     when(mockClaimRepository.findById(id)).thenReturn(Optional.of(claimEntity));
@@ -379,7 +403,7 @@ class DatabaseBasedClaimServiceTest {
   /** Should not delete a claim when it does not exist. */
   @Test
   void shouldNotDeleteClaim_whenClaimNotFoundThenThrowsException() {
-    Long id = 5L;
+    UUID id = UUID.randomUUID();
     when(mockClaimRepository.findById(id)).thenReturn(Optional.empty());
 
     assertThrows(ClaimNotFoundException.class, () -> claimService.deleteClaim(id));
@@ -390,12 +414,14 @@ class DatabaseBasedClaimServiceTest {
   @Test
   void shouldAddEvidenceToClaim() {
 
+    UUID claimId = UUID.randomUUID();
+
     ClaimEvidenceRequestBody claimEvidenceRequestBody =
         ClaimEvidenceRequestBody.builder().fileKey("Claim evidence file key").build();
 
     ClaimEntity savedClaimEntity =
         ClaimEntity.builder()
-            .id(3L)
+            .id(claimId)
             .ufn("UFN789")
             .client("Alice Example")
             .category("Category C")
@@ -406,23 +432,25 @@ class DatabaseBasedClaimServiceTest {
             .claimed(new BigDecimal(1500.0))
             .build();
 
-    when(mockClaimRepository.findById(3L)).thenReturn(Optional.of(savedClaimEntity));
+    when(mockClaimRepository.findById(claimId)).thenReturn(Optional.of(savedClaimEntity));
 
     when(mockClaimEvidenceRepository.save(any(ClaimEvidenceEntity.class)))
         .thenAnswer(
             invocation -> {
               ClaimEvidenceEntity claimEvidenceEntity = invocation.getArgument(0);
-              claimEvidenceEntity.setId(3L);
+              claimEvidenceEntity.setId(claimId);
               return claimEvidenceEntity;
             });
 
-    Long result = claimService.addEvidenceToClaim(3L, claimEvidenceRequestBody);
+    UUID result = claimService.addEvidenceToClaim(claimId, claimEvidenceRequestBody);
 
-    assertThat(result).isNotNull().isEqualTo(3L);
+    assertThat(result).isNotNull().isEqualTo(claimId);
   }
 
   @Test
   void shouldAddLineItemToClaim() {
+
+    UUID claimId = UUID.randomUUID();
 
     LineItemRequestBody lineItemRequestBody =
         LineItemRequestBody.builder()
@@ -432,7 +460,7 @@ class DatabaseBasedClaimServiceTest {
 
     ClaimEntity savedClaimEntity =
         ClaimEntity.builder()
-            .id(3L)
+            .id(claimId)
             .ufn("UFN789")
             .client("Alice Example")
             .category("Category C")
@@ -443,27 +471,31 @@ class DatabaseBasedClaimServiceTest {
             .claimed(new BigDecimal(1500.0))
             .build();
 
-    when(mockClaimRepository.findById(3L)).thenReturn(Optional.of(savedClaimEntity));
+    when(mockClaimRepository.findById(claimId)).thenReturn(Optional.of(savedClaimEntity));
 
     when(mockLineItemRepository.save(any(LineItemEntity.class)))
         .thenAnswer(
             invocation -> {
               LineItemEntity lineItemEntity = invocation.getArgument(0);
-              lineItemEntity.setId(3L);
+              lineItemEntity.setId(claimId);
               return lineItemEntity;
             });
 
-    Long result = claimService.addLineItemToClaim(3L, lineItemRequestBody);
+    UUID result = claimService.addLineItemToClaim(claimId, lineItemRequestBody);
 
-    assertThat(result).isNotNull().isEqualTo(3L);
+    assertThat(result).isNotNull().isEqualTo(claimId);
   }
 
   @Test
   void shouldDeleteEvidenceFromClaim() {
 
+    UUID claimId = UUID.randomUUID();
+    UUID lineItemId = UUID.randomUUID();
+    UUID evidenceId = UUID.randomUUID();
+
     ClaimEntity claimEntity =
         ClaimEntity.builder()
-            .id(1L)
+            .id(claimId)
             .ufn("UFN123")
             .client("John Doe")
             .category("Category A")
@@ -474,10 +506,11 @@ class DatabaseBasedClaimServiceTest {
             .claimed(new BigDecimal(1000.0))
             .build();
 
-    LineItemEntity lineItemEntity = LineItemEntity.builder().id(1L).claim(claimEntity).build();
+    LineItemEntity lineItemEntity =
+        LineItemEntity.builder().id(lineItemId).claim(claimEntity).build();
 
     ClaimEvidenceEntity claimEvidenceEntity =
-        ClaimEvidenceEntity.builder().id(1L).claim(claimEntity).build();
+        ClaimEvidenceEntity.builder().id(evidenceId).claim(claimEntity).build();
 
     Set<ClaimEvidenceEntity> claimEvidenceEntities = new HashSet<>();
     claimEvidenceEntities.add(claimEvidenceEntity);
@@ -487,10 +520,11 @@ class DatabaseBasedClaimServiceTest {
     lineItemEntities.add(lineItemEntity);
     claimEntity.setLineItems(lineItemEntities);
 
-    when(mockClaimRepository.findById(1L)).thenReturn(Optional.of(claimEntity));
-    when(mockClaimEvidenceRepository.findById(1L)).thenReturn(Optional.of(claimEvidenceEntity));
+    when(mockClaimRepository.findById(claimId)).thenReturn(Optional.of(claimEntity));
+    when(mockClaimEvidenceRepository.findById(evidenceId))
+        .thenReturn(Optional.of(claimEvidenceEntity));
 
-    claimService.deleteEvidenceFromClaim(1L, 1L);
+    claimService.deleteEvidenceFromClaim(claimId, evidenceId);
 
     assertThat(claimEntity.getEvidence()).hasSize(0);
     assertThat(lineItemEntity.getEvidenceItems()).hasSize(0);
@@ -499,18 +533,24 @@ class DatabaseBasedClaimServiceTest {
   @Test
   void shouldFailToDeleteEvidenceFromClaimWhenClaimNotFound() {
 
-    when(mockClaimRepository.findById(1L)).thenReturn(Optional.empty());
+    UUID claimId = UUID.randomUUID();
+
+    when(mockClaimRepository.findById(claimId)).thenReturn(Optional.empty());
 
     assertThrows(
-        ClaimNotFoundException.class, () -> claimService.deleteEvidenceFromClaim(1L, 1L));
+        ClaimNotFoundException.class,
+        () -> claimService.deleteEvidenceFromClaim(claimId, UUID.randomUUID()));
   }
 
   @Test
   void shouldFailToDeleteEvidenceFromClaimWhenEvidenceNotFound() {
 
+    UUID claimId = UUID.randomUUID();
+    UUID evidenceId = UUID.randomUUID();
+
     ClaimEntity claimEntity =
         ClaimEntity.builder()
-            .id(1L)
+            .id(claimId)
             .ufn("UFN123")
             .client("John Doe")
             .category("Category A")
@@ -521,19 +561,25 @@ class DatabaseBasedClaimServiceTest {
             .claimed(new BigDecimal(1000.0))
             .build();
 
-    when(mockClaimRepository.findById(1L)).thenReturn(Optional.of(claimEntity));
-    when(mockClaimEvidenceRepository.findById(1L)).thenReturn(Optional.empty());
+    when(mockClaimRepository.findById(claimId)).thenReturn(Optional.of(claimEntity));
+    when(mockClaimEvidenceRepository.findById(evidenceId)).thenReturn(Optional.empty());
 
     assertThrows(
-        ClaimEvidenceNotFoundException.class, () -> claimService.deleteEvidenceFromClaim(1L, 1L));
+        ClaimEvidenceNotFoundException.class,
+        () -> claimService.deleteEvidenceFromClaim(claimId, evidenceId));
   }
 
   @Test
   void shouldFailToDeleteEvidenceFromClaimWhenEvidenceIsNotAlreadyUploadedToClaim() {
 
+    UUID claimId1 = UUID.randomUUID();
+    UUID claimId2 = UUID.randomUUID();
+    UUID lineItemId = UUID.randomUUID();
+    UUID evidenceId = UUID.randomUUID();
+
     ClaimEntity claimEntity1 =
         ClaimEntity.builder()
-            .id(1L)
+            .id(claimId1)
             .ufn("UFN123")
             .client("John Doe")
             .category("Category A")
@@ -543,10 +589,12 @@ class DatabaseBasedClaimServiceTest {
             .counselPayment("Paid and Reconciled")
             .claimed(new BigDecimal(1000.0))
             .build();
+
+    when(mockClaimRepository.findById(claimId1)).thenReturn(Optional.of(claimEntity1));
 
     ClaimEntity claimEntity2 =
         ClaimEntity.builder()
-            .id(2L)
+            .id(claimId2)
             .ufn("UFN123")
             .client("John Doe")
             .category("Category A")
@@ -557,10 +605,11 @@ class DatabaseBasedClaimServiceTest {
             .claimed(new BigDecimal(1000.0))
             .build();
 
-    LineItemEntity lineItemEntity = LineItemEntity.builder().id(1L).claim(claimEntity2).build();
+    LineItemEntity lineItemEntity =
+        LineItemEntity.builder().id(lineItemId).claim(claimEntity2).build();
 
     ClaimEvidenceEntity claimEvidenceEntity =
-        ClaimEvidenceEntity.builder().id(1L).claim(claimEntity2).build();
+        ClaimEvidenceEntity.builder().id(evidenceId).claim(claimEntity2).build();
 
     Set<ClaimEvidenceEntity> claimEvidenceEntities = new HashSet<>();
     claimEvidenceEntities.add(claimEvidenceEntity);
@@ -570,19 +619,24 @@ class DatabaseBasedClaimServiceTest {
     lineItemEntities.add(lineItemEntity);
     claimEntity2.setLineItems(lineItemEntities);
 
-    when(mockClaimRepository.findById(1L)).thenReturn(Optional.of(claimEntity1));
-    when(mockClaimEvidenceRepository.findById(1L)).thenReturn(Optional.of(claimEvidenceEntity));
+    when(mockClaimEvidenceRepository.findById(evidenceId))
+        .thenReturn(Optional.of(claimEvidenceEntity));
 
     assertThrows(
-        ClaimEvidenceNotFoundException.class, () -> claimService.deleteEvidenceFromClaim(1L, 1L));
+        ClaimEvidenceNotFoundException.class,
+        () -> claimService.deleteEvidenceFromClaim(claimId1, evidenceId));
   }
 
   @Test
   void shouldLinkEvidenceToLineItem() {
 
+    UUID claimId1 = UUID.randomUUID();
+    UUID lineItemId = UUID.randomUUID();
+    UUID evidenceId = UUID.randomUUID();
+
     ClaimEntity claimEntity =
         ClaimEntity.builder()
-            .id(1L)
+            .id(claimId1)
             .ufn("UFN123")
             .client("John Doe")
             .category("Category A")
@@ -593,16 +647,18 @@ class DatabaseBasedClaimServiceTest {
             .claimed(new BigDecimal(1000.0))
             .build();
 
-    LineItemEntity lineItemEntity = LineItemEntity.builder().id(1L).claim(claimEntity).build();
+    LineItemEntity lineItemEntity =
+        LineItemEntity.builder().id(lineItemId).claim(claimEntity).build();
 
     ClaimEvidenceEntity claimEvidenceEntity =
-        ClaimEvidenceEntity.builder().id(1L).claim(claimEntity).build();
+        ClaimEvidenceEntity.builder().id(evidenceId).claim(claimEntity).build();
 
-    when(mockClaimRepository.findById(1L)).thenReturn(Optional.of(claimEntity));
-    when(mockLineItemRepository.findById(1L)).thenReturn(Optional.of(lineItemEntity));
-    when(mockClaimEvidenceRepository.findById(1L)).thenReturn(Optional.of(claimEvidenceEntity));
+    when(mockClaimRepository.findById(claimId1)).thenReturn(Optional.of(claimEntity));
+    when(mockLineItemRepository.findById(lineItemId)).thenReturn(Optional.of(lineItemEntity));
+    when(mockClaimEvidenceRepository.findById(evidenceId))
+        .thenReturn(Optional.of(claimEvidenceEntity));
 
-    claimService.linkEvidenceToLineItem(1L, 1L, List.of(1L));
+    claimService.linkEvidenceToLineItem(claimId1, lineItemId, List.of(evidenceId));
 
     assertThat(lineItemEntity.getEvidenceItems()).contains(claimEvidenceEntity);
   }
@@ -610,9 +666,14 @@ class DatabaseBasedClaimServiceTest {
   @Test
   void shouldFailToLinkEvidenceToLineItemWhenEvidenceIsNotAlreadyUploadedToClaim() {
 
+    UUID claimId1 = UUID.randomUUID();
+    UUID claimId2 = UUID.randomUUID();
+    UUID lineItemId = UUID.randomUUID();
+    UUID evidenceId = UUID.randomUUID();
+
     ClaimEntity claimEntity1 =
         ClaimEntity.builder()
-            .id(1L)
+            .id(claimId1)
             .ufn("UFN123")
             .client("John Doe")
             .category("Category A")
@@ -625,7 +686,7 @@ class DatabaseBasedClaimServiceTest {
 
     ClaimEntity claimEntity2 =
         ClaimEntity.builder()
-            .id(2L)
+            .id(claimId2)
             .ufn("UFN123")
             .client("John Doe")
             .category("Category A")
@@ -636,48 +697,60 @@ class DatabaseBasedClaimServiceTest {
             .claimed(new BigDecimal(1000.0))
             .build();
 
-    LineItemEntity lineItemEntity = LineItemEntity.builder().id(1L).claim(claimEntity1).build();
+    LineItemEntity lineItemEntity =
+        LineItemEntity.builder().id(lineItemId).claim(claimEntity1).build();
 
     ClaimEvidenceEntity claimEvidenceEntity =
-        ClaimEvidenceEntity.builder().id(1L).claim(claimEntity2).build();
+        ClaimEvidenceEntity.builder().id(evidenceId).claim(claimEntity2).build();
 
-    when(mockClaimRepository.findById(1L)).thenReturn(Optional.of(claimEntity1));
-    when(mockLineItemRepository.findById(1L)).thenReturn(Optional.of(lineItemEntity));
-    when(mockClaimEvidenceRepository.findById(1L)).thenReturn(Optional.of(claimEvidenceEntity));
+    when(mockClaimRepository.findById(claimId1)).thenReturn(Optional.of(claimEntity1));
+    when(mockLineItemRepository.findById(lineItemId)).thenReturn(Optional.of(lineItemEntity));
+    when(mockClaimEvidenceRepository.findById(evidenceId))
+        .thenReturn(Optional.of(claimEvidenceEntity));
 
-    assertThrows(ClaimEvidenceNotFoundException.class, () -> claimService.linkEvidenceToLineItem(1L, 1L, List.of(1L)));
+    assertThrows(
+        ClaimEvidenceNotFoundException.class,
+        () -> claimService.linkEvidenceToLineItem(claimId1, lineItemId, List.of(evidenceId)));
   }
 
   @Test
   void shouldLinkMultipleEvidenceToLineItem() {
 
-    ClaimEntity claimEntity =
-      ClaimEntity.builder()
-        .id(1L)
-        .ufn("UFN123")
-        .client("John Doe")
-        .category("Category A")
-        .concluded(LocalDate.of(2025, 7, 1))
-        .feeType("Fixed")
-        .escaped(false)
-        .counselPayment("Paid and Reconciled")
-        .claimed(new BigDecimal(1000.0))
-        .build();
+    UUID claimId1 = UUID.randomUUID();
+    UUID lineItemId = UUID.randomUUID();
+    UUID evidenceId = UUID.randomUUID();
+    UUID evidenceId2 = UUID.randomUUID();
 
-    LineItemEntity lineItemEntity = LineItemEntity.builder().id(1L).claim(claimEntity).build();
+    ClaimEntity claimEntity =
+        ClaimEntity.builder()
+            .id(claimId1)
+            .ufn("UFN123")
+            .client("John Doe")
+            .category("Category A")
+            .concluded(LocalDate.of(2025, 7, 1))
+            .feeType("Fixed")
+            .escaped(false)
+            .counselPayment("Paid and Reconciled")
+            .claimed(new BigDecimal(1000.0))
+            .build();
+
+    LineItemEntity lineItemEntity =
+        LineItemEntity.builder().id(lineItemId).claim(claimEntity).build();
 
     ClaimEvidenceEntity claimEvidenceEntity1 =
-      ClaimEvidenceEntity.builder().id(1L).claim(claimEntity).build();
+        ClaimEvidenceEntity.builder().id(evidenceId).claim(claimEntity).build();
 
     ClaimEvidenceEntity claimEvidenceEntity2 =
-      ClaimEvidenceEntity.builder().id(2L).claim(claimEntity).build();
+        ClaimEvidenceEntity.builder().id(evidenceId2).claim(claimEntity).build();
 
-    when(mockClaimRepository.findById(1L)).thenReturn(Optional.of(claimEntity));
-    when(mockLineItemRepository.findById(1L)).thenReturn(Optional.of(lineItemEntity));
-    when(mockClaimEvidenceRepository.findById(1L)).thenReturn(Optional.of(claimEvidenceEntity1));
-    when(mockClaimEvidenceRepository.findById(2L)).thenReturn(Optional.of(claimEvidenceEntity2));
+    when(mockClaimRepository.findById(claimId1)).thenReturn(Optional.of(claimEntity));
+    when(mockLineItemRepository.findById(lineItemId)).thenReturn(Optional.of(lineItemEntity));
+    when(mockClaimEvidenceRepository.findById(evidenceId))
+        .thenReturn(Optional.of(claimEvidenceEntity1));
+    when(mockClaimEvidenceRepository.findById(evidenceId2))
+        .thenReturn(Optional.of(claimEvidenceEntity2));
 
-    claimService.linkEvidenceToLineItem(1L, 1L, List.of(1L, 2L));
+    claimService.linkEvidenceToLineItem(claimId1, lineItemId, List.of(evidenceId, evidenceId2));
 
     assertThat(lineItemEntity.getEvidenceItems()).contains(claimEvidenceEntity1);
   }
@@ -685,9 +758,13 @@ class DatabaseBasedClaimServiceTest {
   @Test
   void shouldUnlinkEvidenceFromLineItem() {
 
+    UUID claimId1 = UUID.randomUUID();
+    UUID lineItemId = UUID.randomUUID();
+    UUID evidenceId = UUID.randomUUID();
+
     ClaimEntity claimEntity =
         ClaimEntity.builder()
-            .id(1L)
+            .id(claimId1)
             .ufn("UFN123")
             .client("John Doe")
             .category("Category A")
@@ -699,18 +776,24 @@ class DatabaseBasedClaimServiceTest {
             .build();
 
     ClaimEvidenceEntity claimEvidenceEntity =
-        ClaimEvidenceEntity.builder().id(1L).claim(claimEntity).build();
+        ClaimEvidenceEntity.builder().id(evidenceId).claim(claimEntity).build();
 
     Set<ClaimEvidenceEntity> claimEvidenceEntities = new HashSet<>();
     claimEvidenceEntities.add(claimEvidenceEntity);
 
-    LineItemEntity lineItemEntity = LineItemEntity.builder().id(1L).claim(claimEntity).evidenceItems(claimEvidenceEntities).build();
+    LineItemEntity lineItemEntity =
+        LineItemEntity.builder()
+            .id(lineItemId)
+            .claim(claimEntity)
+            .evidenceItems(claimEvidenceEntities)
+            .build();
 
-    when(mockClaimRepository.findById(1L)).thenReturn(Optional.of(claimEntity));
-    when(mockLineItemRepository.findById(1L)).thenReturn(Optional.of(lineItemEntity));
-    when(mockClaimEvidenceRepository.findById(1L)).thenReturn(Optional.of(claimEvidenceEntity));
+    when(mockClaimRepository.findById(claimId1)).thenReturn(Optional.of(claimEntity));
+    when(mockLineItemRepository.findById(lineItemId)).thenReturn(Optional.of(lineItemEntity));
+    when(mockClaimEvidenceRepository.findById(evidenceId))
+        .thenReturn(Optional.of(claimEvidenceEntity));
 
-    claimService.unlinkEvidenceFromLineItem(1L, 1L, 1L);
+    claimService.unlinkEvidenceFromLineItem(claimId1, lineItemId, evidenceId);
 
     assertThat(lineItemEntity.getEvidenceItems()).hasSize(0);
   }
@@ -718,17 +801,27 @@ class DatabaseBasedClaimServiceTest {
   @Test
   void shouldFailToUnlinkEvidenceFromLineItemWhenClaimNotFound() {
 
-    when(mockClaimRepository.findById(1L)).thenReturn(Optional.empty());
+    UUID claimId1 = UUID.randomUUID();
+    UUID lineItemId = UUID.randomUUID();
+    UUID evidenceId = UUID.randomUUID();
 
-    assertThrows(ClaimNotFoundException.class, () -> claimService.unlinkEvidenceFromLineItem(1L, 1L, 1L));
+    when(mockClaimRepository.findById(claimId1)).thenReturn(Optional.empty());
+
+    assertThrows(
+        ClaimNotFoundException.class,
+        () -> claimService.unlinkEvidenceFromLineItem(claimId1, lineItemId, evidenceId));
   }
 
   @Test
   void shouldFailToUnlinkEvidenceFromLineItemWhenLineItemNotFound() {
 
+    UUID claimId1 = UUID.randomUUID();
+    UUID lineItemId = UUID.randomUUID();
+    UUID evidenceId = UUID.randomUUID();
+
     ClaimEntity claimEntity =
         ClaimEntity.builder()
-            .id(1L)
+            .id(claimId1)
             .ufn("UFN123")
             .client("John Doe")
             .category("Category A")
@@ -739,19 +832,24 @@ class DatabaseBasedClaimServiceTest {
             .claimed(new BigDecimal(1000.0))
             .build();
 
-    when(mockClaimRepository.findById(1L)).thenReturn(Optional.of(claimEntity));
-    when(mockLineItemRepository.findById(1L)).thenReturn(Optional.empty());
+    when(mockClaimRepository.findById(claimId1)).thenReturn(Optional.of(claimEntity));
+    when(mockLineItemRepository.findById(lineItemId)).thenReturn(Optional.empty());
 
     assertThrows(
-        LineItemNotFoundException.class, () -> claimService.unlinkEvidenceFromLineItem(1L, 1L, 1L));
+        LineItemNotFoundException.class,
+        () -> claimService.unlinkEvidenceFromLineItem(claimId1, lineItemId, evidenceId));
   }
 
   @Test
   void shouldFailToUnlinkEvidenceFromLineItemWhenEvidenceNotFound() {
 
+    UUID claimId1 = UUID.randomUUID();
+    UUID lineItemId = UUID.randomUUID();
+    UUID evidenceId = UUID.randomUUID();
+
     ClaimEntity claimEntity =
         ClaimEntity.builder()
-            .id(1L)
+            .id(claimId1)
             .ufn("UFN123")
             .client("John Doe")
             .category("Category A")
@@ -762,22 +860,29 @@ class DatabaseBasedClaimServiceTest {
             .claimed(new BigDecimal(1000.0))
             .build();
 
-    LineItemEntity lineItemEntity = LineItemEntity.builder().id(1L).claim(claimEntity).build();
+    LineItemEntity lineItemEntity =
+        LineItemEntity.builder().id(lineItemId).claim(claimEntity).build();
 
-    when(mockClaimRepository.findById(1L)).thenReturn(Optional.of(claimEntity));
-    when(mockLineItemRepository.findById(1L)).thenReturn(Optional.of(lineItemEntity));
-    when(mockClaimEvidenceRepository.findById(1L)).thenReturn(Optional.empty());
+    when(mockClaimRepository.findById(claimId1)).thenReturn(Optional.of(claimEntity));
+    when(mockLineItemRepository.findById(lineItemId)).thenReturn(Optional.of(lineItemEntity));
+    when(mockClaimEvidenceRepository.findById(evidenceId)).thenReturn(Optional.empty());
 
     assertThrows(
-        ClaimEvidenceNotFoundException.class, () -> claimService.unlinkEvidenceFromLineItem(1L, 1L, 1L));
+        ClaimEvidenceNotFoundException.class,
+        () -> claimService.unlinkEvidenceFromLineItem(claimId1, lineItemId, evidenceId));
   }
 
   @Test
   void shouldFailToUnlinkEvidenceFromLineItemWhenLineItemDoesNotBelongToClaim() {
 
+    UUID claimId1 = UUID.randomUUID();
+    UUID claimId2 = UUID.randomUUID();
+    UUID lineItemId = UUID.randomUUID();
+    UUID evidenceId = UUID.randomUUID();
+
     ClaimEntity claimEntity1 =
         ClaimEntity.builder()
-            .id(1L)
+            .id(claimId1)
             .ufn("UFN123")
             .client("John Doe")
             .category("Category A")
@@ -790,7 +895,7 @@ class DatabaseBasedClaimServiceTest {
 
     ClaimEntity claimEntity2 =
         ClaimEntity.builder()
-            .id(2L)
+            .id(claimId2)
             .ufn("UFN123")
             .client("John Doe")
             .category("Category A")
@@ -802,27 +907,38 @@ class DatabaseBasedClaimServiceTest {
             .build();
 
     ClaimEvidenceEntity claimEvidenceEntity =
-        ClaimEvidenceEntity.builder().id(1L).claim(claimEntity1).build();
+        ClaimEvidenceEntity.builder().id(evidenceId).claim(claimEntity1).build();
 
     Set<ClaimEvidenceEntity> claimEvidenceEntities = new HashSet<>();
     claimEvidenceEntities.add(claimEvidenceEntity);
 
-    LineItemEntity lineItemEntity = LineItemEntity.builder().id(1L).claim(claimEntity2).evidenceItems(claimEvidenceEntities).build();
+    LineItemEntity lineItemEntity =
+        LineItemEntity.builder()
+            .id(lineItemId)
+            .claim(claimEntity2)
+            .evidenceItems(claimEvidenceEntities)
+            .build();
 
-    when(mockClaimRepository.findById(1L)).thenReturn(Optional.of(claimEntity1));
-    when(mockLineItemRepository.findById(1L)).thenReturn(Optional.of(lineItemEntity));
-    when(mockClaimEvidenceRepository.findById(1L)).thenReturn(Optional.of(claimEvidenceEntity));
+    when(mockClaimRepository.findById(claimId1)).thenReturn(Optional.of(claimEntity1));
+    when(mockLineItemRepository.findById(lineItemId)).thenReturn(Optional.of(lineItemEntity));
+    when(mockClaimEvidenceRepository.findById(evidenceId))
+        .thenReturn(Optional.of(claimEvidenceEntity));
 
     assertThrows(
-        LineItemNotFoundException.class, () -> claimService.unlinkEvidenceFromLineItem(1L, 1L, 1L));
+        LineItemNotFoundException.class,
+        () -> claimService.unlinkEvidenceFromLineItem(claimId1, lineItemId, evidenceId));
   }
 
   @Test
   void shouldFailToUnlinkEvidenceFromLineItemWhenEvidenceDoesNotBelongToLineItem() {
 
+    UUID claimId1 = UUID.randomUUID();
+    UUID lineItemId = UUID.randomUUID();
+    UUID evidenceId = UUID.randomUUID();
+
     ClaimEntity claimEntity =
         ClaimEntity.builder()
-            .id(1L)
+            .id(claimId1)
             .ufn("UFN123")
             .client("John Doe")
             .category("Category A")
@@ -834,24 +950,32 @@ class DatabaseBasedClaimServiceTest {
             .build();
 
     ClaimEvidenceEntity claimEvidenceEntity =
-        ClaimEvidenceEntity.builder().id(1L).claim(claimEntity).build();
+        ClaimEvidenceEntity.builder().id(evidenceId).claim(claimEntity).build();
 
-    LineItemEntity lineItemEntity = LineItemEntity.builder().id(1L).claim(claimEntity).build();
+    LineItemEntity lineItemEntity =
+        LineItemEntity.builder().id(lineItemId).claim(claimEntity).build();
 
-    when(mockClaimRepository.findById(1L)).thenReturn(Optional.of(claimEntity));
-    when(mockLineItemRepository.findById(1L)).thenReturn(Optional.of(lineItemEntity));
-    when(mockClaimEvidenceRepository.findById(1L)).thenReturn(Optional.of(claimEvidenceEntity));
+    when(mockClaimRepository.findById(claimId1)).thenReturn(Optional.of(claimEntity));
+    when(mockLineItemRepository.findById(lineItemId)).thenReturn(Optional.of(lineItemEntity));
+    when(mockClaimEvidenceRepository.findById(evidenceId))
+        .thenReturn(Optional.of(claimEvidenceEntity));
 
     assertThrows(
-        ClaimEvidenceNotFoundException.class, () -> claimService.unlinkEvidenceFromLineItem(1L, 1L, 1L));
+        ClaimEvidenceNotFoundException.class,
+        () -> claimService.unlinkEvidenceFromLineItem(claimId1, lineItemId, evidenceId));
   }
 
   @Test
   void shouldFailToUnlinkEvidenceFromLineItemWhenEvidenceDoesNotBelongToClaim() {
 
+    UUID claimId1 = UUID.randomUUID();
+    UUID claimId2 = UUID.randomUUID();
+    UUID lineItemId = UUID.randomUUID();
+    UUID evidenceId = UUID.randomUUID();
+
     ClaimEntity claimEntity1 =
         ClaimEntity.builder()
-            .id(1L)
+            .id(claimId1)
             .ufn("UFN123")
             .client("John Doe")
             .category("Category A")
@@ -864,7 +988,7 @@ class DatabaseBasedClaimServiceTest {
 
     ClaimEntity claimEntity2 =
         ClaimEntity.builder()
-            .id(2L)
+            .id(claimId2)
             .ufn("UFN123")
             .client("John Doe")
             .category("Category A")
@@ -876,18 +1000,25 @@ class DatabaseBasedClaimServiceTest {
             .build();
 
     ClaimEvidenceEntity claimEvidenceEntity =
-        ClaimEvidenceEntity.builder().id(1L).claim(claimEntity2).build();
+        ClaimEvidenceEntity.builder().id(evidenceId).claim(claimEntity2).build();
 
     Set<ClaimEvidenceEntity> claimEvidenceEntities = new HashSet<>();
     claimEvidenceEntities.add(claimEvidenceEntity);
 
-    LineItemEntity lineItemEntity = LineItemEntity.builder().id(1L).claim(claimEntity1).evidenceItems(claimEvidenceEntities).build();
+    LineItemEntity lineItemEntity =
+        LineItemEntity.builder()
+            .id(lineItemId)
+            .claim(claimEntity1)
+            .evidenceItems(claimEvidenceEntities)
+            .build();
 
-    when(mockClaimRepository.findById(1L)).thenReturn(Optional.of(claimEntity1));
-    when(mockLineItemRepository.findById(1L)).thenReturn(Optional.of(lineItemEntity));
-    when(mockClaimEvidenceRepository.findById(1L)).thenReturn(Optional.of(claimEvidenceEntity));
+    when(mockClaimRepository.findById(claimId1)).thenReturn(Optional.of(claimEntity1));
+    when(mockLineItemRepository.findById(lineItemId)).thenReturn(Optional.of(lineItemEntity));
+    when(mockClaimEvidenceRepository.findById(evidenceId))
+        .thenReturn(Optional.of(claimEvidenceEntity));
 
     assertThrows(
-        ClaimEvidenceNotFoundException.class, () -> claimService.unlinkEvidenceFromLineItem(1L, 1L, 1L));
+        ClaimEvidenceNotFoundException.class,
+        () -> claimService.unlinkEvidenceFromLineItem(claimId1, lineItemId, evidenceId));
   }
 }

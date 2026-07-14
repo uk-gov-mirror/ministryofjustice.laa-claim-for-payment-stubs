@@ -37,6 +37,7 @@ jacocoTestCoverageVerification {
 }
 
 dependencies {
+    checkstyle "com.puppycrawl.tools:checkstyle:${rootProject.ext.checkstyleVersion}"
 
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -58,6 +59,8 @@ dependencies {
 
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql:42.7.12'
+    runtimeOnly "ch.qos.logback:logback-classic:${rootProject.ext.logbackVersion}"
+    runtimeOnly "ch.qos.logback:logback-core:${rootProject.ext.logbackVersion}"
     implementation "org.flywaydb:flyway-core"
     implementation "org.flywaydb:flyway-database-postgresql"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"

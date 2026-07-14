@@ -1,10 +1,50 @@
+ext {
+    logbackVersion = '1.5.36'
+    checkstyleVersion = '11.0.0'
+}
+
 subprojects {
     group = 'uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.stubs'
+
+    configurations.configureEach {
+        exclude group: 'ch.qos.logback', module: 'logback-classic'
+        exclude group: 'ch.qos.logback', module: 'logback-core'
+
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == 'ch.qos.logback' && details.requested.name in ['logback-classic', 'logback-core']) {
+                details.useVersion rootProject.ext.logbackVersion
+                details.because('Align Logback across subprojects to avoid vulnerable versions')
+            }
+            if (details.requested.group == 'com.puppycrawl.tools' && details.requested.name == 'checkstyle') {
+                details.useVersion rootProject.ext.checkstyleVersion
+                details.because('Align Checkstyle across subprojects to avoid vulnerable versions')
+            }
+        }
+    }
+
+    configurations.configureEach {
+        resolutionStrategy.force(
+            "ch.qos.logback:logback-classic:${rootProject.ext.logbackVersion}",
+            "ch.qos.logback:logback-core:${rootProject.ext.logbackVersion}",
+            "com.puppycrawl.tools:checkstyle:${rootProject.ext.checkstyleVersion}"
+        )
+    }
+
+    configurations.matching { it.name == 'checkstyle' }.configureEach {
+        resolutionStrategy.force("com.puppycrawl.tools:checkstyle:${rootProject.ext.checkstyleVersion}")
+    }
+
     plugins.withType(JavaPlugin) {
+        dependencies {
+            runtimeOnly("ch.qos.logback:logback-classic:${rootProject.ext.logbackVersion}")
+            runtimeOnly("ch.qos.logback:logback-core:${rootProject.ext.logbackVersion}")
+        }
+
         java {
             toolchain {
                 languageVersion = JavaLanguageVersion.of(25)
             }
         }
     }
+
 }

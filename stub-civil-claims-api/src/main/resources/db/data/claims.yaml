@@ -1,5 +1,6 @@
 claims:
-  - ufn: "121120/467"
+  - id: "019f5c43-7d3b-7a50-8f2e-442533c936d0"
+    ufn: "121120/467"
     client: "Giordano"
     category: "Family"
     concluded: "2025-03-18"
@@ -7,10 +8,10 @@ claims:
     escaped: false
     counselPayment: "Paid and Reconciled"
     claimed: 234.56
-    submissionId: "550e8400-e29b-41d4-a716-446655440000"
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - ufn: "100323/098"
+  - id: "019f5c43-ba95-755c-8f28-c92bfb46013b"
+    ufn: "100323/098"
     client: "Amoto"
     category: "Immigration and Asylum"
     concluded: "2025-03-14"
@@ -18,10 +19,10 @@ claims:
     escaped: false
     counselPayment: "Paid and Reconciled"
     claimed: 56.00
-    submissionId: "550e8400-e29b-41d4-a716-446655440000"
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - ufn: "121120/678"
+  - id: "019f5c43-d9f0-732e-88b2-1ca29c6c41de"
+    ufn: "121120/678"
     client: "DeMello"
     category: "Immigration and Asylum"
     concluded: "2025-03-13"
@@ -29,10 +30,10 @@ claims:
     escaped: true
     counselPayment: "Paid and Reconciled"
     claimed: 456.01
-    submissionId: "550e8400-e29b-41d4-a716-446655440000"
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - ufn: "121120/678"
+  - id: "019f5c43-f5f9-7dca-828d-6191287beff5"
+    ufn: "121120/678"
     client: "Omar"
     category: "Immigration and Asylum"
     concluded: "2025-03-12"
@@ -40,10 +41,10 @@ claims:
     escaped: false
     counselPayment: "Paid and Reconciled"
     claimed: 456.01
-    submissionId: "550e8400-e29b-41d4-a716-446655440000"
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - ufn: "121120/678"
+  - id: "019f5c44-14bb-7553-ab4c-99b46fb62ffa"
+    ufn: "121120/678"
     client: "Abdelazim"
     category: "Family"
     concluded: "2025-03-11"
@@ -51,10 +52,10 @@ claims:
     escaped: true
     counselPayment: "Paid and Reconciled"
     claimed: 234.56
-    submissionId: "550e8400-e29b-41d4-a716-446655440000"
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - ufn: "121120/765"
+  - id: "019f5c44-330e-7957-bcc2-319135a4d8bc"
+    ufn: "121120/765"
     client: "Simpson"
     category: "Family"
     concluded: "2025-03-07"
@@ -62,10 +63,10 @@ claims:
     escaped: false
     counselPayment: "Paid and Reconciled"
     claimed: 234.56
-    submissionId: "550e8400-e29b-41d4-a716-446655440000"
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - ufn: "121120/678"
+  - id: "019f5c44-4ff7-7458-912e-a4a9cacaafa9"
+    ufn: "121120/678"
     client: "Gruffalo"
     category: "Immigration and Asylum"
     concluded: "2025-03-02"
@@ -73,20 +74,20 @@ claims:
     escaped: false
     counselPayment: "Paid and Reconciled"
     claimed: 456.01
-    submissionId: "550e8400-e29b-41d4-a716-446655440000"
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - ufn: "121120/678"
+  - id: "019f5c44-669a-7ecf-8c94-abe3e56ddc1f"
+    ufn: "121120/678"
     client: "O'Connor"
     category: "Family"
     concluded: "2025-03-01"
     feeType: "Fixed"
     escaped: true
     claimed: 234.56
-    submissionId: "550e8400-e29b-41d4-a716-446655440000"
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - ufn: "100323/567"
+  - id: "019f5c44-7f43-7178-a3b7-0d51052c89e5"
+    ufn: "100323/567"
     client: "Tony"
     category: "Immigration and Asylum"
     concluded: "2025-03-01"
@@ -94,10 +95,10 @@ claims:
     escaped: true
     counselPayment: "Paid and Reconciled"
     claimed: 56.00
-    submissionId: "550e8400-e29b-41d4-a716-446655440000"
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - ufn: "100323/234"
+  - id: "019f5c44-98e9-7144-acb5-4d8af9050d93"
+    ufn: "100323/234"
     client: "Bianchi"
     category: "Immigration and Asylum"
     concluded: "2025-03-01"
@@ -105,10 +106,10 @@ claims:
     escaped: false
     counselPayment: "Paid and Reconciled"
     claimed: 56.00
-    submissionId: "550e8400-e29b-41d4-a716-446655440000"
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - ufn: "100323/765"
+  - id: "019f5c44-b49f-70a3-b6b1-9a810dc7a323"
+    ufn: "100323/765"
     client: "McKenna"
     category: "Immigration and Asylum"
     concluded: "2025-03-01"
@@ -116,10 +117,10 @@ claims:
     escaped: false
     counselPayment: "Paid and Reconciled"
     claimed: 56.00
-    submissionId: "550e8400-e29b-41d4-a716-446655440000"
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
-  - ufn: "240301/101"
+  - id: "019f5c44-d798-7445-9214-24d4642400ba"
+    ufn: "240301/101"
     client: "Johnson"
     category: "Immigration and Asylum"
     concluded: "2025-03-02"
@@ -127,10 +128,10 @@ claims:
     escaped: false
     counselPayment: "Paid and Reconciled"
     claimed: 429.01
-    submissionId: "6c5c142d-cb45-4ef6-865f-d4ecce40811c"
     providerUserId: "d9c4b277-941c-451c-81c4-6b46b7f7ab59"
 
-  - ufn: "240301/102"
+  - id: "019f5c44-f132-70e7-b4f2-19b3b4a9c717"
+    ufn: "240301/102"
     client: "Anderson"
     category: "Family"
     concluded: "2025-03-01"
@@ -138,10 +139,10 @@ claims:
     escaped: true
     counselPayment: "Paid and Reconciled"
     claimed: 234.56
-    submissionId: "c45ae7b7-95e7-4c2f-b3b7-b95b03f71cf8"
     providerUserId: "d9c4b277-941c-451c-81c4-6b46b7f7ab59"
 
-  - ufn: "240301/103"
+  - id: "019f5c45-0b14-77d5-bee9-318259da6f54"
+    ufn: "240301/103"
     client: "Thompson"
     category: "Immigration and Asylum"
     concluded: "2025-03-01"
@@ -149,10 +150,10 @@ claims:
     escaped: false
     counselPayment: "Paid and Reconciled"
     claimed: 56.00
-    submissionId: "a173ef60-58c0-4d7f-9400-1d97f1adf287"
     providerUserId: "d9c4b277-941c-451c-81c4-6b46b7f7ab59"
 
-  - ufn: "240301/104"
+  - id: "019f5c45-25e2-767a-9519-e4f4791e380f"
+    ufn: "240301/104"
     client: "Harrison"
     category: "Immigration and Asylum"
     concluded: "2025-03-01"
@@ -160,10 +161,10 @@ claims:
     escaped: false
     counselPayment: "Paid and Reconciled"
     claimed: 76.00
-    submissionId: "f92c91f4-66e0-4cb2-8eae-0b8a0b4b5d73"
     providerUserId: "d9c4b277-941c-451c-81c4-6b46b7f7ab59"
 
-  - ufn: "240301/105"
+  - id: "019f5c45-4203-7d7d-b7bb-173c4c941a45"
+    ufn: "240301/105"
     client: "Mitchell"
     category: "Immigration and Asylum"
     concluded: "2025-03-01"
@@ -171,95 +172,88 @@ claims:
     escaped: false
     counselPayment: "Paid and Reconciled"
     claimed: 52.00
-    submissionId: "2c9b3892-9de7-4e76-b7c6-6d96fa36a6b3"
     providerUserId: "d9c4b277-941c-451c-81c4-6b46b7f7ab59"
 
 claim_evidence:
-  - claimUfn: "100323/098"
-    client: "Amoto"
+  - id: "019f5c45-6070-7abd-9129-171e41387b7c"
+    claimId: "019f5c43-ba95-755c-8f28-c92bfb46013b"
     fileIdString: "amoto-invoice-001.pdf"
     fileSize: 5000000
     submittedOn: "2026-06-17T10:15:30Z"
 
-  - claimUfn: "100323/098"
-    client: "Amoto"
+  - id: "019f5c45-ff06-7419-ab4c-9165d89b6173"
+    claimId: "019f5c43-ba95-755c-8f28-c92bfb46013b"
     fileIdString: "amoto-invoice-002.pdf"
     fileSize: 4000000
     submittedOn: "2026-06-17T10:16:45Z"
 
-  - claimUfn: "100323/098"
-    client: "Amoto"
+  - id: "019f5c43-ba95-755c-8f28-c92bfb46013b"
+    claimId: "019f5c43-ba95-755c-8f28-c92bfb46013b"
     fileIdString: "amoto-invoice-003.pdf"
     fileSize: 5000000
     submittedOn: "2026-06-17T10:18:12Z"
 
-  - claimUfn: "100323/098"
-    client: "Amoto"
+  - id: "019f5c46-2184-7325-94aa-756fbce442b0"
+    claimId: "019f5c43-ba95-755c-8f28-c92bfb46013b"
     fileIdString: "amoto-invoice-004.pdf"
     fileSize: 6000000
     submittedOn: "2026-06-17T10:20:05Z"
 
 line_items:
-  - claimUfn: "100323/098"
-    client: "Amoto"
+  - id: "019f5c46-5788-7252-9172-b494faac8fe8"
+    claimId: "019f5c43-ba95-755c-8f28-c92bfb46013b"
     title: "Interim hearing"
     category: "Work Item"
     date: "2023-12-20"
 
-  - claimUfn: "121120/678"
-    client: "DeMello"
+  - id: "019f5c48-82cc-7a0d-842b-0cf523e7296b"
+    claimId: "019f5c43-d9f0-732e-88b2-1ca29c6c41de"
     title: "Interim hearing"
     category: "Work Item"
     date: "2023-12-20"
 
-  - claimUfn: "121120/678"
-    client: "DeMello"
+  - id: "019f5c43-ba95-755c-8f28-c92bfb46013b"
+    claimId: "019f5c43-d9f0-732e-88b2-1ca29c6c41de"
     title: "Interim hearing"
     category: "Work Item"
     date: "2024-01-04"
 
-  - claimUfn: "121120/678"
-    client: "DeMello"
+  - id: "019f5c43-d9f0-732e-88b2-1ca29c6c41de"
+    claimId: "019f5c43-d9f0-732e-88b2-1ca29c6c41de"
     title: "Final hearing"
     category: "Work Item"
     date: "2024-01-24"
 
-  - claimUfn: "121120/678"
-    client: "DeMello"
+  - id: "019f5c46-d10b-7be6-b294-8a901d12d5ed"
+    claimId: "019f5c43-d9f0-732e-88b2-1ca29c6c41de"
     title: "Enquiry Agent"
     category: "Disbursement"
     date: "2023-12-23"
 
-  - claimUfn: "121120/678"
-    client: "DeMello"
+  - id: "019f5c46-f48c-79cf-9b14-05db42117fad"
+    claimId: "019f5c43-d9f0-732e-88b2-1ca29c6c41de"
     title: "Enquiry Agent"
     category: "Disbursement"
     date: "2023-01-13"
 
-  - claimUfn: "121120/678"
-    client: "DeMello"
+  - id: "019f5c47-15a3-7a13-b6e7-4e25a1aef3f7"
+    claimId: "019f5c43-d9f0-732e-88b2-1ca29c6c41de"
     title: "Car Mileage"
     category: "Disbursement"
     date: "2023-12-20"
 
-  - claimUfn: "121120/678"
-    client: "DeMello"
+  - id: "019f5c47-300d-762f-889a-23e6a4820128"
+    claimId: "019f5c43-d9f0-732e-88b2-1ca29c6c41de"
     title: "Car Mileage"
     category: "Disbursement"
     date: "2024-01-04"
 
 line_item_claim_evidence:
-  - claimUfn: "100323/098"
-    client: "Amoto"
-    evidenceFileIdString: "amoto-invoice-001.pdf"
-    lineItemTitle: "Interim hearing"
-    lineItemDate: "2023-12-20"
+  - lineItemId: "019f5c46-5788-7252-9172-b494faac8fe8"
+    evidenceId: "019f5c45-6070-7abd-9129-171e41387b7c"
 
-  - claimUfn: "100323/098"
-    client: "Amoto"
-    evidenceFileIdString: "amoto-invoice-002.pdf"
-    lineItemTitle: "Interim hearing"
-    lineItemDate: "2023-12-20"
+  - lineItemId: "019f5c46-5788-7252-9172-b494faac8fe8"
+    evidenceId: "019f5c45-ff06-7419-ab4c-9165d89b6173"
 
 draft_claims:
   - id: "550e8400-e29b-41d4-a716-446655440000"

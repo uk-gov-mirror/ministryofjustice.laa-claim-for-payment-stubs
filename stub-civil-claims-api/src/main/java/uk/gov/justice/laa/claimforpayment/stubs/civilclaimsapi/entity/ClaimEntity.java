@@ -3,8 +3,6 @@ package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -26,9 +24,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "CLAIMS")
 public class ClaimEntity {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  @Id private UUID id;
 
   private String ufn;
 
@@ -52,9 +48,6 @@ public class ClaimEntity {
 
   @Column(name = "claimed", nullable = false, precision = 10, scale = 2)
   private BigDecimal claimed;
-
-  @Column(name = "submission_id")
-  private UUID submissionId;
 
   @OneToMany(mappedBy = "claim", cascade = CascadeType.ALL, orphanRemoval = true)
   @Builder.Default

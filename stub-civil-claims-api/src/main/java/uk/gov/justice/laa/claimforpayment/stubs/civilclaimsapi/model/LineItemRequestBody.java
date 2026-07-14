@@ -2,7 +2,9 @@ package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +19,10 @@ import tools.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(builder = LineItemRequestBody.LineItemRequestBodyBuilder.class)
 @Schema(name = "LineItemRequestBody", description = "Input model for creating a line item")
 public class LineItemRequestBody {
+
+  @Schema(description = "The unique ID for the line item")
+  @JsonProperty
+  private UUID id;
 
   @Schema(description = "The title of the line item")
   @JsonProperty("title")

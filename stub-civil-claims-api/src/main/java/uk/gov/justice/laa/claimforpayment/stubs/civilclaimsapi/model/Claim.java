@@ -25,7 +25,7 @@ public class Claim implements Serializable {
   @NotNull
   @Schema(name = "id", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("id")
-  private Long id;
+  private UUID id;
 
   @Schema(description = "line items associated with the claim")
   @JsonProperty("lineItems")
@@ -70,10 +70,5 @@ public class Claim implements Serializable {
   @Schema(description = "amount claimed")
   @JsonProperty("claimed")
   private BigDecimal claimed;
-
-  @NotNull
-  @Schema(description = "id of the submission this claim belongs to")
-  @JsonProperty("submissionId")
-  private UUID submissionId;
 
 }

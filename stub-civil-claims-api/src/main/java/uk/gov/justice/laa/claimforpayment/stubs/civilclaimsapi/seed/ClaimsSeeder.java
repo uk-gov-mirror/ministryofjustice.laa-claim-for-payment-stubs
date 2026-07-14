@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -68,11 +67,11 @@ public class ClaimsSeeder {
         ClaimsFile file = loadFile();
         assertSeedFileIsValid(file);
 
-        Map<String, Long> claimIdsByKey = insertClaims(connection, file);
-        Map<String, Long> evidenceIdsByKey = insertEvidence(connection, file, claimIdsByKey);
-        Map<String, Long> lineItemIdsByKey = insertLineItems(connection, file, claimIdsByKey);
+        insertClaims(connection, file);
+        insertEvidence(connection, file);
+        insertLineItems(connection, file);
 
-        insertJoinRows(connection, file, lineItemIdsByKey, evidenceIdsByKey);
+        insertJoinRows(connection, file);
 
         insertDrafts(connection, file);
 
@@ -99,99 +98,72 @@ public class ClaimsSeeder {
     }
   }
 
-  private Map<String, Long> insertClaims(Connection connection, ClaimsFile file)
-      throws SQLException {
-    Map<String, Long> claimIdsByKey = new HashMap<>();
+  private void insertClaims(Connection connection, ClaimsFile file) throws SQLException {
 
     String sql =
-        "INSERT INTO claims (ufn, client, category, concluded, fee_type, escaped, counsel_payment,"
-            + " claimed, submission_id, provider_user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        "INSERT INTO claims (id, ufn, client, category, concluded, fee_type, escaped,"
+            + " counsel_payment, claimed, provider_user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
       for (ClaimRow c : file.claims) {
-        ps.setString(1, c.ufn);
-        ps.setString(2, c.client);
-        ps.setString(3, c.category);
-        ps.setDate(4, Date.valueOf(c.concluded));
-        ps.setString(5, c.feeType);
-        ps.setBoolean(6, c.escaped);
-        ps.setString(7, c.counselPayment);
-        ps.setBigDecimal(8, c.claimed);
-        ps.setObject(9, c.submissionId);
+        ps.setObject(1, c.id);
+        ps.setString(2, c.ufn);
+        ps.setString(3, c.client);
+        ps.setString(4, c.category);
+        ps.setDate(5, Date.valueOf(c.concluded));
+        ps.setString(6, c.feeType);
+        ps.setBoolean(7, c.escaped);
+        ps.setString(8, c.counselPayment);
+        ps.setBigDecimal(9, c.claimed);
         ps.setObject(10, c.providerUserId);
         ps.executeUpdate();
-
-        try (ResultSet rs = ps.getGeneratedKeys()) {
-          rs.next();
-          claimIdsByKey.put(c.ufn + "|" + c.client, rs.getLong(1));
-        }
       }
     }
-    return claimIdsByKey;
   }
 
-  private Map<String, Long> insertEvidence(
-      Connection connection, ClaimsFile file, Map<String, Long> claimIds) throws SQLException {
+  private void insertEvidence(Connection connection, ClaimsFile file) throws SQLException {
 
     Map<String, Long> evidenceIds = new HashMap<>();
     String sql =
         "INSERT INTO claim_evidence"
-            + " (claim_id, file_key, file_size, submitted_on) "
-            + "VALUES (?, ?, ?, ?)";
+            + " (id, claim_id, file_key, file_size, submitted_on) "
+            + "VALUES (?, ?, ?, ?, ?)";
 
     try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
       for (ClaimEvidenceRow e : file.claim_evidence) {
-        String key = e.claimUfn + "|" + e.client;
-        ps.setLong(1, claimIds.get(key));
-        ps.setString(2, e.fileIdString);
-        ps.setLong(3, e.fileSize);
-        ps.setTimestamp(4, Timestamp.from(e.submittedOn));
+        ps.setObject(1, e.id);
+        ps.setObject(2, e.claimId);
+        ps.setString(3, e.fileIdString);
+        ps.setLong(4, e.fileSize);
+        ps.setTimestamp(5, Timestamp.from(e.submittedOn));
         ps.executeUpdate();
-
-        try (ResultSet rs = ps.getGeneratedKeys()) {
-          rs.next();
-          evidenceIds.put(key + ":" + e.fileIdString, rs.getLong(1));
-        }
       }
     }
-    return evidenceIds;
   }
 
-  private Map<String, Long> insertLineItems(
-      Connection connection, ClaimsFile file, Map<String, Long> claimIds) throws SQLException {
+  private void insertLineItems(Connection connection, ClaimsFile file) throws SQLException {
 
     Map<String, Long> lineItems = new HashMap<>();
-    String sql = "INSERT INTO line_items (claim_id, title, category, date) VALUES (?, ?, ?, ?)";
+    String sql =
+        "INSERT INTO line_items (id, claim_id, title, category, date) VALUES (?, ?, ?, ?, ?)";
 
     try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
       for (LineItemRow li : file.line_items) {
-        String key = li.claimUfn + "|" + li.client;
-        String lineKey = key + "|" + li.title;
 
-        ps.setLong(1, claimIds.get(key));
-        ps.setString(2, li.title);
-        ps.setString(3, li.category);
-        ps.setDate(4, Date.valueOf(li.date));
+        ps.setObject(1, li.id);
+        ps.setObject(2, li.claimId);
+        ps.setString(3, li.title);
+        ps.setString(4, li.category);
+        ps.setDate(5, Date.valueOf(li.date));
         ps.executeUpdate();
-
-        try (ResultSet rs = ps.getGeneratedKeys()) {
-          rs.next();
-          lineItems.put(lineKey, rs.getLong(1));
-        }
       }
     }
-    return lineItems;
   }
 
-  private void insertJoinRows(
-      Connection connection,
-      ClaimsFile file,
-      Map<String, Long> lineItems,
-      Map<String, Long> evidenceIds)
-      throws SQLException {
+  private void insertJoinRows(Connection connection, ClaimsFile file) throws SQLException {
 
     String sql =
         "INSERT INTO line_item_claim_evidence (line_item_id, claim_evidence_id) VALUES (?, ?)";
@@ -199,11 +171,9 @@ public class ClaimsSeeder {
     try (PreparedStatement ps = connection.prepareStatement(sql)) {
 
       for (LineItemEvidenceRow link : file.line_item_claim_evidence) {
-        String claimKey = link.claimUfn + "|" + link.client;
-        String lineKey = claimKey + "|" + link.lineItemTitle;
 
-        ps.setLong(1, lineItems.get(lineKey));
-        ps.setLong(2, evidenceIds.get(claimKey + ":" + link.evidenceFileIdString));
+        ps.setObject(1, link.lineItemId);
+        ps.setObject(2, link.evidenceId);
         ps.executeUpdate();
       }
     }
@@ -269,6 +239,7 @@ public class ClaimsSeeder {
 
   /** DTO for a claim row. */
   public static class ClaimRow {
+    public UUID id;
     public String ufn;
     public String client;
     public String category;
@@ -277,14 +248,13 @@ public class ClaimsSeeder {
     public LocalDate concluded;
     public boolean escaped;
     public BigDecimal claimed;
-    public UUID submissionId;
     public UUID providerUserId;
   }
 
   /** DTO for claim evidence. */
   public static class ClaimEvidenceRow {
-    public String claimUfn;
-    public String client;
+    public UUID id;
+    public UUID claimId;
     public String fileIdString;
     public Long fileSize;
     public Instant submittedOn;
@@ -292,8 +262,8 @@ public class ClaimsSeeder {
 
   /** DTO for a line item row. */
   public static class LineItemRow {
-    public String client;
-    public String claimUfn;
+    public UUID id;
+    public UUID claimId;
     public String title;
     public String category;
     public LocalDate date;
@@ -301,11 +271,8 @@ public class ClaimsSeeder {
 
   /** DTO for the link between line items and claim evidence. */
   public static class LineItemEvidenceRow {
-    public String client;
-    public String claimUfn;
-    public String evidenceFileIdString;
-    public String lineItemTitle;
-    public LocalDate lineItemDate;
+    public UUID lineItemId;
+    public UUID evidenceId;
   }
 
   /** DTO for a draft claim row. */
