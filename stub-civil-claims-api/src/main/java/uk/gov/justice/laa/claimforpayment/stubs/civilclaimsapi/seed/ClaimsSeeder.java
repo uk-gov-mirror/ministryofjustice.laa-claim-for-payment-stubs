@@ -278,8 +278,8 @@ public class ClaimsSeeder {
 
   /** DTO for a draft claim row. */
   public static class DraftClaimRow {
-    public String id;
+    public UUID id;
     public String payload;
-    public String providerUserId;
+    public UUID providerUserId;
   }
 }
