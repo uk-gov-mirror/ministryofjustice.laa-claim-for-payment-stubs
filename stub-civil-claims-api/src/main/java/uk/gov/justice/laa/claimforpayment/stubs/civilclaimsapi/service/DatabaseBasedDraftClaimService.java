@@ -44,8 +44,8 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
   @Override
   public UUID createDraftClaim(DraftClaimPost requestBody) {
     DraftClaimEntity draftClaimEntity = draftClaimMapper.toDraftClaimEntity(requestBody);
-    draftClaimRepository.save(draftClaimEntity);
-    return draftClaimEntity.getId();
+    DraftClaimEntity savedDraftClaimEntity = draftClaimRepository.save(draftClaimEntity);
+    return savedDraftClaimEntity.getId();
   }
 
   @Override
@@ -65,8 +65,8 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
       JsonNode payload = jsonNodeMapper.toJsonNode(requestBody.getPayload());
       draftClaimEntity.setPayload(payload);
     }
-    draftClaimRepository.save(draftClaimEntity);
-    return draftClaimMapper.toDraftClaim(draftClaimEntity);
+    DraftClaimEntity savedDraftClaimEntity = draftClaimRepository.save(draftClaimEntity);
+    return draftClaimMapper.toDraftClaim(savedDraftClaimEntity);
   }
 
   /**
@@ -88,6 +88,8 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
         .orElseThrow(
             () ->
                 new DraftClaimNotFoundException(
-                    String.format("No draft claim found with id: %s", draftClaimId)));
+                    String.format(
+                        "No draft claim found with id: %s for provider user: %s",
+                        draftClaimId, providerUserId)));
   }
 }
