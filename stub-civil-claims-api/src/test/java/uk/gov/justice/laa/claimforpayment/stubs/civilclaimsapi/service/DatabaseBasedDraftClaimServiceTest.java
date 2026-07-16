@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.entity.DraftClaimEntity;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.exception.DraftClaimNotFoundException;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.mapper.DraftClaimMapper;
+import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.mapper.JsonNodeMapper;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaim;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPatch;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPost;
@@ -32,6 +33,8 @@ class DatabaseBasedDraftClaimServiceTest {
   @Mock private DraftClaimRepository mockDraftClaimRepository;
 
   @Mock private DraftClaimMapper mockDraftClaimMapper;
+
+  @Mock private JsonNodeMapper jsonNodeMapper;
 
   @InjectMocks private DatabaseBasedDraftClaimService draftClaimService;
 
@@ -245,7 +248,7 @@ class DatabaseBasedDraftClaimServiceTest {
     when(mockDraftClaimRepository.findByIdAndProviderUserId(draftClaimId, providerUserId))
         .thenReturn(Optional.of(savedEntity));
 
-    when(mockDraftClaimMapper.map(newPayloadMap)).thenReturn(newPayloadJson);
+    when(jsonNodeMapper.toJsonNode(newPayloadMap)).thenReturn(newPayloadJson);
 
     when(mockDraftClaimRepository.save(any(DraftClaimEntity.class))).thenReturn(updatedEntity);
 

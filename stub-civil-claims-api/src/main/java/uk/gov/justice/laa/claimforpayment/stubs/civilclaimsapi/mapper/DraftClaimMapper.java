@@ -13,7 +13,10 @@ import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimP
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPut;
 
 /** The mapper between DraftClaimEntity and DraftClaim. */
-@Mapper(componentModel = "spring")
+@Mapper(
+    componentModel = "spring",
+    uses = JsonNodeMapper.class
+)
 public interface DraftClaimMapper {
 
   /**
@@ -40,32 +43,4 @@ public interface DraftClaimMapper {
    */
   @Mapping(target = "id", ignore = true)
   void updateEntity(DraftClaimPut request, @MappingTarget DraftClaimEntity entity);
-
-  /**
-   * Conversion between entity payload and DTO payload.
-   *
-   * @param payload entity payload
-   * @return payload for DTO
-  */
-  default Map<String, Object> map(JsonNode payload) {
-    if (payload == null) {
-      return null;
-    }
-
-    return new ObjectMapper().convertValue(payload, new TypeReference<>() {});
-  }
-
-  /**
-   * Conversion between DTO payload and entity payload.
-   *
-   * @param payload DTO payload
-   * @return payload for entity
-   */
-  default JsonNode map(Map<String, Object> payload) {
-    if (payload == null) {
-      return null;
-    }
-
-    return new ObjectMapper().valueToTree(payload);
-  }
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.entity.DraftClaimEntity;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.exception.DraftClaimNotFoundException;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.mapper.DraftClaimMapper;
+import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.mapper.JsonNodeMapper;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaim;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPatch;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPost;
@@ -22,6 +23,7 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
 
   private final DraftClaimRepository draftClaimRepository;
   private final DraftClaimMapper draftClaimMapper;
+  private final JsonNodeMapper jsonNodeMapper;
 
   /**
    * Gets a claim for a given id.
@@ -74,7 +76,7 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
       DraftClaimPatch requestBody, UUID draftClaimId, UUID providerUserId) {
     DraftClaimEntity draftClaimEntity = checkIfDraftClaimExists(draftClaimId, providerUserId);
     if (requestBody.getPayload() != null) {
-      JsonNode payload = draftClaimMapper.map(requestBody.getPayload());
+      JsonNode payload = jsonNodeMapper.toJsonNode(requestBody.getPayload());
       draftClaimEntity.setPayload(payload);
     }
     draftClaimRepository.save(draftClaimEntity);

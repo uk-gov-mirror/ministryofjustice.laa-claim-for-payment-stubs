@@ -39,6 +39,8 @@ public class ClaimsSeeder {
 
   private final DataSource dataSource;
 
+  private final ObjectMapper objectMapper;
+
   private static final String FILE_PATH = "db/data/claims.yaml";
 
   private static final AtomicBoolean HAS_RUN = new AtomicBoolean(false);
@@ -126,7 +128,6 @@ public class ClaimsSeeder {
 
   private void insertEvidence(Connection connection, ClaimsFile file) throws SQLException {
 
-    Map<String, Long> evidenceIds = new HashMap<>();
     String sql =
         "INSERT INTO claim_evidence"
             + " (id, claim_id, file_key, file_size, submitted_on) "
@@ -147,7 +148,6 @@ public class ClaimsSeeder {
 
   private void insertLineItems(Connection connection, ClaimsFile file) throws SQLException {
 
-    Map<String, Long> lineItems = new HashMap<>();
     String sql =
         "INSERT INTO line_items (id, claim_id, title, category, date) VALUES (?, ?, ?, ?, ?)";
 
@@ -223,10 +223,9 @@ public class ClaimsSeeder {
 
     try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-      ObjectMapper mapper = new ObjectMapper();
       for (DraftClaimRow d : file.draft_claims) {
         ps.setObject(1, d.id);
-        ps.setString(2, mapper.writeValueAsString(d.payload));
+        ps.setString(2, objectMapper.writeValueAsString(d.payload));
         ps.setObject(3, d.providerUserId);
         ps.executeUpdate();
       }
