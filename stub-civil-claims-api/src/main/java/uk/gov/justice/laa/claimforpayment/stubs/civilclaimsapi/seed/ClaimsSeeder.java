@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.seed;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -95,6 +96,7 @@ public class ClaimsSeeder {
       stmt.executeUpdate("DELETE FROM claim_evidence");
       stmt.executeUpdate("DELETE FROM line_items");
       stmt.executeUpdate("DELETE FROM claims");
+      stmt.executeUpdate("DELETE FROM draft_claims");
     }
   }
 
@@ -213,16 +215,18 @@ public class ClaimsSeeder {
     }
   }
 
-  private void insertDrafts(Connection connection, ClaimsFile file) throws SQLException {
+  private void insertDrafts(Connection connection, ClaimsFile file)
+      throws SQLException, JsonProcessingException {
 
     String sql =
         "INSERT INTO draft_claims (id, payload, provider_user_id) VALUES (?, CAST(? AS jsonb), ?)";
 
     try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
+      ObjectMapper mapper = new ObjectMapper();
       for (DraftClaimRow d : file.draft_claims) {
         ps.setObject(1, d.id);
-        ps.setObject(2, d.payload);
+        ps.setString(2, mapper.writeValueAsString(d.payload));
         ps.setObject(3, d.providerUserId);
         ps.executeUpdate();
       }
@@ -279,7 +283,7 @@ public class ClaimsSeeder {
   /** DTO for a draft claim row. */
   public static class DraftClaimRow {
     public UUID id;
-    public String payload;
+    public Map<String, Object> payload;
     public UUID providerUserId;
   }
 }

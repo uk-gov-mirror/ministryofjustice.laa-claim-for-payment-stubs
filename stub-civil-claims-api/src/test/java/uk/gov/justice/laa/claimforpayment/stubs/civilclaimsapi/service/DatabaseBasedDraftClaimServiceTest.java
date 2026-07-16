@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -35,28 +38,32 @@ class DatabaseBasedDraftClaimServiceTest {
   @Captor ArgumentCaptor<DraftClaimEntity> savedDraftClaimCaptor;
 
   @Test
-  void shouldGetDraftClaimById() {
-
+  void shouldGetDraftClaimById() throws Exception {
     UUID draftClaimId = UUID.randomUUID();
     UUID providerUserId = UUID.randomUUID();
-    String payload =
-        """
-        {
-          "someField": "someValue"
-        }
-        """;
+
+    JsonNode payloadJson =
+        new ObjectMapper()
+            .readTree(
+                """
+          {
+            "someField": "someValue"
+          }
+          """);
+
+    Map<String, Object> payloadMap = Map.of("someField", "someValue");
 
     DraftClaimEntity entity =
         DraftClaimEntity.builder()
             .id(draftClaimId)
-            .payload(payload)
+            .payload(payloadJson)
             .providerUserId(providerUserId)
             .build();
 
     DraftClaim draftClaim =
         DraftClaim.builder()
             .id(draftClaimId)
-            .payload(payload)
+            .payload(payloadMap)
             .providerUserId(providerUserId)
             .build();
 
@@ -68,7 +75,7 @@ class DatabaseBasedDraftClaimServiceTest {
 
     assertThat(result).isNotNull();
     assertThat(result.getId()).isEqualTo(draftClaimId);
-    assertThat(result.getPayload()).isEqualTo(payload);
+    assertThat(result.getPayload()).isEqualTo(payloadMap);
   }
 
   @Test
@@ -87,24 +94,31 @@ class DatabaseBasedDraftClaimServiceTest {
   }
 
   @Test
-  void shouldCreateClaim() {
+  void shouldCreateClaim() throws Exception {
     UUID draftClaimId = UUID.randomUUID();
     UUID providerUserId = UUID.randomUUID();
-    String payload =
-        """
-        {
-          "someField": "someValue"
-        }
-        """;
 
-    DraftClaimPost requestBody = DraftClaimPost.builder().id(draftClaimId).payload(payload).build();
+    JsonNode payloadJson =
+        new ObjectMapper()
+            .readTree(
+                """
+          {
+            "someField": "someValue"
+          }
+          """);
+
+    Map<String, Object> payloadMap = Map.of("someField", "someValue");
+
+    DraftClaimPost requestBody = DraftClaimPost.builder().id(draftClaimId).payload(payloadMap).build();
 
     DraftClaimEntity savedEntity =
         DraftClaimEntity.builder()
             .id(draftClaimId)
-            .payload(payload)
+            .payload(payloadJson)
             .providerUserId(providerUserId)
             .build();
+
+    when(mockDraftClaimMapper.toDraftClaimEntity(requestBody)).thenReturn(savedEntity);
 
     when(mockDraftClaimRepository.save(any(DraftClaimEntity.class))).thenReturn(savedEntity);
 
@@ -115,48 +129,58 @@ class DatabaseBasedDraftClaimServiceTest {
   }
 
   @Test
-  void shouldUpdateClaim() {
+  void shouldUpdateClaim() throws Exception {
     UUID draftClaimId = UUID.randomUUID();
     UUID providerUserId = UUID.randomUUID();
-    String oldPayload =
-        """
-                    {
-                      "field": "oldValue"
-                    }
-                    """;
-    String newPayload =
-        """
-                    {
-                      "field": "newValue"
-                    }
-                    """;
+
+    JsonNode oldPayloadJson =
+        new ObjectMapper()
+            .readTree(
+                """
+          {
+            "field": "oldValue"
+          }
+          """);
+
+    JsonNode newPayloadJson =
+        new ObjectMapper()
+            .readTree(
+                """
+          {
+            "field": "newValue"
+          }
+          """);
+
+    Map<String, Object> newPayloadMap = Map.of("field", "newValue");
 
     DraftClaimPut requestBody =
-        DraftClaimPut.builder().payload(newPayload).providerUserId(providerUserId).build();
+        DraftClaimPut.builder().payload(newPayloadMap).providerUserId(providerUserId).build();
 
     DraftClaimEntity savedEntity =
         DraftClaimEntity.builder()
             .id(draftClaimId)
-            .payload(oldPayload)
+            .payload(oldPayloadJson)
             .providerUserId(providerUserId)
             .build();
 
     DraftClaimEntity updatedEntity =
         DraftClaimEntity.builder()
             .id(draftClaimId)
-            .payload(newPayload)
+            .payload(newPayloadJson)
             .providerUserId(providerUserId)
             .build();
 
     DraftClaim updatedClaim =
         DraftClaim.builder()
             .id(draftClaimId)
-            .payload(newPayload)
+            .payload(newPayloadMap)
             .providerUserId(providerUserId)
             .build();
 
     when(mockDraftClaimRepository.findByIdAndProviderUserId(draftClaimId, providerUserId))
         .thenReturn(Optional.of(savedEntity));
+
+    doNothing().when(mockDraftClaimMapper).updateEntity(requestBody, savedEntity);
 
     when(mockDraftClaimRepository.save(any(DraftClaimEntity.class))).thenReturn(updatedEntity);
 
@@ -164,55 +188,64 @@ class DatabaseBasedDraftClaimServiceTest {
 
     DraftClaim result = draftClaimService.updateDraftClaim(requestBody, draftClaimId);
 
-    verify(mockDraftClaimRepository).save(savedDraftClaimCaptor.capture());
-
     assertThat(result).isNotNull();
     assertThat(result).isEqualTo(updatedClaim);
-    assertThat(savedDraftClaimCaptor.getValue().getPayload()).isEqualTo(newPayload);
+
+    verify(mockDraftClaimRepository).save(savedEntity);
   }
 
   @Test
-  void shouldPatchClaimWhenFieldsDefined() {
+  void shouldPatchClaimWhenFieldsDefined() throws Exception {
     UUID draftClaimId = UUID.randomUUID();
     UUID providerUserId = UUID.randomUUID();
-    String oldPayload =
-        """
-                    {
-                      "field": "oldValue"
-                    }
-                    """;
-    String newPayload =
-        """
-                    {
-                      "field": "newValue"
-                    }
-                    """;
 
-    DraftClaimPatch requestBody = DraftClaimPatch.builder().payload(newPayload).build();
+    JsonNode oldPayloadJson =
+        new ObjectMapper()
+            .readTree(
+                """
+          {
+            "field": "oldValue"
+          }
+          """);
+
+    JsonNode newPayloadJson =
+        new ObjectMapper()
+            .readTree(
+                """
+          {
+            "field": "newValue"
+          }
+          """);
+
+    Map<String, Object> newPayloadMap = Map.of("field", "newValue");
+
+    DraftClaimPatch requestBody = DraftClaimPatch.builder().payload(newPayloadMap).build();
 
     DraftClaimEntity savedEntity =
         DraftClaimEntity.builder()
             .id(draftClaimId)
-            .payload(oldPayload)
+            .payload(oldPayloadJson)
             .providerUserId(providerUserId)
             .build();
 
     DraftClaimEntity updatedEntity =
         DraftClaimEntity.builder()
             .id(draftClaimId)
-            .payload(newPayload)
+            .payload(newPayloadJson)
             .providerUserId(providerUserId)
             .build();
 
     DraftClaim updatedClaim =
         DraftClaim.builder()
             .id(draftClaimId)
-            .payload(newPayload)
+            .payload(newPayloadMap)
             .providerUserId(providerUserId)
             .build();
 
     when(mockDraftClaimRepository.findByIdAndProviderUserId(draftClaimId, providerUserId))
         .thenReturn(Optional.of(savedEntity));
+
+    when(mockDraftClaimMapper.map(newPayloadMap)).thenReturn(newPayloadJson);
 
     when(mockDraftClaimRepository.save(any(DraftClaimEntity.class))).thenReturn(updatedEntity);
 
@@ -225,33 +258,38 @@ class DatabaseBasedDraftClaimServiceTest {
 
     assertThat(result).isNotNull();
     assertThat(result).isEqualTo(updatedClaim);
-    assertThat(savedDraftClaimCaptor.getValue().getPayload()).isEqualTo(newPayload);
+    assertThat(savedDraftClaimCaptor.getValue().getPayload()).isEqualTo(newPayloadJson);
   }
 
   @Test
-  void shouldPatchClaimWhenFieldsUndefined() {
+  void shouldPatchClaimWhenFieldsUndefined() throws Exception {
     UUID draftClaimId = UUID.randomUUID();
     UUID providerUserId = UUID.randomUUID();
-    String oldPayload =
-        """
-                    {
-                      "field": "oldValue"
-                    }
-                    """;
+
+    JsonNode oldPayloadJson =
+        new ObjectMapper()
+            .readTree(
+                """
+          {
+            "field": "oldValue"
+          }
+          """);
+
+    Map<String, Object> oldPayloadMap = Map.of("field", "oldValue");
 
     DraftClaimPatch requestBody = DraftClaimPatch.builder().build();
 
     DraftClaimEntity savedEntity =
         DraftClaimEntity.builder()
             .id(draftClaimId)
-            .payload(oldPayload)
+            .payload(oldPayloadJson)
             .providerUserId(providerUserId)
             .build();
 
     DraftClaim updatedClaim =
         DraftClaim.builder()
             .id(draftClaimId)
-            .payload(oldPayload)
+            .payload(oldPayloadMap)
             .providerUserId(providerUserId)
             .build();
 
@@ -269,24 +307,27 @@ class DatabaseBasedDraftClaimServiceTest {
 
     assertThat(result).isNotNull();
     assertThat(result).isEqualTo(updatedClaim);
-    assertThat(savedDraftClaimCaptor.getValue().getPayload()).isEqualTo(oldPayload);
+    assertThat(savedDraftClaimCaptor.getValue().getPayload()).isEqualTo(oldPayloadJson);
   }
 
   @Test
-  void shouldDeleteDraftClaim() {
+  void shouldDeleteDraftClaim() throws Exception {
     UUID draftClaimId = UUID.randomUUID();
     UUID providerUserId = UUID.randomUUID();
-    String payload =
-        """
-                    {
-                      "field": "oldValue"
-                    }
-                    """;
+
+    JsonNode payloadJson =
+        new ObjectMapper()
+            .readTree(
+                """
+          {
+            "field": "oldValue"
+          }
+          """);
 
     DraftClaimEntity savedEntity =
         DraftClaimEntity.builder()
             .id(draftClaimId)
-            .payload(payload)
+            .payload(payloadJson)
             .providerUserId(providerUserId)
             .build();
 
