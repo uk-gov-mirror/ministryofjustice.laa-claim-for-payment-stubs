@@ -19,6 +19,12 @@ public class JsonNodeMapper {
     this.objectMapper = objectMapper;
   }
 
+  /**
+   * Maps a JsonNode to a Map.
+   *
+   * @param payload the JsonNode
+   * @return a Map
+   */
   public Map<String, Object> toMap(JsonNode payload) {
     if (payload == null) {
       return null;
@@ -35,6 +41,12 @@ public class JsonNodeMapper {
     return objectMapper.convertValue(payload, new TypeReference<>() {});
   }
 
+  /**
+   * Maps a Map to a JsonNode.
+   *
+   * @param payload the Map
+   * @return a JsonNode
+   */
   public JsonNode toJsonNode(Map<String, Object> payload) {
     return objectMapper.valueToTree(payload);
   }
