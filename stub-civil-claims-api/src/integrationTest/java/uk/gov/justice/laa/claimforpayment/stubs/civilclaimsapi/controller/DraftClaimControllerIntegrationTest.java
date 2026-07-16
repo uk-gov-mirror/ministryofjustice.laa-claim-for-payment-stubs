@@ -58,6 +58,8 @@ class DraftClaimControllerIntegrationTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.id").value(id.toString()))
         .andExpect(jsonPath("$.providerUserId").value(providerUserId.toString()))
+        .andExpect(jsonPath("$.payload.id").value(id.toString()))
+        .andExpect(jsonPath("$.payload.providerUserId").value(providerUserId.toString()))
         .andExpect(jsonPath("$.payload.ufn").value("121120/467"));
   }
 
