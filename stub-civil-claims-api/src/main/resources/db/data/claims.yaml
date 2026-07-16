@@ -266,7 +266,6 @@ draft_claims:
       escaped: false
       counselPayment: "Paid and Reconciled"
       claimed: 234.56
-      submissionId: "550e8400-e29b-41d4-a716-446655440000"
       providerUserId: "123e4567-e89b-12d3-a456-426614174000"
     providerUserId: "123e4567-e89b-12d3-a456-426614174000"
 
@@ -280,6 +279,5 @@ draft_claims:
       escaped: false
       counselPayment: "Paid and Reconciled"
       claimed: 429.01
-      submissionId: "6c5c142d-cb45-4ef6-865f-d4ecce40811c"
       providerUserId: "d9c4b277-941c-451c-81c4-6b46b7f7ab59"
     providerUserId: "d9c4b277-941c-451c-81c4-6b46b7f7ab59"
