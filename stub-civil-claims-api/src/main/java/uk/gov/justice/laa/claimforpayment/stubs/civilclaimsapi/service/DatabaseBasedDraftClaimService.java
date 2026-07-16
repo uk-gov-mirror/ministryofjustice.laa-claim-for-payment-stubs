@@ -1,8 +1,6 @@
 package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,18 +32,6 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
   @Override
   public DraftClaim getDraftClaim(UUID draftClaimId, UUID providerUserId) {
     DraftClaimEntity draftClaimEntity = checkIfDraftClaimExists(draftClaimId, providerUserId);
-
-    JsonNode payload = draftClaimEntity.getPayload();
-
-    if (payload.isTextual()) {
-      try {
-        payload = new ObjectMapper().readTree(payload.textValue());
-        draftClaimEntity.setPayload(payload);
-      } catch (JsonProcessingException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
     return draftClaimMapper.toDraftClaim(draftClaimEntity);
   }
 

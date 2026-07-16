@@ -60,7 +60,14 @@ class DraftClaimControllerIntegrationTest {
         .andExpect(jsonPath("$.providerUserId").value(providerUserId.toString()))
         .andExpect(jsonPath("$.payload.id").value(id.toString()))
         .andExpect(jsonPath("$.payload.providerUserId").value(providerUserId.toString()))
-        .andExpect(jsonPath("$.payload.ufn").value("121120/467"));
+        .andExpect(jsonPath("$.payload.ufn").value("121120/467"))
+        .andExpect(jsonPath("$.payload.client").value("Giordano"))
+        .andExpect(jsonPath("$.payload.category").value("Family"))
+        .andExpect(jsonPath("$.payload.concluded").value("2025-03-18"))
+        .andExpect(jsonPath("$.payload.feeType").value("Escape"))
+        .andExpect(jsonPath("$.payload.escaped").value(false))
+        .andExpect(jsonPath("$.payload.counselPayment").value("Paid and Reconciled"))
+        .andExpect(jsonPath("$.payload.claimed").value(234.56));
   }
 
   @Test
