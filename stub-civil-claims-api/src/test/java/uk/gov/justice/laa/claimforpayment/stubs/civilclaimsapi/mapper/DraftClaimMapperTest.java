@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Instant;
 import java.util.List;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.config.JacksonConfig;
 import java.time.LocalDate;
@@ -32,66 +33,73 @@ class DraftClaimMapperTest {
   void shouldMapToDraftClaim() throws Exception {
     JsonNode payloadJson =
         new ObjectMapper()
-            .readTree(
-                """
-          {
-            "someString": "string",
-            "someBoolean": true,
-            "someInteger": 1,
-            "someDate": "2026-07-16",
-            "someObject": {
-              "someNestedString": "nestedString",
-              "someNestedArray": [
+            .readTree("""
+            {
+              "id": "019f5c43-ba95-755c-8f28-c92bfb46013b",
+              "ufn": "100323/098",
+              "concluded": "2025-03-14",
+              "escaped": false,
+              "claimed": 56.0,
+              "lineItems": [
                 {
-                  "someNestedArrayObject1": {
-                    "someNestedArrayObject1String": "nestedArrayObject1String"
-                  },
-                  "someNestedArrayObject2": {
-                    "someNestedArrayObject2String": "nestedArrayObject2String"
-                  }
+                  "id": "019f5c46-5788-7252-9172-b494faac8fe8",
+                  "title": "Interim hearing",
+                  "category": "Work Item",
+                  "date": "2023-12-20",
+                  "evidenceItems": [
+                    "019f5c45-6070-7abd-9129-171e41387b7c",
+                    "019f5c45-ff06-7419-ab4c-9165d89b6173"
+                  ]
+                }
+              ],
+              "evidence": [
+                {
+                  "id": "019f5c45-6070-7abd-9129-171e41387b7c",
+                  "fileKey": "amoto-invoice-001.pdf",
+                  "fileSize": 5000000,
+                  "submittedOn": "2026-06-17T10:15:30Z"
+                },
+                {
+                  "id": "019f5c45-ff06-7419-ab4c-9165d89b6173",
+                  "fileKey": "amoto-invoice-002.pdf",
+                  "fileSize": 4000000,
+                  "submittedOn": "2026-06-17T10:16:45Z"
                 }
               ]
-            },
-            "someArray": [
-              {
-                "someArrayObject1": {
-                  "someArrayObject1String": "arrayObject1String"
-                },
-                "someArrayObject2": {
-                  "someArrayObject2String": "arrayObject2String"
-                }
-              }
-            ]
-          }
-          """);
+            }
+            """);
 
     Map<String, Object> payloadMap =
         Map.of(
-            "someString", "string",
-            "someBoolean", true,
-            "someInteger", 1,
-            "someDate", "2026-07-16",
-            "someObject", Map.of(
-                "someNestedString", "nestedString",
-                "someNestedArray", List.of(
-                    Map.of(
-                        "someNestedArrayObject1", Map.of(
-                            "someNestedArrayObject1String", "nestedArrayObject1String"
-                        ),
-                        "someNestedArrayObject2", Map.of(
-                            "someNestedArrayObject2String", "nestedArrayObject2String"
-                        )
+            "id", "019f5c43-ba95-755c-8f28-c92bfb46013b",
+            "ufn", "100323/098",
+            "concluded", "2025-03-14",
+            "escaped", false,
+            "claimed", 56.00,
+            "lineItems", List.of(
+                Map.of(
+                    "id", "019f5c46-5788-7252-9172-b494faac8fe8",
+                    "title", "Interim hearing",
+                    "category", "Work Item",
+                    "date", "2023-12-20",
+                    "evidenceItems", List.of(
+                        "019f5c45-6070-7abd-9129-171e41387b7c",
+                        "019f5c45-ff06-7419-ab4c-9165d89b6173"
                     )
                 )
             ),
-            "someArray", List.of(
+            "evidence", List.of(
                 Map.of(
-                    "someArrayObject1", Map.of(
-                        "someArrayObject1String", "arrayObject1String"
-                    ),
-                    "someArrayObject2", Map.of(
-                        "someArrayObject2String", "arrayObject2String"
-                    )
+                    "id", "019f5c45-6070-7abd-9129-171e41387b7c",
+                    "fileKey", "amoto-invoice-001.pdf",
+                    "fileSize", 5000000,
+                    "submittedOn", "2026-06-17T10:15:30Z"
+                ),
+                Map.of(
+                    "id", "019f5c45-ff06-7419-ab4c-9165d89b6173",
+                    "fileKey", "amoto-invoice-002.pdf",
+                    "fileSize", 4000000,
+                    "submittedOn", "2026-06-17T10:16:45Z"
                 )
             )
         );
@@ -115,69 +123,76 @@ class DraftClaimMapperTest {
   void shouldMapToDraftClaimEntity() throws Exception {
     Map<String, Object> payloadMap =
         Map.of(
-            "someString", "string",
-            "someBoolean", true,
-            "someInteger", 1,
-            "someDate", LocalDate.of(2026, 7, 16),
-            "someObject", Map.of(
-                "someNestedString", "nestedString",
-                "someNestedArray", List.of(
-                    Map.of(
-                        "someNestedArrayObject1", Map.of(
-                            "someNestedArrayObject1String", "nestedArrayObject1String"
-                        ),
-                        "someNestedArrayObject2", Map.of(
-                            "someNestedArrayObject2String", "nestedArrayObject2String"
-                        )
+            "id", "019f5c43-ba95-755c-8f28-c92bfb46013b",
+            "ufn", "100323/098",
+            "concluded", LocalDate.of(2025, 3, 14),
+            "escaped", false,
+            "claimed", 56.00,
+            "lineItems", List.of(
+                Map.of(
+                    "id", "019f5c46-5788-7252-9172-b494faac8fe8",
+                    "title", "Interim hearing",
+                    "category", "Work Item",
+                    "date", "2023-12-20",
+                    "evidenceItems", List.of(
+                          "019f5c45-6070-7abd-9129-171e41387b7c",
+                          "019f5c45-ff06-7419-ab4c-9165d89b6173"
                     )
                 )
             ),
-            "someArray", List.of(
+            "evidence", List.of(
                 Map.of(
-                    "someArrayObject1", Map.of(
-                        "someArrayObject1String", "arrayObject1String"
-                    ),
-                    "someArrayObject2", Map.of(
-                        "someArrayObject2String", "arrayObject2String"
-                    )
+                    "id", "019f5c45-6070-7abd-9129-171e41387b7c",
+                    "fileKey", "amoto-invoice-001.pdf",
+                    "fileSize", 5000000,
+                    "submittedOn", Instant.ofEpochSecond(1781691330)
+                ),
+                Map.of(
+                    "id", "019f5c45-ff06-7419-ab4c-9165d89b6173",
+                    "fileKey", "amoto-invoice-002.pdf",
+                    "fileSize", 4000000,
+                    "submittedOn", Instant.ofEpochSecond(1781691405)
                 )
             )
         );
 
     JsonNode payloadJson =
         new ObjectMapper()
-            .readTree(
-                """
-          {
-            "someString": "string",
-            "someBoolean": true,
-            "someInteger": 1,
-            "someDate": "2026-07-16",
-            "someObject": {
-              "someNestedString": "nestedString",
-              "someNestedArray": [
+            .readTree("""
+            {
+              "id": "019f5c43-ba95-755c-8f28-c92bfb46013b",
+              "ufn": "100323/098",
+              "concluded": "2025-03-14",
+              "escaped": false,
+              "claimed": 56.0,
+              "lineItems": [
                 {
-                  "someNestedArrayObject1": {
-                    "someNestedArrayObject1String": "nestedArrayObject1String"
-                  },
-                  "someNestedArrayObject2": {
-                    "someNestedArrayObject2String": "nestedArrayObject2String"
-                  }
+                  "id": "019f5c46-5788-7252-9172-b494faac8fe8",
+                  "title": "Interim hearing",
+                  "category": "Work Item",
+                  "date": "2023-12-20",
+                  "evidenceItems": [
+                    "019f5c45-6070-7abd-9129-171e41387b7c",
+                    "019f5c45-ff06-7419-ab4c-9165d89b6173"
+                  ]
+                }
+              ],
+              "evidence": [
+                {
+                  "id": "019f5c45-6070-7abd-9129-171e41387b7c",
+                  "fileKey": "amoto-invoice-001.pdf",
+                  "fileSize": 5000000,
+                  "submittedOn": "2026-06-17T10:15:30Z"
+                },
+                {
+                  "id": "019f5c45-ff06-7419-ab4c-9165d89b6173",
+                  "fileKey": "amoto-invoice-002.pdf",
+                  "fileSize": 4000000,
+                  "submittedOn": "2026-06-17T10:16:45Z"
                 }
               ]
-            },
-            "someArray": [
-              {
-                "someArrayObject1": {
-                  "someArrayObject1String": "arrayObject1String"
-                },
-                "someArrayObject2": {
-                  "someArrayObject2String": "arrayObject2String"
-                }
-              }
-            ]
-          }
-          """);
+            }
+            """);
 
     DraftClaimPost request =
         DraftClaimPost.builder()
