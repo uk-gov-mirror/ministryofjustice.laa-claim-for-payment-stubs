@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.config.JacksonConfig;
 import java.time.LocalDate;
 import java.util.Map;
@@ -37,16 +38,63 @@ class DraftClaimMapperTest {
             "someString": "string",
             "someBoolean": true,
             "someInteger": 1,
-            "someDate": "2026-07-16"
+            "someDate": "2026-07-16",
+            "someObject": {
+              "someNestedString": "nestedString",
+              "someNestedArray": [
+                {
+                  "someNestedArrayObject1": {
+                    "someNestedArrayObject1String": "nestedArrayObject1String"
+                  },
+                  "someNestedArrayObject2": {
+                    "someNestedArrayObject2String": "nestedArrayObject2String"
+                  }
+                }
+              ]
+            },
+            "someArray": [
+              {
+                "someArrayObject1": {
+                  "someArrayObject1String": "arrayObject1String"
+                },
+                "someArrayObject2": {
+                  "someArrayObject2String": "arrayObject2String"
+                }
+              }
+            ]
           }
           """);
 
-    Map<String, Object> payloadMap = Map.of(
-        "someString", "string",
-        "someBoolean", true,
-        "someInteger", 1,
-        "someDate", "2026-07-16"
-    );
+    Map<String, Object> payloadMap =
+        Map.of(
+            "someString", "string",
+            "someBoolean", true,
+            "someInteger", 1,
+            "someDate", "2026-07-16",
+            "someObject", Map.of(
+                "someNestedString", "nestedString",
+                "someNestedArray", List.of(
+                    Map.of(
+                        "someNestedArrayObject1", Map.of(
+                            "someNestedArrayObject1String", "nestedArrayObject1String"
+                        ),
+                        "someNestedArrayObject2", Map.of(
+                            "someNestedArrayObject2String", "nestedArrayObject2String"
+                        )
+                    )
+                )
+            ),
+            "someArray", List.of(
+                Map.of(
+                    "someArrayObject1", Map.of(
+                        "someArrayObject1String", "arrayObject1String"
+                    ),
+                    "someArrayObject2", Map.of(
+                        "someArrayObject2String", "arrayObject2String"
+                    )
+                )
+            )
+        );
 
     DraftClaimEntity entity =
         DraftClaimEntity.builder()
@@ -65,6 +113,37 @@ class DraftClaimMapperTest {
 
   @Test
   void shouldMapToDraftClaimEntity() throws Exception {
+    Map<String, Object> payloadMap =
+        Map.of(
+            "someString", "string",
+            "someBoolean", true,
+            "someInteger", 1,
+            "someDate", LocalDate.of(2026, 7, 16),
+            "someObject", Map.of(
+                "someNestedString", "nestedString",
+                "someNestedArray", List.of(
+                    Map.of(
+                        "someNestedArrayObject1", Map.of(
+                            "someNestedArrayObject1String", "nestedArrayObject1String"
+                        ),
+                        "someNestedArrayObject2", Map.of(
+                            "someNestedArrayObject2String", "nestedArrayObject2String"
+                        )
+                    )
+                )
+            ),
+            "someArray", List.of(
+                Map.of(
+                    "someArrayObject1", Map.of(
+                        "someArrayObject1String", "arrayObject1String"
+                    ),
+                    "someArrayObject2", Map.of(
+                        "someArrayObject2String", "arrayObject2String"
+                    )
+                )
+            )
+        );
+
     JsonNode payloadJson =
         new ObjectMapper()
             .readTree(
@@ -73,16 +152,32 @@ class DraftClaimMapperTest {
             "someString": "string",
             "someBoolean": true,
             "someInteger": 1,
-            "someDate": "2026-07-16"
+            "someDate": "2026-07-16",
+            "someObject": {
+              "someNestedString": "nestedString",
+              "someNestedArray": [
+                {
+                  "someNestedArrayObject1": {
+                    "someNestedArrayObject1String": "nestedArrayObject1String"
+                  },
+                  "someNestedArrayObject2": {
+                    "someNestedArrayObject2String": "nestedArrayObject2String"
+                  }
+                }
+              ]
+            },
+            "someArray": [
+              {
+                "someArrayObject1": {
+                  "someArrayObject1String": "arrayObject1String"
+                },
+                "someArrayObject2": {
+                  "someArrayObject2String": "arrayObject2String"
+                }
+              }
+            ]
           }
           """);
-
-    Map<String, Object> payloadMap = Map.of(
-        "someString", "string",
-        "someBoolean", true,
-        "someInteger", 1,
-        "someDate", LocalDate.of(2026, 7, 16)
-    );
 
     DraftClaimPost request =
         DraftClaimPost.builder()
