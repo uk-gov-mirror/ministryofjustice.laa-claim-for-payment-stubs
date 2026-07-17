@@ -1,11 +1,13 @@
 package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.entity.DraftClaimEntity;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.exception.DraftClaimNotFoundException;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.mapper.DraftClaimMapper;
+import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.mapper.JsonNodeMapper;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaim;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPatch;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPost;
@@ -19,6 +21,7 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
 
   private final DraftClaimRepository draftClaimRepository;
   private final DraftClaimMapper draftClaimMapper;
+  private final JsonNodeMapper jsonNodeMapper;
 
   /**
    * Gets a claim for a given id.
@@ -40,23 +43,18 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
    */
   @Override
   public UUID createDraftClaim(DraftClaimPost requestBody) {
-    DraftClaimEntity entity = new DraftClaimEntity();
-    entity.setId(requestBody.getId());
-    entity.setPayload(requestBody.getPayload());
-    entity.setProviderUserId(requestBody.getProviderUserId());
-
-    DraftClaimEntity createdEntity = draftClaimRepository.save(entity);
-    return createdEntity.getId();
+    DraftClaimEntity draftClaimEntity = draftClaimMapper.toDraftClaimEntity(requestBody);
+    DraftClaimEntity savedDraftClaimEntity = draftClaimRepository.save(draftClaimEntity);
+    return savedDraftClaimEntity.getId();
   }
 
   @Override
   public DraftClaim updateDraftClaim(DraftClaimPut requestBody, UUID draftClaimId) {
     DraftClaimEntity draftClaimEntity =
         checkIfDraftClaimExists(draftClaimId, requestBody.getProviderUserId());
-
-    draftClaimEntity.setPayload(requestBody.getPayload());
-    DraftClaimEntity updatedEntity = draftClaimRepository.save(draftClaimEntity);
-    return draftClaimMapper.toDraftClaim(updatedEntity);
+    draftClaimMapper.updateEntity(requestBody, draftClaimEntity);
+    DraftClaimEntity savedDraftClaimEntity = draftClaimRepository.save(draftClaimEntity);
+    return draftClaimMapper.toDraftClaim(savedDraftClaimEntity);
   }
 
   @Override
@@ -64,10 +62,11 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
       DraftClaimPatch requestBody, UUID draftClaimId, UUID providerUserId) {
     DraftClaimEntity draftClaimEntity = checkIfDraftClaimExists(draftClaimId, providerUserId);
     if (requestBody.getPayload() != null) {
-      draftClaimEntity.setPayload(requestBody.getPayload());
+      JsonNode payload = jsonNodeMapper.toJsonNode(requestBody.getPayload());
+      draftClaimEntity.setPayload(payload);
     }
-    DraftClaimEntity updatedEntity = draftClaimRepository.save(draftClaimEntity);
-    return draftClaimMapper.toDraftClaim(updatedEntity);
+    DraftClaimEntity savedDraftClaimEntity = draftClaimRepository.save(draftClaimEntity);
+    return draftClaimMapper.toDraftClaim(savedDraftClaimEntity);
   }
 
   /**
@@ -89,6 +88,8 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
         .orElseThrow(
             () ->
                 new DraftClaimNotFoundException(
-                    String.format("No draft claim found with id: %s", draftClaimId)));
+                    String.format(
+                        "No draft claim found with id: %s for provider user: %s",
+                        draftClaimId, providerUserId)));
   }
 }

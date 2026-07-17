@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.seed;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -37,6 +38,8 @@ import org.springframework.stereotype.Component;
 public class ClaimsSeeder {
 
   private final DataSource dataSource;
+
+  private final ObjectMapper objectMapper;
 
   private static final String FILE_PATH = "db/data/claims.yaml";
 
@@ -95,6 +98,7 @@ public class ClaimsSeeder {
       stmt.executeUpdate("DELETE FROM claim_evidence");
       stmt.executeUpdate("DELETE FROM line_items");
       stmt.executeUpdate("DELETE FROM claims");
+      stmt.executeUpdate("DELETE FROM draft_claims");
     }
   }
 
@@ -124,7 +128,6 @@ public class ClaimsSeeder {
 
   private void insertEvidence(Connection connection, ClaimsFile file) throws SQLException {
 
-    Map<String, Long> evidenceIds = new HashMap<>();
     String sql =
         "INSERT INTO claim_evidence"
             + " (id, claim_id, file_key, file_size, submitted_on) "
@@ -145,7 +148,6 @@ public class ClaimsSeeder {
 
   private void insertLineItems(Connection connection, ClaimsFile file) throws SQLException {
 
-    Map<String, Long> lineItems = new HashMap<>();
     String sql =
         "INSERT INTO line_items (id, claim_id, title, category, date) VALUES (?, ?, ?, ?, ?)";
 
@@ -213,7 +215,8 @@ public class ClaimsSeeder {
     }
   }
 
-  private void insertDrafts(Connection connection, ClaimsFile file) throws SQLException {
+  private void insertDrafts(Connection connection, ClaimsFile file)
+      throws SQLException, JsonProcessingException {
 
     String sql =
         "INSERT INTO draft_claims (id, payload, provider_user_id) VALUES (?, CAST(? AS jsonb), ?)";
@@ -222,7 +225,7 @@ public class ClaimsSeeder {
 
       for (DraftClaimRow d : file.draft_claims) {
         ps.setObject(1, d.id);
-        ps.setObject(2, d.payload);
+        ps.setString(2, objectMapper.writeValueAsString(d.payload));
         ps.setObject(3, d.providerUserId);
         ps.executeUpdate();
       }
@@ -279,7 +282,7 @@ public class ClaimsSeeder {
   /** DTO for a draft claim row. */
   public static class DraftClaimRow {
     public UUID id;
-    public String payload;
+    public Map<String, Object> payload;
     public UUID providerUserId;
   }
 }

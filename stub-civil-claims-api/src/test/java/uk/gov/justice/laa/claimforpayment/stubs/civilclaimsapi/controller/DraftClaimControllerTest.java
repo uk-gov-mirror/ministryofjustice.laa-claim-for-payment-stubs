@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -65,12 +66,7 @@ public class DraftClaimControllerTest {
 
     @Test
     void returnsOkStatusAndDraftClaim() throws Exception {
-      String payload =
-          """
-          {
-            "someField": "someValue"
-          }
-          """;
+      Map<String, Object> payload = Map.of("someField", "someValue");
 
       when(mockDraftClaimService.getDraftClaim(draftClaimId, providerUserId))
           .thenReturn(
@@ -90,7 +86,7 @@ public class DraftClaimControllerTest {
           .andExpect(status().isOk())
           .andExpect(content().contentType(MediaType.APPLICATION_JSON))
           .andExpect(jsonPath("$.id").value(draftClaimId.toString()))
-          .andExpect(jsonPath("$.payload").value(payload))
+          .andExpect(jsonPath("$.payload.someField").value("someValue"))
           .andExpect(jsonPath("$.providerUserId").value(providerUserId.toString()));
     }
 
@@ -143,14 +139,16 @@ public class DraftClaimControllerTest {
 
     UUID providerUserId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
     UUID draftClaimId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
-    String payload = "{\"someField\": \"someValue\"}";
+    Map<String, Object> payload = Map.of("someField", "someValue");
 
     String requestBody =
         String.format(
             """
         {
           "id": "%s",
-          "payload": "{\\"someField\\": \\"someValue\\"}",
+          "payload": {
+            "someField": "someValue"
+          },
           "providerUserId": "%s"
         }
         """,
@@ -224,13 +222,15 @@ public class DraftClaimControllerTest {
 
     UUID providerUserId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
     UUID draftClaimId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
-    String payload = "{\"someField\": \"someValue\"}";
+    Map<String, Object> payload = Map.of("someField", "someValue");
 
     String requestBody =
         String.format(
             """
         {
-          "payload": "{\\"someField\\": \\"someValue\\"}",
+          "payload": {
+            "someField": "someValue"
+          },
           "providerUserId": "%s"
         }
         """,
@@ -238,8 +238,7 @@ public class DraftClaimControllerTest {
 
     @Test
     void returnsNoContentStatus() throws Exception {
-      when(mockDraftClaimService.updateDraftClaim(
-              any(DraftClaimPut.class), eq(draftClaimId)))
+      when(mockDraftClaimService.updateDraftClaim(any(DraftClaimPut.class), eq(draftClaimId)))
           .thenReturn(
               DraftClaim.builder()
                   .id(draftClaimId)
@@ -291,8 +290,7 @@ public class DraftClaimControllerTest {
 
     @Test
     void returnsNotFoundStatusWhenDraftClaimDoesNotExist() throws Exception {
-      when(mockDraftClaimService.updateDraftClaim(
-              any(DraftClaimPut.class), eq(draftClaimId)))
+      when(mockDraftClaimService.updateDraftClaim(any(DraftClaimPut.class), eq(draftClaimId)))
           .thenThrow(new DraftClaimNotFoundException("Draft claim not found"));
 
       mockMvc
@@ -327,16 +325,16 @@ public class DraftClaimControllerTest {
 
     UUID providerUserId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
     UUID draftClaimId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
-    String payload = "{'someField':'someValue'}";
+    Map<String, Object> payload = Map.of("someField", "someValue");
 
     String requestBody =
-        String.format(
-            """
-        {
-          "payload": "%s"
-        }
-        """,
-            payload);
+        """
+    {
+      "payload": {
+        "someField": "someValue"
+      }
+    }
+    """;
 
     @Test
     void returnsOkStatusAndPatchedClaim() throws Exception {
@@ -362,7 +360,7 @@ public class DraftClaimControllerTest {
           .andExpect(status().isOk())
           .andExpect(content().contentType(MediaType.APPLICATION_JSON))
           .andExpect(jsonPath("$.id").value(draftClaimId.toString()))
-          .andExpect(jsonPath("$.payload").value(payload))
+          .andExpect(jsonPath("$.payload.someField").value("someValue"))
           .andExpect(jsonPath("$.providerUserId").value(providerUserId.toString()));
 
       verify(mockDraftClaimService)

@@ -6,8 +6,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.Instant;
-import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,7 +57,17 @@ class DraftClaimControllerIntegrationTest {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.id").value(id.toString()))
-        .andExpect(jsonPath("$.providerUserId").value(providerUserId.toString()));
+        .andExpect(jsonPath("$.providerUserId").value(providerUserId.toString()))
+        .andExpect(jsonPath("$.payload.id").value(id.toString()))
+        .andExpect(jsonPath("$.payload.providerUserId").value(providerUserId.toString()))
+        .andExpect(jsonPath("$.payload.ufn").value("121120/467"))
+        .andExpect(jsonPath("$.payload.client").value("Giordano"))
+        .andExpect(jsonPath("$.payload.category").value("Family"))
+        .andExpect(jsonPath("$.payload.concluded").value("2025-03-18"))
+        .andExpect(jsonPath("$.payload.feeType").value("Escape"))
+        .andExpect(jsonPath("$.payload.escaped").value(false))
+        .andExpect(jsonPath("$.payload.counselPayment").value("Paid and Reconciled"))
+        .andExpect(jsonPath("$.payload.claimed").value(234.56));
   }
 
   @Test
@@ -81,14 +87,15 @@ class DraftClaimControllerIntegrationTest {
   @Test
   void shouldCreateDraftClaim() throws Exception {
     UUID id = UUID.fromString("17dd7c98-ff17-4342-bef1-0b589a656f58");
-    String payload = "{\"someField\": \"someValue\"}";
 
     String requestBody =
         String.format(
             """
         {
           "id": "%s",
-          "payload": "{\\"someField\\": \\"someValue\\"}",
+          "payload": {
+            "someField": "someValue"
+          },
           "providerUserId": "%s"
         }
         """,
@@ -116,7 +123,7 @@ class DraftClaimControllerIntegrationTest {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.id").value(id.toString()))
-        .andExpect(jsonPath("$.payload").value(payload))
+        .andExpect(jsonPath("$.payload.someField").value("someValue"))
         .andExpect(jsonPath("$.providerUserId").value(providerUserId.toString()));
   }
 
@@ -124,13 +131,13 @@ class DraftClaimControllerIntegrationTest {
   void shouldUpdateDraftClaim() throws Exception {
     UUID id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
-    String payload = "{\"someField\": \"someValue\"}";
-
     String requestBody =
         String.format(
             """
         {
-          "payload": "{\\"someField\\": \\"someValue\\"}",
+          "payload": {
+            "someField": "someValue"
+          },
           "providerUserId": "%s"
         }
         """,
@@ -158,7 +165,7 @@ class DraftClaimControllerIntegrationTest {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.id").value(id.toString()))
-        .andExpect(jsonPath("$.payload").value(payload))
+        .andExpect(jsonPath("$.payload.someField").value("someValue"))
         .andExpect(jsonPath("$.providerUserId").value(providerUserId.toString()));
   }
 
@@ -170,7 +177,9 @@ class DraftClaimControllerIntegrationTest {
         String.format(
             """
         {
-          "payload": "{\\"someField\\": \\"someValue\\"}",
+          "payload": {
+            "someField": "someValue"
+          },
           "providerUserId": "%s"
         }
         """,
@@ -193,14 +202,13 @@ class DraftClaimControllerIntegrationTest {
   void shouldPatchDraftClaim() throws Exception {
     UUID id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
-    String payload = "{'someField':'someValue'}";
-
-    String requestBody =
-        String.format("""
+    String requestBody = """
         {
-          "payload": "%s"
+          "payload": {
+            "someField": "someValue"
+          }
         }
-        """, payload);
+        """;
 
     mockMvc
         .perform(
@@ -215,7 +223,7 @@ class DraftClaimControllerIntegrationTest {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.id").value(id.toString()))
-        .andExpect(jsonPath("$.payload").value(payload))
+        .andExpect(jsonPath("$.payload.someField").value("someValue"))
         .andExpect(jsonPath("$.providerUserId").value(providerUserId.toString()));
 
     mockMvc
@@ -228,7 +236,7 @@ class DraftClaimControllerIntegrationTest {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.id").value(id.toString()))
-        .andExpect(jsonPath("$.payload").value(payload))
+        .andExpect(jsonPath("$.payload.someField").value("someValue"))
         .andExpect(jsonPath("$.providerUserId").value(providerUserId.toString()));
   }
 
@@ -236,14 +244,13 @@ class DraftClaimControllerIntegrationTest {
   void shouldNotPatchDraftClaimWhenItDoesNotExist() throws Exception {
     UUID id = UUID.fromString("0ec9d4b6-900d-48ac-8685-ebb9fcd335dd");
 
-    String payload = "{'someField':'someValue'}";
-
-    String requestBody =
-        String.format("""
+    String requestBody = """
         {
-          "payload": "%s"
+          "payload": {
+            "someField": "someValue"
+          }
         }
-        """, payload);
+        """;
 
     mockMvc
         .perform(
