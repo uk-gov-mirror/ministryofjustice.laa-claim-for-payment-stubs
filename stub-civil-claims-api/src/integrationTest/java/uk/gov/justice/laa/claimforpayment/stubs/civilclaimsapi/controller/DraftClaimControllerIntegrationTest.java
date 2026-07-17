@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.controller;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -43,6 +44,8 @@ class DraftClaimControllerIntegrationTest {
   @Value("${app.security.authorities.claims-write}")
   private String claimsWriteScope;
 
+  private UUID providerUserId1 = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+
   @Test
   void shouldGetDraftClaim() throws Exception {
     UUID id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
@@ -85,20 +88,34 @@ class DraftClaimControllerIntegrationTest {
   }
 
   @Test
+  void shouldGetAllDraftClaimsForUser() throws Exception {
+    mockMvc
+        .perform(
+            get("/api/v1/drafts")
+                .with(
+                    jwt()
+                        .jwt(jwt -> jwt.claim("USER_NAME", providerUserId1.toString()))
+                        .authorities(() -> "SCOPE_Claims.Write")))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.draftClaims", hasSize(1)));
+  }
+
+  @Test
   void shouldCreateDraftClaim() throws Exception {
     UUID id = UUID.fromString("17dd7c98-ff17-4342-bef1-0b589a656f58");
 
     String requestBody =
         String.format(
             """
-        {
-          "id": "%s",
-          "payload": {
-            "someField": "someValue"
-          },
-          "providerUserId": "%s"
-        }
-        """,
+            {
+              "id": "%s",
+              "payload": {
+                "someField": "someValue"
+              },
+              "providerUserId": "%s"
+            }
+            """,
             id, providerUserId);
 
     mockMvc
@@ -134,13 +151,13 @@ class DraftClaimControllerIntegrationTest {
     String requestBody =
         String.format(
             """
-        {
-          "payload": {
-            "someField": "someValue"
-          },
-          "providerUserId": "%s"
-        }
-        """,
+            {
+              "payload": {
+                "someField": "someValue"
+              },
+              "providerUserId": "%s"
+            }
+            """,
             providerUserId);
 
     mockMvc
@@ -176,13 +193,13 @@ class DraftClaimControllerIntegrationTest {
     String requestBody =
         String.format(
             """
-        {
-          "payload": {
-            "someField": "someValue"
-          },
-          "providerUserId": "%s"
-        }
-        """,
+            {
+              "payload": {
+                "someField": "someValue"
+              },
+              "providerUserId": "%s"
+            }
+            """,
             providerUserId);
 
     mockMvc
@@ -202,7 +219,8 @@ class DraftClaimControllerIntegrationTest {
   void shouldPatchDraftClaim() throws Exception {
     UUID id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
-    String requestBody = """
+    String requestBody =
+        """
         {
           "payload": {
             "someField": "someValue"
@@ -244,7 +262,8 @@ class DraftClaimControllerIntegrationTest {
   void shouldNotPatchDraftClaimWhenItDoesNotExist() throws Exception {
     UUID id = UUID.fromString("0ec9d4b6-900d-48ac-8685-ebb9fcd335dd");
 
-    String requestBody = """
+    String requestBody =
+        """
         {
           "payload": {
             "someField": "someValue"

@@ -2,7 +2,9 @@ package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -11,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Nested;
@@ -23,6 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -144,14 +150,14 @@ public class DraftClaimControllerTest {
     String requestBody =
         String.format(
             """
-        {
-          "id": "%s",
-          "payload": {
-            "someField": "someValue"
-          },
-          "providerUserId": "%s"
-        }
-        """,
+            {
+              "id": "%s",
+              "payload": {
+                "someField": "someValue"
+              },
+              "providerUserId": "%s"
+            }
+            """,
             draftClaimId, providerUserId);
 
     @Test
@@ -227,13 +233,13 @@ public class DraftClaimControllerTest {
     String requestBody =
         String.format(
             """
-        {
-          "payload": {
-            "someField": "someValue"
-          },
-          "providerUserId": "%s"
-        }
-        """,
+            {
+              "payload": {
+                "someField": "someValue"
+              },
+              "providerUserId": "%s"
+            }
+            """,
             providerUserId);
 
     @Test
@@ -329,12 +335,12 @@ public class DraftClaimControllerTest {
 
     String requestBody =
         """
-    {
-      "payload": {
-        "someField": "someValue"
-      }
-    }
-    """;
+        {
+          "payload": {
+            "someField": "someValue"
+          }
+        }
+        """;
 
     @Test
     void returnsOkStatusAndPatchedClaim() throws Exception {
@@ -528,5 +534,50 @@ public class DraftClaimControllerTest {
 
       verifyNoInteractions(mockDraftClaimService);
     }
+  }
+
+  @Test
+  void getDraftClaims_returnsOkStatusAndAllClaims() throws Exception {
+    UUID providerUserId1 = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+    UUID providerUserId2 = UUID.randomUUID();
+
+    UUID claimId1 = UUID.randomUUID();
+    UUID claimId2 = UUID.randomUUID();
+
+    List<DraftClaim> draftClaims =
+        List.of(
+            DraftClaim.builder()
+                .id(claimId1)
+                .payload(Map.of())
+                .providerUserId(providerUserId1)
+                .build(),
+            DraftClaim.builder()
+                .id(claimId2)
+                .payload(Map.of())
+                .providerUserId(providerUserId2)
+                .build());
+
+    Page<DraftClaim> draftClaim1 =
+        new PageImpl<>(List.of(draftClaims.getFirst()), Pageable.ofSize(1), 1);
+    int pageNumber = 1;
+
+    int pageSize = 1;
+
+    when(mockDraftClaimService.getAllDraftClaimsForProvider(providerUserId1, pageNumber, pageSize))
+        .thenReturn(draftClaim1);
+
+    mockMvc
+        .perform(
+            get("/api/v1/drafts")
+                .param("page", String.valueOf(pageNumber))
+                .param("limit", String.valueOf(pageSize))
+                .with(
+                    jwt()
+                        .jwt(jwt -> jwt.claim("USER_NAME", providerUserId1.toString()))
+                        .authorities(() -> "SCOPE_" + claimsWriteScope)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.draftClaims[0].id").value(claimId1.toString()))
+        .andExpect(jsonPath("$.draftClaims", hasSize(1)));
   }
 }

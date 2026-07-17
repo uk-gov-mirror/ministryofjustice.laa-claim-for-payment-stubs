@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.service;
 
 import java.util.UUID;
+import org.springframework.data.domain.Page;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaim;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPatch;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPost;
@@ -48,4 +49,14 @@ public interface DraftClaimServiceInterface {
    * @param draftClaimId the id of the draft claim to be deleted
    */
   void deleteDraftClaim(UUID draftClaimId, UUID providerUserId);
+
+  /**
+   * Gets all draft claims for a given provider user ID.
+   *
+   * @param providerUserId the ID of the provider user
+   * @param pageNumber the page number to retrieve
+   * @param pageSize the number of draft claims per page
+   * @return a list of draft claims for the provider user
+   */
+  Page<DraftClaim> getAllDraftClaimsForProvider(UUID providerUserId, int pageNumber, int pageSize);
 }

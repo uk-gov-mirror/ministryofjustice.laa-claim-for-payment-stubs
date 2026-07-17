@@ -12,11 +12,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,11 +30,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.exception.DraftClaimNotFoundException;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.CreateDraftClaimResponse;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaim;
+import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPageResponse;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPatch;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPost;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPut;
@@ -121,6 +126,58 @@ public class DraftClaimController {
       log.error(e.getMessage());
       return ResponseEntity.notFound().build();
     }
+  }
+
+  /**
+   * Retrieves all draftclaims for the user.
+   *
+   * @return a list of all draft claims for the user
+   */
+  @Operation(summary = "Get paged draft claims for the authenticated user")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Paged list of draft claims linked to a provider user",
+            content = @Content(schema = @Schema(implementation = DraftClaimPageResponse.class)))
+      })
+  @PreAuthorize(
+      "hasAuthority('SCOPE_' + @environment.getProperty('app.security.authorities.claims-write'))")
+  @GetMapping
+  public ResponseEntity<DraftClaimPageResponse> getDraftClaims(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "20") int limit,
+      @AuthenticationPrincipal Jwt jwt) {
+
+    String id = jwt.getClaimAsString("USER_NAME");
+    if (id == null || id.isBlank()) {
+      throw new ResponseStatusException(FORBIDDEN, "providerUserId missing in token");
+    }
+    UUID providerUserId = UUID.fromString(id);
+    log.debug("Fetching all draft claims for provider user " + providerUserId);
+
+    Page<DraftClaim> draftClaims =
+        draftClaimService.getAllDraftClaimsForProvider(providerUserId, page, limit);
+
+    DraftClaimPageResponse response;
+
+    if (draftClaims == null || draftClaims.isEmpty()) {
+      log.debug("No draft claims found for provider user " + providerUserId);
+      response = new DraftClaimPageResponse(List.of(), page, limit, 0, 0);
+    } else {
+      log.debug(
+          "Found {} draft claims for provider user {}",
+          draftClaims.getNumberOfElements(),
+          providerUserId);
+      response =
+          new DraftClaimPageResponse(
+              draftClaims.toList(),
+              page,
+              limit,
+              draftClaims.getTotalElements(),
+              draftClaims.getTotalPages());
+    }
+    return ResponseEntity.ok(response);
   }
 
   /**

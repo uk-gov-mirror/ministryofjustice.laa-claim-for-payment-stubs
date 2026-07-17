@@ -3,6 +3,9 @@ package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.entity.DraftClaimEntity;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.exception.DraftClaimNotFoundException;
@@ -79,6 +82,15 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
   public void deleteDraftClaim(UUID draftClaimId, UUID providerUserId) {
     checkIfDraftClaimExists(draftClaimId, providerUserId);
     draftClaimRepository.deleteByIdAndProviderUserId(draftClaimId, providerUserId);
+  }
+
+  @Override
+  public Page<DraftClaim> getAllDraftClaimsForProvider(
+      UUID providerUserId, int pageNumber, int pageSize) {
+    Pageable pageable = PageRequest.of(pageNumber, pageSize);
+    Page<DraftClaimEntity> draftClaimPage =
+        draftClaimRepository.findByProviderUserId(providerUserId, pageable);
+    return draftClaimPage.map(draftClaimMapper::toDraftClaim);
   }
 
   private DraftClaimEntity checkIfDraftClaimExists(UUID draftClaimId, UUID providerUserId)
