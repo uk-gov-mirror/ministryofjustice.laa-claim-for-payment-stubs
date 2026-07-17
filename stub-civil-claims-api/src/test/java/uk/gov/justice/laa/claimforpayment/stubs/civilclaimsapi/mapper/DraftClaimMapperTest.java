@@ -55,13 +55,13 @@ class DraftClaimMapperTest {
               "evidence": [
                 {
                   "id": "019f5c45-6070-7abd-9129-171e41387b7c",
-                  "fileKey": "amoto-invoice-001.pdf",
+                  "fileName": "amoto-invoice-001.pdf",
                   "fileSize": 5000000,
                   "submittedOn": "2026-06-17T10:15:30Z"
                 },
                 {
                   "id": "019f5c45-ff06-7419-ab4c-9165d89b6173",
-                  "fileKey": "amoto-invoice-002.pdf",
+                  "fileName": "amoto-invoice-002.pdf",
                   "fileSize": 4000000,
                   "submittedOn": "2026-06-17T10:16:45Z"
                 }
@@ -91,13 +91,13 @@ class DraftClaimMapperTest {
             "evidence", List.of(
                 Map.of(
                     "id", "019f5c45-6070-7abd-9129-171e41387b7c",
-                    "fileKey", "amoto-invoice-001.pdf",
+                    "fileName", "amoto-invoice-001.pdf",
                     "fileSize", 5000000,
                     "submittedOn", "2026-06-17T10:15:30Z"
                 ),
                 Map.of(
                     "id", "019f5c45-ff06-7419-ab4c-9165d89b6173",
-                    "fileKey", "amoto-invoice-002.pdf",
+                    "fileName", "amoto-invoice-002.pdf",
                     "fileSize", 4000000,
                     "submittedOn", "2026-06-17T10:16:45Z"
                 )
@@ -143,13 +143,13 @@ class DraftClaimMapperTest {
             "evidence", List.of(
                 Map.of(
                     "id", "019f5c45-6070-7abd-9129-171e41387b7c",
-                    "fileKey", "amoto-invoice-001.pdf",
+                    "fileName", "amoto-invoice-001.pdf",
                     "fileSize", 5000000,
                     "submittedOn", Instant.ofEpochSecond(1781691330)
                 ),
                 Map.of(
                     "id", "019f5c45-ff06-7419-ab4c-9165d89b6173",
-                    "fileKey", "amoto-invoice-002.pdf",
+                    "fileName", "amoto-invoice-002.pdf",
                     "fileSize", 4000000,
                     "submittedOn", Instant.ofEpochSecond(1781691405)
                 )
@@ -180,13 +180,13 @@ class DraftClaimMapperTest {
               "evidence": [
                 {
                   "id": "019f5c45-6070-7abd-9129-171e41387b7c",
-                  "fileKey": "amoto-invoice-001.pdf",
+                  "fileName": "amoto-invoice-001.pdf",
                   "fileSize": 5000000,
                   "submittedOn": "2026-06-17T10:15:30Z"
                 },
                 {
                   "id": "019f5c45-ff06-7419-ab4c-9165d89b6173",
-                  "fileKey": "amoto-invoice-002.pdf",
+                  "fileName": "amoto-invoice-002.pdf",
                   "fileSize": 4000000,
                   "submittedOn": "2026-06-17T10:16:45Z"
                 }
