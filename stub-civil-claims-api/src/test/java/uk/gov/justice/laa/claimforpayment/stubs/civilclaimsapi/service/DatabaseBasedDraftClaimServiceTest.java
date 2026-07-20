@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,6 +18,10 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.entity.DraftClaimEntity;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.exception.DraftClaimNotFoundException;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.mapper.DraftClaimMapper;
@@ -49,10 +54,10 @@ class DatabaseBasedDraftClaimServiceTest {
         new ObjectMapper()
             .readTree(
                 """
-          {
-            "someField": "someValue"
-          }
-          """);
+                {
+                  "someField": "someValue"
+                }
+                """);
 
     Map<String, Object> payloadMap = Map.of("someField", "someValue");
 
@@ -105,14 +110,15 @@ class DatabaseBasedDraftClaimServiceTest {
         new ObjectMapper()
             .readTree(
                 """
-          {
-            "someField": "someValue"
-          }
-          """);
+                {
+                  "someField": "someValue"
+                }
+                """);
 
     Map<String, Object> payloadMap = Map.of("someField", "someValue");
 
-    DraftClaimPost requestBody = DraftClaimPost.builder().id(draftClaimId).payload(payloadMap).build();
+    DraftClaimPost requestBody =
+        DraftClaimPost.builder().id(draftClaimId).payload(payloadMap).build();
 
     DraftClaimEntity savedEntity =
         DraftClaimEntity.builder()
@@ -140,19 +146,19 @@ class DatabaseBasedDraftClaimServiceTest {
         new ObjectMapper()
             .readTree(
                 """
-          {
-            "field": "oldValue"
-          }
-          """);
+                {
+                  "field": "oldValue"
+                }
+                """);
 
     JsonNode newPayloadJson =
         new ObjectMapper()
             .readTree(
                 """
-          {
-            "field": "newValue"
-          }
-          """);
+                {
+                  "field": "newValue"
+                }
+                """);
 
     Map<String, Object> newPayloadMap = Map.of("field", "newValue");
 
@@ -206,19 +212,19 @@ class DatabaseBasedDraftClaimServiceTest {
         new ObjectMapper()
             .readTree(
                 """
-          {
-            "field": "oldValue"
-          }
-          """);
+                {
+                  "field": "oldValue"
+                }
+                """);
 
     JsonNode newPayloadJson =
         new ObjectMapper()
             .readTree(
                 """
-          {
-            "field": "newValue"
-          }
-          """);
+                {
+                  "field": "newValue"
+                }
+                """);
 
     Map<String, Object> newPayloadMap = Map.of("field", "newValue");
 
@@ -273,10 +279,10 @@ class DatabaseBasedDraftClaimServiceTest {
         new ObjectMapper()
             .readTree(
                 """
-          {
-            "field": "oldValue"
-          }
-          """);
+                {
+                  "field": "oldValue"
+                }
+                """);
 
     Map<String, Object> oldPayloadMap = Map.of("field", "oldValue");
 
@@ -322,10 +328,10 @@ class DatabaseBasedDraftClaimServiceTest {
         new ObjectMapper()
             .readTree(
                 """
-          {
-            "field": "oldValue"
-          }
-          """);
+                {
+                  "field": "oldValue"
+                }
+                """);
 
     DraftClaimEntity savedEntity =
         DraftClaimEntity.builder()
@@ -361,5 +367,45 @@ class DatabaseBasedDraftClaimServiceTest {
 
     verify(mockDraftClaimRepository, never())
         .deleteByIdAndProviderUserId(draftClaimId, providerUserId);
+  }
+
+  @Test
+  void shouldGetAllDraftClaimsForProviderUser() {
+    UUID providerUserId = UUID.randomUUID();
+
+    UUID firstClaimId = UUID.randomUUID();
+    UUID secondClaimId = UUID.randomUUID();
+
+    DraftClaimEntity firstDraftClaimEntity =
+        DraftClaimEntity.builder()
+            .id(firstClaimId)
+            .payload(null)
+            .providerUserId(providerUserId)
+            .build();
+
+    DraftClaimEntity secondDraftClaimEntity =
+        DraftClaimEntity.builder()
+            .id(secondClaimId)
+            .payload(null)
+            .providerUserId(providerUserId)
+            .build();
+
+    DraftClaim firstDraftClaim =
+        DraftClaim.builder().id(firstClaimId).payload(null).providerUserId(providerUserId).build();
+
+    DraftClaim secondDraftClaim =
+        DraftClaim.builder().id(secondClaimId).payload(null).providerUserId(providerUserId).build();
+
+    Pageable pageable = PageRequest.of(1, 1);
+    Page<DraftClaimEntity> page =
+        new PageImpl<DraftClaimEntity>(List.of(firstDraftClaimEntity, secondDraftClaimEntity));
+
+    when(mockDraftClaimRepository.findByProviderUserId(providerUserId, pageable)).thenReturn(page);
+    when(mockDraftClaimMapper.toDraftClaim(firstDraftClaimEntity)).thenReturn(firstDraftClaim);
+    when(mockDraftClaimMapper.toDraftClaim(secondDraftClaimEntity)).thenReturn(secondDraftClaim);
+
+    Page<DraftClaim> result = draftClaimService.getAllDraftClaimsForProvider(providerUserId, 1, 1);
+
+    assertThat(result).hasSize(2).contains(firstDraftClaim, secondDraftClaim);
   }
 }

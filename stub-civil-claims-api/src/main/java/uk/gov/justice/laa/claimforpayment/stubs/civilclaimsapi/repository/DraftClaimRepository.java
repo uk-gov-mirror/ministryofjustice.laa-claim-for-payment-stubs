@@ -2,6 +2,8 @@ package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.repository;
 
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.entity.DraftClaimEntity;
@@ -13,4 +15,6 @@ public interface DraftClaimRepository extends JpaRepository<DraftClaimEntity, UU
   Optional<DraftClaimEntity> findByIdAndProviderUserId(UUID id, UUID providerUserId);
 
   void deleteByIdAndProviderUserId(UUID id, UUID providerUserId);
+
+  Page<DraftClaimEntity> findByProviderUserId(UUID providerUserId, Pageable pageable);
 }
