@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,14 @@ public class DraftClaim implements Serializable {
   @Schema(name = "id", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("id")
   private UUID id;
+
+  @Schema(description = "line items associated with the draft claim")
+  @JsonProperty("lineItems")
+  private List<LineItem> lineItems;
+
+  @Schema(description = "evidence associated with the draft claim")
+  @JsonProperty("evidence")
+  private List<ClaimEvidence> evidence;
 
   @Schema(description = "payload")
   @JsonProperty("payload")

@@ -35,9 +35,13 @@ public class LineItemEntity {
 
   private LocalDate date;
 
-  @ManyToOne(optional = false)
+  @ManyToOne
   @JoinColumn(name = "claim_id")
   private ClaimEntity claim;
+
+  @ManyToOne
+  @JoinColumn(name = "draft_claim_id")
+  private DraftClaimEntity draftClaim;
 
   @ManyToMany
   @JoinTable(

@@ -31,9 +31,13 @@ public class ClaimEvidenceEntity {
 
   @Id @EqualsAndHashCode.Include private UUID id;
 
-  @ManyToOne(optional = false)
+  @ManyToOne
   @JoinColumn(name = "claim_id")
   private ClaimEntity claim;
+
+  @ManyToOne
+  @JoinColumn(name = "draft_claim_id")
+  private DraftClaimEntity draftClaim;
 
   private String fileKey;
 

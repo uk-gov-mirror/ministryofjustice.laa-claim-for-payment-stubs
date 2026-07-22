@@ -199,6 +199,12 @@ claim_evidence:
     fileSize: 6000000
     submittedOn: "2026-06-17T10:20:05Z"
 
+  - id: "019f8906-a4e6-7d3e-a465-de5d71326945"
+    draftClaimId: "550e8400-e29b-41d4-a716-446655440000"
+    fileIdString: "amoto-invoice-005.pdf"
+    fileSize: 7000000
+    submittedOn: "2026-06-18T10:15:30Z"
+
 line_items:
   - id: "019f5c46-5788-7252-9172-b494faac8fe8"
     claimId: "019f5c43-ba95-755c-8f28-c92bfb46013b"
@@ -248,12 +254,21 @@ line_items:
     category: "Disbursement"
     date: "2024-01-04"
 
+  - id: "019f8908-af9b-7b15-a1af-58339904391c"
+    draftClaimId: "550e8400-e29b-41d4-a716-446655440000"
+    title: "Car Mileage"
+    category: "Disbursement"
+    date: "2024-01-04"
+
 line_item_claim_evidence:
   - lineItemId: "019f5c46-5788-7252-9172-b494faac8fe8"
     evidenceId: "019f5c45-6070-7abd-9129-171e41387b7c"
 
   - lineItemId: "019f5c46-5788-7252-9172-b494faac8fe8"
     evidenceId: "019f5c45-ff06-7419-ab4c-9165d89b6173"
+
+  - lineItemId: "019f8908-af9b-7b15-a1af-58339904391c"
+    evidenceId: "019f8906-a4e6-7d3e-a465-de5d71326945"
 
 draft_claims:
   - id: "550e8400-e29b-41d4-a716-446655440000"

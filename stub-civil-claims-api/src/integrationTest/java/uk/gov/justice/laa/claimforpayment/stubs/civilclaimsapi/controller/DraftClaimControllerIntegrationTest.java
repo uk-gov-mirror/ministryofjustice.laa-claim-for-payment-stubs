@@ -70,7 +70,13 @@ class DraftClaimControllerIntegrationTest {
         .andExpect(jsonPath("$.payload.feeType").value("Escape"))
         .andExpect(jsonPath("$.payload.escaped").value(false))
         .andExpect(jsonPath("$.payload.counselPayment").value("Paid and Reconciled"))
-        .andExpect(jsonPath("$.payload.claimed").value(234.56));
+        .andExpect(jsonPath("$.payload.claimed").value(234.56))
+        .andExpect(jsonPath("$.lineItems", hasSize(1)))
+        .andExpect(jsonPath("$.lineItems[0].id").value("019f8908-af9b-7b15-a1af-58339904391c"))
+        .andExpect(jsonPath("$.lineItems[0].evidenceItems", hasSize(1)))
+        .andExpect(jsonPath("$.lineItems[0].evidenceItems[0]").value("019f8906-a4e6-7d3e-a465-de5d71326945"))
+        .andExpect(jsonPath("$.evidence", hasSize(1)))
+        .andExpect(jsonPath("$.evidence[0].id").value("019f8906-a4e6-7d3e-a465-de5d71326945"));
   }
 
   @Test

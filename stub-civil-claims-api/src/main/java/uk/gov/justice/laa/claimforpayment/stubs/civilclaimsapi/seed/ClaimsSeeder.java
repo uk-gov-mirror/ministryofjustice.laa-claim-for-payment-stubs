@@ -71,12 +71,11 @@ public class ClaimsSeeder {
         assertSeedFileIsValid(file);
 
         insertClaims(connection, file);
+        insertDrafts(connection, file);
         insertEvidence(connection, file);
         insertLineItems(connection, file);
 
         insertJoinRows(connection, file);
-
-        insertDrafts(connection, file);
 
         connection.commit();
         log.info("Seeding completed successfully");
@@ -130,17 +129,18 @@ public class ClaimsSeeder {
 
     String sql =
         "INSERT INTO claim_evidence"
-            + " (id, claim_id, file_key, file_size, submitted_on) "
-            + "VALUES (?, ?, ?, ?, ?)";
+            + " (id, claim_id, draft_claim_id, file_key, file_size, submitted_on) "
+            + "VALUES (?, ?, ?, ?, ?, ?)";
 
     try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
       for (ClaimEvidenceRow e : file.claim_evidence) {
         ps.setObject(1, e.id);
         ps.setObject(2, e.claimId);
-        ps.setString(3, e.fileIdString);
-        ps.setLong(4, e.fileSize);
-        ps.setTimestamp(5, Timestamp.from(e.submittedOn));
+        ps.setObject(3, e.draftClaimId);
+        ps.setString(4, e.fileIdString);
+        ps.setLong(5, e.fileSize);
+        ps.setTimestamp(6, Timestamp.from(e.submittedOn));
         ps.executeUpdate();
       }
     }
@@ -149,7 +149,9 @@ public class ClaimsSeeder {
   private void insertLineItems(Connection connection, ClaimsFile file) throws SQLException {
 
     String sql =
-        "INSERT INTO line_items (id, claim_id, title, category, date) VALUES (?, ?, ?, ?, ?)";
+        "INSERT INTO line_items"
+            + "(id, claim_id, draft_claim_id, title, category, date) "
+            + "VALUES (?, ?, ?, ?, ?, ?)";
 
     try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -157,9 +159,10 @@ public class ClaimsSeeder {
 
         ps.setObject(1, li.id);
         ps.setObject(2, li.claimId);
-        ps.setString(3, li.title);
-        ps.setString(4, li.category);
-        ps.setDate(5, Date.valueOf(li.date));
+        ps.setObject(3, li.draftClaimId);
+        ps.setString(4, li.title);
+        ps.setString(5, li.category);
+        ps.setDate(6, Date.valueOf(li.date));
         ps.executeUpdate();
       }
     }
@@ -259,6 +262,7 @@ public class ClaimsSeeder {
   public static class ClaimEvidenceRow {
     public UUID id;
     public UUID claimId;
+    public UUID draftClaimId;
     public String fileIdString;
     public Long fileSize;
     public Instant submittedOn;
@@ -268,6 +272,7 @@ public class ClaimsSeeder {
   public static class LineItemRow {
     public UUID id;
     public UUID claimId;
+    public UUID draftClaimId;
     public String title;
     public String category;
     public LocalDate date;

@@ -15,7 +15,7 @@ import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimP
 /** The mapper between DraftClaimEntity and DraftClaim. */
 @Mapper(
     componentModel = "spring",
-    uses = JsonNodeMapper.class
+    uses = {LineItemMapper.class, JsonNodeMapper.class}
 )
 public interface DraftClaimMapper {
 
@@ -33,6 +33,8 @@ public interface DraftClaimMapper {
    * @param request the draft claim post request body
    * @return the draft claim entity
    */
+  @Mapping(target = "lineItems", ignore = true)
+  @Mapping(target = "evidence", ignore = true)
   DraftClaimEntity toDraftClaimEntity(DraftClaimPost request);
 
   /**
@@ -42,5 +44,7 @@ public interface DraftClaimMapper {
    * @param entity the existing entity
    */
   @Mapping(target = "id", ignore = true)
+  @Mapping(target = "lineItems", ignore = true)
+  @Mapping(target = "evidence", ignore = true)
   void updateEntity(DraftClaimPut request, @MappingTarget DraftClaimEntity entity);
 }
