@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -249,13 +250,15 @@ public class DraftClaimController {
           DraftClaimPatch requestBody,
       @Parameter(description = "ID of the draft claim to patch", required = true) @PathVariable
           UUID draftClaimId,
+      @RequestHeader(value = "If-Match", required = true) String version,
       @AuthenticationPrincipal Jwt jwt) {
 
     UUID providerUserId = getProviderUserId(jwt);
     log.debug("Patching draft claim with ID: {}", draftClaimId);
     try {
       DraftClaim draftClaim =
-          draftClaimService.patchDraftClaim(requestBody, draftClaimId, providerUserId);
+          draftClaimService.patchDraftClaim(
+              requestBody, draftClaimId, providerUserId, parseIfMatchHeader(version));
       return ResponseEntity.ok(draftClaim);
     } catch (DraftClaimNotFoundException e) {
       log.error(e.getMessage());
@@ -302,5 +305,15 @@ public class DraftClaimController {
       throw new ResponseStatusException(FORBIDDEN, "providerUserId missing in token");
     }
     return UUID.fromString(id);
+  }
+
+  private Long parseIfMatchHeader(String ifMatch) {
+    try {
+      // Strip surrounding quotes and whitespace
+      String cleanVersion = ifMatch.replace("\"", "").trim();
+      return Long.parseLong(cleanVersion);
+    } catch (NumberFormatException e) {
+      return 0L; // Default to 0 if parsing fails
+    }
   }
 }

@@ -1,9 +1,5 @@
 package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.mapper;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Map;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -13,10 +9,7 @@ import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimP
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model.DraftClaimPut;
 
 /** The mapper between DraftClaimEntity and DraftClaim. */
-@Mapper(
-    componentModel = "spring",
-    uses = JsonNodeMapper.class
-)
+@Mapper(componentModel = "spring", uses = JsonNodeMapper.class)
 public interface DraftClaimMapper {
 
   /**
@@ -33,6 +26,7 @@ public interface DraftClaimMapper {
    * @param request the draft claim post request body
    * @return the draft claim entity
    */
+  @Mapping(target = "version", ignore = true)
   DraftClaimEntity toDraftClaimEntity(DraftClaimPost request);
 
   /**
@@ -42,5 +36,6 @@ public interface DraftClaimMapper {
    * @param entity the existing entity
    */
   @Mapping(target = "id", ignore = true)
+  @Mapping(target = "version", ignore = true)
   void updateEntity(DraftClaimPut request, @MappingTarget DraftClaimEntity entity);
 }

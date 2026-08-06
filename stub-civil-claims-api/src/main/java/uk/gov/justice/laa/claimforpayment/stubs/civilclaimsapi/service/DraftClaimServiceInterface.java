@@ -41,7 +41,8 @@ public interface DraftClaimServiceInterface {
    * @param requestBody the updated draft claim fields
    * @return the updated draft claim
    */
-  DraftClaim patchDraftClaim(DraftClaimPatch requestBody, UUID draftClaimId, UUID providerUserId);
+  DraftClaim patchDraftClaim(
+      DraftClaimPatch requestBody, UUID draftClaimId, UUID providerUserId, Long version);
 
   /**
    * Deletes a draft claim.
