@@ -3,6 +3,7 @@ package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.exception;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
@@ -67,5 +68,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   @ResponseStatus(HttpStatus.FORBIDDEN)
   void handleAuthorizationDenied() {
     // nothing to do
+  }
+
+  @ExceptionHandler(OptimisticLockingFailureException.class)
+  public ResponseEntity<String> handleOptimisticLockingFailure(
+      OptimisticLockingFailureException exception) {
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
   }
 }

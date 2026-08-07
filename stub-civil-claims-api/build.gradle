@@ -61,8 +61,8 @@ dependencies {
 
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql:42.7.12'
-    runtimeOnly "ch.qos.logback:logback-classic:${rootProject.ext.logbackVersion}"
-    runtimeOnly "ch.qos.logback:logback-core:${rootProject.ext.logbackVersion}"
+    runtimeOnly "ch.qos.logback:logback-classic:1.5.36"
+    runtimeOnly "ch.qos.logback:logback-core:1.5.36"
     implementation "org.flywaydb:flyway-core"
     implementation "org.flywaydb:flyway-database-postgresql"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
@@ -73,9 +73,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testImplementation "org.springframework.security:spring-security-test"
+    integrationTestImplementation 'org.springframework.boot:spring-boot-starter-logging'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 }

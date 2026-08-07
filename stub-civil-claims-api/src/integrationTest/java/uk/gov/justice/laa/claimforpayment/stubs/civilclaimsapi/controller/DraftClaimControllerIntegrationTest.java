@@ -152,6 +152,7 @@ class DraftClaimControllerIntegrationTest {
         String.format(
             """
             {
+                "version" : 0,
               "payload": {
                 "someField": "someValue"
               },
@@ -194,6 +195,7 @@ class DraftClaimControllerIntegrationTest {
         String.format(
             """
             {
+              "version" : 0,
               "payload": {
                 "someField": "someValue"
               },
@@ -216,12 +218,68 @@ class DraftClaimControllerIntegrationTest {
   }
 
   @Test
+  void shouldNotUpdateDraftClaimWhenVersionHasChanged() throws Exception {
+    UUID id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+
+    String requestBody =
+        String.format(
+            """
+            {
+              "version" : 0,
+              "payload": {
+                "someField": "someValue"
+              },
+              "providerUserId": "%s"
+            }
+            """,
+            providerUserId);
+
+    mockMvc
+        .perform(
+            put("/api/v1/drafts/{draftClaimId}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(
+                    jwt()
+                        .jwt(jwt -> jwt.claim("USER_NAME", providerUserId.toString()))
+                        .authorities(() -> "SCOPE_" + claimsWriteScope)))
+        .andExpect(status().isNoContent());
+
+    requestBody =
+        String.format(
+            """
+            {
+              "version" : 0,
+              "payload": {
+                "someField": "someValue"
+              },
+              "providerUserId": "%s"
+            }
+            """,
+            providerUserId);
+
+    mockMvc
+        .perform(
+            put("/api/v1/drafts/{draftClaimId}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
+                .accept(MediaType.APPLICATION_JSON)
+                .with(
+                    jwt()
+                        .jwt(jwt -> jwt.claim("USER_NAME", providerUserId.toString()))
+                        .authorities(() -> "SCOPE_" + claimsWriteScope)))
+        .andExpect(status().isConflict());
+  }
+
+  @Test
   void shouldPatchDraftClaim() throws Exception {
     UUID id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
     String requestBody =
         """
         {
+          "version" : 0,
           "payload": {
             "someField": "someValue"
           }
@@ -233,6 +291,7 @@ class DraftClaimControllerIntegrationTest {
             patch("/api/v1/drafts/{draftClaimId}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
+                .header("If-Match", "0")
                 .accept(MediaType.APPLICATION_JSON)
                 .with(
                     jwt()
@@ -265,6 +324,7 @@ class DraftClaimControllerIntegrationTest {
     String requestBody =
         """
         {
+          "version" : 0,
           "payload": {
             "someField": "someValue"
           }
@@ -276,12 +336,68 @@ class DraftClaimControllerIntegrationTest {
             patch("/api/v1/drafts/{draftClaimId}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
+                .header("If-Match", "0")
                 .accept(MediaType.APPLICATION_JSON)
                 .with(
                     jwt()
                         .jwt(jwt -> jwt.claim("USER_NAME", providerUserId.toString()))
                         .authorities(() -> "SCOPE_" + claimsWriteScope)))
         .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void shouldNotPatchDraftClaimWhenVersionHasChanged() throws Exception {
+    UUID id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+
+    String requestBody =
+        """
+        {
+          "payload": {
+            "someField": "someValue"
+          }
+        }
+        """;
+
+    mockMvc
+        .perform(
+            patch("/api/v1/drafts/{draftClaimId}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
+                .header("If-Match", "0")
+                .accept(MediaType.APPLICATION_JSON)
+                .with(
+                    jwt()
+                        .jwt(jwt -> jwt.claim("USER_NAME", providerUserId.toString()))
+                        .authorities(() -> "SCOPE_" + claimsWriteScope)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.id").value(id.toString()))
+        .andExpect(jsonPath("$.payload.someField").value("someValue"))
+        .andExpect(jsonPath("$.providerUserId").value(providerUserId.toString()));
+
+    requestBody =
+        String.format(
+            """
+            {
+              "payload": {
+                "someField": "someValue"
+              }
+            }
+            """,
+            providerUserId);
+
+    mockMvc
+        .perform(
+            patch("/api/v1/drafts/{draftClaimId}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
+                .header("If-Match", "0")
+                .accept(MediaType.APPLICATION_JSON)
+                .with(
+                    jwt()
+                        .jwt(jwt -> jwt.claim("USER_NAME", providerUserId.toString()))
+                        .authorities(() -> "SCOPE_" + claimsWriteScope)))
+        .andExpect(status().isConflict());
   }
 
   @Test

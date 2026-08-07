@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,8 +22,9 @@ import org.hibernate.type.SqlTypes;
 @Entity
 @Table(name = "DRAFT_CLAIMS")
 public class DraftClaimEntity {
-  @Id
-  private UUID id;
+  @Id private UUID id;
+
+  @Column @Version @Builder.Default private Long version = 0L;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb")

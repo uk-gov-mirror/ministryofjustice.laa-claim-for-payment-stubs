@@ -2,6 +2,7 @@ package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Map;
@@ -19,6 +20,11 @@ import lombok.NoArgsConstructor;
 public class DraftClaim implements Serializable {
 
   private static final long serialVersionUID = 1L;
+
+  @NotNull
+  @Schema(name = "version", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("version")
+  private Long version;
 
   @NotNull
   @Schema(name = "id", requiredMode = Schema.RequiredMode.REQUIRED)

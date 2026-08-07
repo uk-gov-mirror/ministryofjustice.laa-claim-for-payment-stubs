@@ -1,6 +1,8 @@
 logging:
   level:
     root: INFO
+    # org.hibernate.SQL: DEBUG
+    # org.hibernate.orm.jdbc.bind: TRACE
     # org.flywaydb: TRACE
     # This shows Spring Boot's decision to start Flyway
     # org.springframework.boot.autoconfigure.flyway: TRACE
@@ -24,5 +26,6 @@ spring:
       show-sql: true
       properties:
         hibernate.format_sql: true
+        highlight_sql: true
 
     

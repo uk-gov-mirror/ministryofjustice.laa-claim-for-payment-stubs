@@ -163,13 +163,18 @@ class DatabaseBasedDraftClaimServiceTest {
     Map<String, Object> newPayloadMap = Map.of("field", "newValue");
 
     DraftClaimPut requestBody =
-        DraftClaimPut.builder().payload(newPayloadMap).providerUserId(providerUserId).build();
+        DraftClaimPut.builder()
+            .payload(newPayloadMap)
+            .providerUserId(providerUserId)
+            .version(0L)
+            .build();
 
     DraftClaimEntity savedEntity =
         DraftClaimEntity.builder()
             .id(draftClaimId)
             .payload(oldPayloadJson)
             .providerUserId(providerUserId)
+            .version(0L)
             .build();
 
     DraftClaimEntity updatedEntity =
@@ -177,6 +182,7 @@ class DatabaseBasedDraftClaimServiceTest {
             .id(draftClaimId)
             .payload(newPayloadJson)
             .providerUserId(providerUserId)
+            .version(1L)
             .build();
 
     DraftClaim updatedClaim =
@@ -261,7 +267,7 @@ class DatabaseBasedDraftClaimServiceTest {
     when(mockDraftClaimMapper.toDraftClaim(updatedEntity)).thenReturn(updatedClaim);
 
     DraftClaim result =
-        draftClaimService.patchDraftClaim(requestBody, draftClaimId, providerUserId);
+        draftClaimService.patchDraftClaim(requestBody, draftClaimId, providerUserId, 0L);
 
     verify(mockDraftClaimRepository).save(savedDraftClaimCaptor.capture());
 
@@ -310,7 +316,7 @@ class DatabaseBasedDraftClaimServiceTest {
     when(mockDraftClaimMapper.toDraftClaim(savedEntity)).thenReturn(updatedClaim);
 
     DraftClaim result =
-        draftClaimService.patchDraftClaim(requestBody, draftClaimId, providerUserId);
+        draftClaimService.patchDraftClaim(requestBody, draftClaimId, providerUserId, 0L);
 
     verify(mockDraftClaimRepository).save(savedDraftClaimCaptor.capture());
 

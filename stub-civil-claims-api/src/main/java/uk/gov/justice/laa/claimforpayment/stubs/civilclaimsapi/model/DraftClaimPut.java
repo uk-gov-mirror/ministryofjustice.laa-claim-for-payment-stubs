@@ -32,6 +32,11 @@ public class DraftClaimPut implements Serializable {
   private Map<String, Object> payload;
 
   @NotNull
+  @JsonProperty("version")
+  @Schema(description = "version")
+  private Long version;
+
+  @NotNull
   @JsonProperty("providerUserId")
   @Schema(description = "provider user id")
   private UUID providerUserId;

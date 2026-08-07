@@ -1,0 +1,2 @@
+ALTER TABLE draft_claims
+ADD version BIGINT NOT NULL DEFAULT 0;

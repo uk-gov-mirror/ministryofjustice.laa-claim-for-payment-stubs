@@ -1,12 +1,16 @@
 package uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.entity.DraftClaimEntity;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.exception.DraftClaimNotFoundException;
 import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.mapper.DraftClaimMapper;
@@ -20,6 +24,7 @@ import uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.repository.DraftC
 /** Service class for handling claims requests. */
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterface {
 
   private final DraftClaimRepository draftClaimRepository;
@@ -52,18 +57,27 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
   }
 
   @Override
+  @Transactional
   public DraftClaim updateDraftClaim(DraftClaimPut requestBody, UUID draftClaimId) {
     DraftClaimEntity draftClaimEntity =
         checkIfDraftClaimExists(draftClaimId, requestBody.getProviderUserId());
+    if (!Objects.equals(draftClaimEntity.getVersion(), requestBody.getVersion())) {
+      throw new ObjectOptimisticLockingFailureException(DraftClaimEntity.class, draftClaimId);
+    }
     draftClaimMapper.updateEntity(requestBody, draftClaimEntity);
+    log.debug("after mapping version=" + draftClaimEntity.getVersion());
     DraftClaimEntity savedDraftClaimEntity = draftClaimRepository.save(draftClaimEntity);
     return draftClaimMapper.toDraftClaim(savedDraftClaimEntity);
   }
 
   @Override
+  @Transactional
   public DraftClaim patchDraftClaim(
-      DraftClaimPatch requestBody, UUID draftClaimId, UUID providerUserId) {
+      DraftClaimPatch requestBody, UUID draftClaimId, UUID providerUserId, Long version) {
     DraftClaimEntity draftClaimEntity = checkIfDraftClaimExists(draftClaimId, providerUserId);
+    if (!Objects.equals(draftClaimEntity.getVersion(), version)) {
+      throw new ObjectOptimisticLockingFailureException(DraftClaimEntity.class, draftClaimId);
+    }
     if (requestBody.getPayload() != null) {
       JsonNode payload = jsonNodeMapper.toJsonNode(requestBody.getPayload());
       draftClaimEntity.setPayload(payload);

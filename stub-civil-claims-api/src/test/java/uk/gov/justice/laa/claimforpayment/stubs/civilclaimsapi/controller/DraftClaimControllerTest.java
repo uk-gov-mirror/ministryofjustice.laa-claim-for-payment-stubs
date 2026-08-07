@@ -97,7 +97,7 @@ public class DraftClaimControllerTest {
     }
 
     @Test
-    void returnsNotFoundStatusWhenDraftClaimDoesNotExist() throws Exception {
+    void returnsNotFoundStatusWhenDraftClaimDoesNotExistGet() throws Exception {
       when(mockDraftClaimService.getDraftClaim(draftClaimId, providerUserId))
           .thenThrow(new DraftClaimNotFoundException("Draft claim not found"));
 
@@ -234,6 +234,7 @@ public class DraftClaimControllerTest {
         String.format(
             """
             {
+              "version": 0,
               "payload": {
                 "someField": "someValue"
               },
@@ -345,12 +346,13 @@ public class DraftClaimControllerTest {
     @Test
     void returnsOkStatusAndPatchedClaim() throws Exception {
       when(mockDraftClaimService.patchDraftClaim(
-              any(DraftClaimPatch.class), eq(draftClaimId), eq(providerUserId)))
+              any(DraftClaimPatch.class), eq(draftClaimId), eq(providerUserId), eq(0L)))
           .thenReturn(
               DraftClaim.builder()
                   .id(draftClaimId)
                   .payload(payload)
                   .providerUserId(providerUserId)
+                  .version(1L)
                   .build());
 
       mockMvc
@@ -358,6 +360,7 @@ public class DraftClaimControllerTest {
               patch("/api/v1/drafts/{draftClaimId}", draftClaimId)
                   .contentType(MediaType.APPLICATION_JSON)
                   .content(requestBody)
+                  .header("If-Match", "0")
                   .accept(MediaType.APPLICATION_JSON)
                   .with(
                       jwt()
@@ -370,7 +373,8 @@ public class DraftClaimControllerTest {
           .andExpect(jsonPath("$.providerUserId").value(providerUserId.toString()));
 
       verify(mockDraftClaimService)
-          .patchDraftClaim(draftClaimPatchCaptor.capture(), eq(draftClaimId), eq(providerUserId));
+          .patchDraftClaim(
+              draftClaimPatchCaptor.capture(), eq(draftClaimId), eq(providerUserId), eq(0L));
 
       assertThat(draftClaimPatchCaptor.getValue().getPayload()).isEqualTo(payload);
     }
@@ -389,6 +393,7 @@ public class DraftClaimControllerTest {
               patch("/api/v1/drafts/{draftClaimId}", draftClaimId)
                   .contentType(MediaType.APPLICATION_JSON)
                   .content(requestBody)
+                  .header("If-Match", "0")
                   .accept(MediaType.APPLICATION_JSON)
                   .with(
                       jwt()
@@ -402,7 +407,7 @@ public class DraftClaimControllerTest {
     @Test
     void returnsNotFoundStatusWhenDraftClaimDoesNotExist() throws Exception {
       when(mockDraftClaimService.patchDraftClaim(
-              any(DraftClaimPatch.class), eq(draftClaimId), eq(providerUserId)))
+              any(DraftClaimPatch.class), eq(draftClaimId), eq(providerUserId), eq(0L)))
           .thenThrow(new DraftClaimNotFoundException("Draft claim not found"));
 
       mockMvc
@@ -410,6 +415,7 @@ public class DraftClaimControllerTest {
               patch("/api/v1/drafts/{draftClaimId}", draftClaimId)
                   .contentType(MediaType.APPLICATION_JSON)
                   .content(requestBody)
+                  .header("If-Match", "0")
                   .accept(MediaType.APPLICATION_JSON)
                   .with(
                       jwt()
@@ -425,6 +431,7 @@ public class DraftClaimControllerTest {
               patch("/api/v1/drafts/{draftClaimId}", draftClaimId)
                   .contentType(MediaType.APPLICATION_JSON)
                   .content(requestBody)
+                  .header("If-Match", "0")
                   .accept(MediaType.APPLICATION_JSON))
           .andExpect(status().isUnauthorized());
 
@@ -439,6 +446,7 @@ public class DraftClaimControllerTest {
                   .with(jwt().authorities(() -> "SCOPE_" + claimsWriteScope))
                   .contentType(MediaType.APPLICATION_JSON)
                   .content(requestBody)
+                  .header("If-Match", "0")
                   .accept(MediaType.APPLICATION_JSON))
           .andExpect(status().isForbidden());
 
@@ -456,6 +464,7 @@ public class DraftClaimControllerTest {
                           .authorities(() -> "SCOPE_" + claimsWriteScope))
                   .contentType(MediaType.APPLICATION_JSON)
                   .content(requestBody)
+                  .header("If-Match", "0")
                   .accept(MediaType.APPLICATION_JSON))
           .andExpect(status().isForbidden());
 
