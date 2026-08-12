@@ -3,16 +3,14 @@ package uk.gov.justice.laa.claimforpayment.stubs.accessdatastoreapi;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-/**
- * Entry point for the Spring Boot microservice application.
- */
+/** Entry point for the Spring Boot microservice application. */
 @SpringBootApplication
 public class AccessDatastoreStubApplication {
 
@@ -44,5 +42,24 @@ class WireMockStubs {
         get(urlPathEqualTo("/hello-world"))
             .willReturn(
                 aResponse().withHeader("Content-Type", "text/plain").withBody("Hello World")));
+
+    wireMockServer.stubFor(
+        get(urlPathMatching("/applications/[^/]+"))
+            .willReturn(
+                aResponse()
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(
+                        """
+                    {
+                      "applicationId": "{{request.pathSegments.[1]}}",
+                      "laaReference": "LAA-123456",
+                      "status": "APPLICATION_SUBMITTED",
+                      "submittedAt": "2026-07-22T10:00:00Z",
+                      "clientFirstName": "John",
+                      "clientLastName": "Doe",
+                      "matterType": "SPECIAL_CHILDREN_ACT"
+                    }
+                    """)
+                    .withTransformers("response-template")));
   }
 }
