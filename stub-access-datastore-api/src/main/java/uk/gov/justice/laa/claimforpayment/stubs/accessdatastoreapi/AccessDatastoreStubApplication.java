@@ -5,7 +5,6 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import uk.gov.justice.laa.claimforpayment.stubs.accessdatastoreapi.wiremock.WireMockStubs;
 
 /** Entry point for the Spring Boot microservice application. */
 @SpringBootApplication
@@ -22,11 +21,9 @@ public class AccessDatastoreStubApplication {
 
   @Bean(initMethod = "start", destroyMethod = "stop")
   WireMockServer wireMockServer() {
-    return new WireMockServer(WireMockConfiguration.options().port(8092));
-  }
-
-  @Bean
-  WireMockStubs wireMockStubs(WireMockServer wireMockServer) {
-    return new WireMockStubs(wireMockServer);
+    return new WireMockServer(
+        WireMockConfiguration.options()
+            .port(8092)
+            .usingFilesUnderDirectory("src/main/resources/wiremock"));
   }
 }
