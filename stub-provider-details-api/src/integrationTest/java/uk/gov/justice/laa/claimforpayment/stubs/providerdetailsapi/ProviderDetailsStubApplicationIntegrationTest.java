@@ -45,7 +45,7 @@ class ProviderDetailsStubApplicationIntegrationTest {
   void getApplicationEndpointReturnsApplicationDetails() throws Exception {
     String firmId = "123";
 
-    String uri = String.format("http://localhost:8093/provider-firms/%s", firmId);
+    String uri = String.format("http://localhost:8093/api/v1/provider-firms/%s", firmId);
 
     HttpRequest request = HttpRequest.newBuilder().uri(URI.create(uri)).GET().build();
 
