@@ -5,7 +5,7 @@
     "ccmsFirmId": 14604,
     "companyHouseNumber": null,
     "constitutionalStatus": "Limited Company",
-    "firmId": "{{request.pathSegments.[1]}}",
+    "firmId": "{{request.pathSegments.[3]}}",
     "firmName": "TEST FIRM",
     "firmNumber": "123",
     "firmType": "Legal Services Provider",
