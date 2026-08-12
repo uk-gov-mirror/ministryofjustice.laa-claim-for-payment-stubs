@@ -20,5 +20,3 @@ include 'authx-secondary'
 include 'stub-access-datastore-api'
 include 'stub-provider-details-api'
 // include 'spring-boot-microservice-service'
-
-include 'stub-provider-details-api'

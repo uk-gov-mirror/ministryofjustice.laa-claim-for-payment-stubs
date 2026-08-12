@@ -22,7 +22,7 @@ integrationTest {
 jacocoTestReport {
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/AccessDatastoreStubApplication.class'])
+            fileTree(dir: it, exclude: ['**/ProviderDetailsStubApplication.class'])
         }))
     }
 }
@@ -30,7 +30,7 @@ jacocoTestReport {
 jacocoTestCoverageVerification {
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/AccessDatastoreStubApplication.class'])
+            fileTree(dir: it, exclude: ['**/ProviderDetailsStubApplication.class'])
         }))
     }
 }
