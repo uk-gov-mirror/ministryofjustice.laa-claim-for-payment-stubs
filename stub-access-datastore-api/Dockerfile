@@ -15,7 +15,7 @@ RUN addgroup -S appgroup && adduser -u 1001 -S appuser -G appgroup
 USER 1001
 
 # Expose the port that the application will run on
-EXPOSE 7080
+EXPOSE 8092
 
 # Run the JAR file
 CMD ["java", "-jar", "app.jar"]

@@ -1,0 +1,23 @@
+{
+  "firm": {
+    "advocateLevel": null,
+    "barCouncilRoll": null,
+    "ccmsFirmId": 14604,
+    "companyHouseNumber": null,
+    "constitutionalStatus": "Limited Company",
+    "firmId": "{{request.pathSegments.[1]}}",
+    "firmName": "TEST FIRM",
+    "firmNumber": "123",
+    "firmType": "Legal Services Provider",
+    "highRiskSupplier": null,
+    "holdAllPaymentsFlag": "N",
+    "holdReason": null,
+    "indemnityReceivedDate": null,
+    "nonProfitOrganisation": "N",
+    "parentFirmId": null,
+    "smallBusinessFlag": "N",
+    "solicitorAdvocateYN": null,
+    "websiteUrl": null,
+    "womenOwnedFlag": "N"
+  }
+}

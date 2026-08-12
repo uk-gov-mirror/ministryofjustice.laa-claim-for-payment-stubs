@@ -1,0 +1,61 @@
+plugins {
+    id 'io.freefair.lombok'
+    id 'uk.gov.justice.service.laa.laa-spring-boot-gradle-plugin'
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+    // testLogging {
+    //     events "passed", "skipped", "failed", "standard_out", "standard_error"
+    //     showStandardStreams = true
+    // }
+}
+
+integrationTest {
+    // testLogging {
+    //     events "passed", "skipped", "failed", "standard_out", "standard_error"
+    //     showStandardStreams = true
+    // }
+}
+
+jacocoTestReport {
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: ['**/AccessDatastoreStubApplication.class'])
+        }))
+    }
+}
+
+jacocoTestCoverageVerification {
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: ['**/AccessDatastoreStubApplication.class'])
+        }))
+    }
+}
+
+dependencies {
+    checkstyle "com.puppycrawl.tools:checkstyle:${rootProject.ext.checkstyleVersion}"
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3'
+    implementation 'org.apache.commons:commons-lang3:3.20.0'
+    implementation 'org.wiremock:wiremock-standalone:3.13.2'
+
+    runtimeOnly "ch.qos.logback:logback-classic:1.5.36"
+    runtimeOnly "ch.qos.logback:logback-core:1.5.36"
+
+    // Overrides to resolve vulnerabilities identified by Snyk
+    implementation 'ch.qos.logback:logback-core:1.5.36'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    integrationTestImplementation 'org.springframework.boot:spring-boot-starter-logging'
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+}
