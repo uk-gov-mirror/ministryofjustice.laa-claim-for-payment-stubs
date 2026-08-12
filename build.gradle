@@ -50,9 +50,6 @@ subprojects {
     configurations.configureEach {
         resolutionStrategy.force(
             "com.puppycrawl.tools:checkstyle:${rootProject.ext.checkstyleVersion}",
-            "tools.jackson:jackson-bom:${rootProject.ext.jacksonDatabindVersion}",
-            "tools.jackson.core:jackson-core:${rootProject.ext.jacksonDatabindVersion}",
-            "tools.jackson.core:jackson-databind:${rootProject.ext.jacksonDatabindVersion}",
             "com.fasterxml.jackson:jackson-bom:${rootProject.ext.fasterXmlJacksonDatabindVersion}",
             "com.fasterxml.jackson.core:jackson-core:${rootProject.ext.fasterXmlJacksonDatabindVersion}",
             "com.fasterxml.jackson.core:jackson-databind:${rootProject.ext.fasterXmlJacksonDatabindVersion}",
