@@ -10,16 +10,24 @@ Start the stub server from the root of the project:
 ./gradlew :stub-access-datastore-api:bootRun
 ```
 
-The WireMock server runs on port `8093`.
+The WireMock server runs on port `8092`.
 
 ## Quick sanity check
 
 ```shell
-curl http://localhost:8093/hello-world
+curl http://localhost:8092/health
 ```
 
 Expected response:
 
-```text
-Hello World
+```json
+{
+  "status": "UP"
+}
+```
+
+## Running tests
+
+```shell
+./gradlew :stub-access-datastore-api:integrationTest
 ```

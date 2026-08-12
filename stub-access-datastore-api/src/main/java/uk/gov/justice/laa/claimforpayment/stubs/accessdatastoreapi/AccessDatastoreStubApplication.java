@@ -1,14 +1,11 @@
 package uk.gov.justice.laa.claimforpayment.stubs.accessdatastoreapi;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
-
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import uk.gov.justice.laa.claimforpayment.stubs.accessdatastoreapi.wiremock.WireMockStubs;
 
 /** Entry point for the Spring Boot microservice application. */
 @SpringBootApplication
@@ -25,41 +22,11 @@ public class AccessDatastoreStubApplication {
 
   @Bean(initMethod = "start", destroyMethod = "stop")
   WireMockServer wireMockServer() {
-    return new WireMockServer(
-        com.github.tomakehurst.wiremock.core.WireMockConfiguration.options().port(8093));
+    return new WireMockServer(WireMockConfiguration.options().port(8092));
   }
 
   @Bean
   WireMockStubs wireMockStubs(WireMockServer wireMockServer) {
     return new WireMockStubs(wireMockServer);
-  }
-}
-
-class WireMockStubs {
-
-  WireMockStubs(WireMockServer wireMockServer) {
-    wireMockServer.stubFor(
-        get(urlPathEqualTo("/hello-world"))
-            .willReturn(
-                aResponse().withHeader("Content-Type", "text/plain").withBody("Hello World")));
-
-    wireMockServer.stubFor(
-        get(urlPathMatching("/applications/[^/]+"))
-            .willReturn(
-                aResponse()
-                    .withHeader("Content-Type", "application/json")
-                    .withBody(
-                        """
-                    {
-                      "applicationId": "{{request.pathSegments.[1]}}",
-                      "laaReference": "LAA-123456",
-                      "status": "APPLICATION_SUBMITTED",
-                      "submittedAt": "2026-07-22T10:00:00Z",
-                      "clientFirstName": "John",
-                      "clientLastName": "Doe",
-                      "matterType": "SPECIAL_CHILDREN_ACT"
-                    }
-                    """)
-                    .withTransformers("response-template")));
   }
 }
