@@ -4,7 +4,7 @@ ext {
 }
 
 subprojects {
-    group = 'uk.gov.justice.laa.claimforpayment.stubs.civilclaimsapi.stubs'
+    group = 'uk.gov.justice.laa.claimforpayment.stubs'
 
     configurations.configureEach {
 
