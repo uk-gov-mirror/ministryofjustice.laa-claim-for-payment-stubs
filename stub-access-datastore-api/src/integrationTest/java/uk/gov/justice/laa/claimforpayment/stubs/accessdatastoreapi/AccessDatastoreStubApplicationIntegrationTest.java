@@ -2,8 +2,6 @@ package uk.gov.justice.laa.claimforpayment.stubs.accessdatastoreapi;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -12,6 +10,8 @@ import java.net.http.HttpResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 class AccessDatastoreStubApplicationIntegrationTest {
@@ -45,7 +45,7 @@ class AccessDatastoreStubApplicationIntegrationTest {
   void getApplicationEndpointReturnsApplicationDetails() throws Exception {
     String applicationId = "123";
 
-    String uri = String.format("http://localhost:8092/applications/%s", applicationId);
+    String uri = String.format("http://localhost:8092/api/v0/applications/%s", applicationId);
 
     HttpRequest request = HttpRequest.newBuilder().uri(URI.create(uri)).GET().build();
 
@@ -56,10 +56,9 @@ class AccessDatastoreStubApplicationIntegrationTest {
     assertThat(response.statusCode()).isEqualTo(200);
     assertThat(body.get("applicationId").asString()).isEqualTo(applicationId);
     assertThat(body.get("laaReference").asString()).isEqualTo("LAA-123456");
-    assertThat(body.get("status").asString()).isEqualTo("APPLICATION_SUBMITTED");
-    assertThat(body.get("submittedAt").asString()).isEqualTo("2026-07-22T10:00:00Z");
-    assertThat(body.get("clientFirstName").asString()).isEqualTo("John");
-    assertThat(body.get("clientLastName").asString()).isEqualTo("Doe");
-    assertThat(body.get("matterType").asString()).isEqualTo("SPECIAL_CHILDREN_ACT");
+    assertThat(body.get("decisionStatus").asString()).isEqualTo("GRANTED");
+    assertThat(body.get("submittedAt").asString()).isEqualTo("2026-08-12T14:27:58.079Z");
+    assertThat(body.get("proceedings").get(0).get("matterType").asString())
+        .isEqualTo("SPECIAL_CHILDREN_ACT");
   }
 }

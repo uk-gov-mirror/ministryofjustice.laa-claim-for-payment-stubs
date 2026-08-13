@@ -1,6 +1,7 @@
 ext {
     checkstyleVersion = '11.0.0'
-    jacksonDatabindVersion = '3.1.5'
+    jacksonDatabindVersion = '3.2.1'
+    fasterXmlJacksonDatabindVersion = '2.21.5'
 }
 
 subprojects {
@@ -19,6 +20,26 @@ subprojects {
                 details.useVersion rootProject.ext.jacksonDatabindVersion
                 details.because('Align Jackson databind across subprojects to resolve Snyk vulnerabilities')
             }
+            if (details.requested.group == 'tools.jackson.core' && details.requested.name == 'jackson-core') {
+                details.useVersion rootProject.ext.jacksonDatabindVersion
+                details.because('Align Jackson core with the databind fix to resolve Snyk vulnerabilities')
+            }
+            if (details.requested.group == 'tools.jackson' && details.requested.name == 'jackson-bom') {
+                details.useVersion rootProject.ext.jacksonDatabindVersion
+                details.because('Override the Spring Boot Jackson BOM to the patched version required by Snyk')
+            }
+            if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-databind') {
+                details.useVersion rootProject.ext.fasterXmlJacksonDatabindVersion
+                details.because('Force the patched FasterXML databind version across all subprojects')
+            }
+            if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-core') {
+                details.useVersion rootProject.ext.fasterXmlJacksonDatabindVersion
+                details.because('Align the FasterXML core version with the patched databind release')
+            }
+            if (details.requested.group == 'com.fasterxml.jackson' && details.requested.name == 'jackson-bom') {
+                details.useVersion rootProject.ext.fasterXmlJacksonDatabindVersion
+                details.because('Override the Springdoc/FasterXML Jackson BOM to the patched version required by Snyk')
+            }
             if (details.requested.group == 'org.apache.commons' && details.requested.name == 'commons-lang3') {
                 details.useVersion '3.20.0'
                 details.because('Force Commons Lang 3.20.0 for Checkstyle transitive dependencies')
@@ -29,7 +50,9 @@ subprojects {
     configurations.configureEach {
         resolutionStrategy.force(
             "com.puppycrawl.tools:checkstyle:${rootProject.ext.checkstyleVersion}",
-            "tools.jackson.core:jackson-databind:${rootProject.ext.jacksonDatabindVersion}",
+            "com.fasterxml.jackson:jackson-bom:${rootProject.ext.fasterXmlJacksonDatabindVersion}",
+            "com.fasterxml.jackson.core:jackson-core:${rootProject.ext.fasterXmlJacksonDatabindVersion}",
+            "com.fasterxml.jackson.core:jackson-databind:${rootProject.ext.fasterXmlJacksonDatabindVersion}",
             "org.apache.commons:commons-lang3:3.20.0"
         )
     }

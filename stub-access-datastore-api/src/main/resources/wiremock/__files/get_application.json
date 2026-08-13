@@ -1,9 +1,51 @@
 {
-  "applicationId": "{{request.pathSegments.[1]}}",
+  "applicationId": "{{request.pathSegments.[3]}}",
+  "status": "APPLICATION_IN_PROGRESS",
   "laaReference": "LAA-123456",
-  "status": "APPLICATION_SUBMITTED",
-  "submittedAt": "2026-07-22T10:00:00Z",
-  "clientFirstName": "John",
-  "clientLastName": "Doe",
-  "matterType": "SPECIAL_CHILDREN_ACT"
+  "lastUpdated": "2026-08-12T14:27:58.079Z",
+  "assignedTo": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "submittedAt": "2026-08-12T14:27:58.079Z",
+  "isLead": true,
+  "usedDelegatedFunctions": true,
+  "autoGrant": true,
+  "decisionStatus": "GRANTED",
+  "applicationType": "INITIAL",
+  "opponents": [
+    {
+      "opponentType": "string",
+      "firstName": "string",
+      "lastName": "string",
+      "organisationName": "string"
+    }
+  ],
+  "proceedings": [
+    {
+      "proceedingId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "proceedingType": "string",
+      "proceedingDescription": "string",
+      "delegatedFunctionsDate": "2026-08-12",
+      "categoryOfLaw": "FAMILY",
+      "matterType": "SPECIAL_CHILDREN_ACT",
+      "levelOfService": "string",
+      "substantiveCostLimitation": 0.1,
+      "scopeLimitations": [
+        {
+          "scopeLimitation": "string",
+          "scopeDescription": "string"
+        }
+      ],
+      "involvedChildren": [
+        {
+          "fullName": "string",
+          "dateOfBirth": "2026-08-12"
+        }
+      ],
+      "meritsDecision": "GRANTED"
+    }
+  ],
+  "provider": {
+    "officeCode": "string",
+    "contactEmail": "string"
+  },
+  "version": 0
 }
