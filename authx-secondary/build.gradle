@@ -64,11 +64,6 @@ dependencies {
     implementation "jakarta.servlet:jakarta.servlet-api:6.1.0"
     implementation 'org.slf4j:slf4j-api:2.0.18'
     implementation 'org.json:json:20260719'
-    implementation 'org.springframework.security:spring-security-core:7.1.0'
-    implementation 'org.springframework.security:spring-security-oauth2-jose:7.1.0'
-    implementation 'org.springframework.security:spring-security-oauth2-resource-server:7.1.0'
-    implementation 'org.springframework.security:spring-security-test:7.1.0'
-    implementation 'org.springframework:spring-test:7.0.8'
 
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.springframework:spring-test"
