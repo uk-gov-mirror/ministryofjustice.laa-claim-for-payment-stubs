@@ -351,12 +351,12 @@ class DatabaseBasedDraftClaimServiceTest {
 
     doNothing()
         .when(mockDraftClaimRepository)
-        .deleteByIdAndProviderUserId(draftClaimId, providerUserId);
+        .deleteById(draftClaimId);
 
     draftClaimService.deleteDraftClaim(draftClaimId, providerUserId);
 
     verify(mockDraftClaimRepository, times(1))
-        .deleteByIdAndProviderUserId(draftClaimId, providerUserId);
+        .deleteById(draftClaimId);
   }
 
   @Test
@@ -372,7 +372,7 @@ class DatabaseBasedDraftClaimServiceTest {
         () -> draftClaimService.deleteDraftClaim(draftClaimId, providerUserId));
 
     verify(mockDraftClaimRepository, never())
-        .deleteByIdAndProviderUserId(draftClaimId, providerUserId);
+        .deleteById(draftClaimId);
   }
 
   @Test

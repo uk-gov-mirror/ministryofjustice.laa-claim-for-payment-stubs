@@ -14,7 +14,5 @@ public interface DraftClaimRepository extends JpaRepository<DraftClaimEntity, UU
 
   Optional<DraftClaimEntity> findByIdAndProviderUserId(UUID id, UUID providerUserId);
 
-  void deleteByIdAndProviderUserId(UUID id, UUID providerUserId);
-
   Page<DraftClaimEntity> findByProviderUserId(UUID providerUserId, Pageable pageable);
 }

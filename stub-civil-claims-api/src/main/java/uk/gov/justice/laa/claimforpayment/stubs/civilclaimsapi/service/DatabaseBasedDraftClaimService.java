@@ -95,7 +95,7 @@ public class DatabaseBasedDraftClaimService implements DraftClaimServiceInterfac
   @Override
   public void deleteDraftClaim(UUID draftClaimId, UUID providerUserId) {
     checkIfDraftClaimExists(draftClaimId, providerUserId);
-    draftClaimRepository.deleteByIdAndProviderUserId(draftClaimId, providerUserId);
+    draftClaimRepository.deleteById(draftClaimId);
   }
 
   @Override
